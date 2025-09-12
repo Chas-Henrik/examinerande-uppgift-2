@@ -18,12 +18,12 @@ export const register = async (req: Request, res: Response) =>  {
     try {
         const { name, email, password } = req.body as UserType;
         const existing = await User.findOne({ email });
-        if (existing) return res.status(400).json({ message: 'User already exists' });
+        if (existing) return res.status(409).json({ message: 'User already exists' });
 
         const user = new User({ name, email, password });
         const savedUser = await user.save();
 
-        const token = signToken({ id: savedUser._id, email: savedUser.email });
+        const token = signToken(savedUser.toObject());
 
         res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User registered' });
     } catch (err) {
@@ -35,12 +35,12 @@ export const register = async (req: Request, res: Response) =>  {
 export const login = async (req: Request, res: Response) =>  {
     try {
         const { email, password } = req.body as { email: string, password: string};
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).lean();
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const token = signToken({ id: user._id, email: user.email });
+        const token = signToken(user);
 
         res.cookie('token', token, COOKIE_OPTIONS).json({ message: 'Logged in successfully' });
     } catch (err) {
