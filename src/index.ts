@@ -23,11 +23,11 @@ app.use(express.json());
 
 import authRoutes from "./routes/auth.route.js";
 // import userRoutes from "./routes/user.route.js";
-// import taskRoutes from "./routes/task.route.js";
+import taskRoutes from "./routes/task.route.js";
 
 app.use("/api/auth", authRoutes);
 // app.use("/api/users", userRoutes)
-// app.use("/api/tasks", taskRoutes);
+app.use("/api/tasks", taskRoutes);
 
 
 await connectDB()

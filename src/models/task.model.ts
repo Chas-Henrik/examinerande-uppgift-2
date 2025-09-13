@@ -1,3 +1,5 @@
+// src/models/task.model.ts
+
 import mongoose, { Schema, InferSchemaType } from "mongoose";
 
 const taskSchema = new mongoose.Schema({
@@ -20,6 +22,10 @@ const taskSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         default: null,
+    },
+    finishedAt : {
+        type: Date,
+        default: null,
     }
 },
 {
@@ -28,6 +34,6 @@ const taskSchema = new mongoose.Schema({
 });
 
 
-export type Task = InferSchemaType<typeof taskSchema>;
+export type TaskType = InferSchemaType<typeof taskSchema>;
 
-export const TaskModel = mongoose.model("Task", taskSchema);
+export const Task = mongoose.model("Task", taskSchema);

@@ -1,8 +1,9 @@
 // src/controllers/auth.controller.ts
 import express, { Request, Response } from 'express';
 import bcrypt from "bcrypt"
-import { UserType, User, UserLevel } from '../models/user.model.js';
 import { signToken } from '../utils/jwt.js'
+import { UserType, User } from '../models/user.model.js';
+import { UserLevel } from "../types/user.js";
 
 const router = express.Router();
 
