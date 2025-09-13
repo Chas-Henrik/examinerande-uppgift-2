@@ -1,7 +1,7 @@
 // src/controllers/auth.controller.ts
 import express, { Request, Response } from 'express';
 import bcrypt from "bcrypt"
-import { UserType, User } from '../models/user.model.js';
+import { UserType, User, UserLevel } from '../models/user.model.js';
 import { signToken } from '../utils/jwt.js'
 
 const router = express.Router();
@@ -16,11 +16,17 @@ const COOKIE_OPTIONS = {
 // POST /api/auth/register
 export const register = async (req: Request, res: Response) =>  {
     try {
-        const { name, email, password } = req.body as UserType;
+        const { name, email, password, userLevel } = req.body as UserType;
+        const level = typeof userLevel === 'string' ? UserLevel[userLevel as keyof typeof UserLevel] : userLevel;
+        
+        if (level === undefined || !Object.values(UserLevel).includes(level)) {
+            return res.status(400).json({ message: 'Invalid user level' });
+        }
+
         const existing = await User.findOne({ email });
         if (existing) return res.status(409).json({ message: 'User already exists' });
 
-        const user = new User({ name, email, password });
+        const user = new User({ name, email, password, userLevel: level });
         const savedUser = await user.save();
 
         const token = signToken(savedUser.toObject());
