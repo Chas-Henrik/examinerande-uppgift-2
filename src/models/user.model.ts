@@ -2,17 +2,15 @@
 
 import mongoose, { Schema, InferSchemaType } from "mongoose";
 import bcrypt from "bcrypt"
-
-export enum UserLevel { 
-	UNDEFINED = 0, 
-	DEVELOPER = 10, 
-	PROJECT_LEADER= 20, 
-	ADMIN = 30, 
-}
+import { UserLevel } from "../types/user.js"
 
 const numericEnumValues = Object.values(UserLevel).filter(v => typeof v === 'number');
 
 const userSchema = new Schema({
+	_id: { 
+		type: mongoose.Schema.Types.ObjectId, 
+		required: true
+	},
 	name: { 
 		type: String, 
 		required: true,
@@ -36,7 +34,7 @@ const userSchema = new Schema({
 	userLevel: {
 		type: Number,
 		enum: numericEnumValues, // This ensures only valid enum values are accepted
-		default: UserLevel.UNDEFINED,
+		default: UserLevel.NONE,
 		required: true
 	}
 });

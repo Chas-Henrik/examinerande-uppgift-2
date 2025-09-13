@@ -53,8 +53,8 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
             return res.status(401).json({ message: 'Unauthorized, invalid user level' });
         }
 
-        // Ensure UserLevel is above UNDEFINED level access
-        if (user.userLevel <= UserLevel.UNDEFINED) {
+        // Ensure UserLevel is above NONE level access
+        if (user.userLevel <= UserLevel.NONE) {
             return res.status(403).json({ error: "Forbidden, missing or insufficient user level" });
         }
 
