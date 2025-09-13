@@ -5,7 +5,7 @@
 ### Motivera ditt val av databas
 
 Jag har valt MongoDB med mongoose som ODM då jag förväntar mig en exponentiell tillströmmning av användare 
-och då vill jag kunna dela upp databasen på flera servrar.
+och då vill jag ha möjlighet att dela upp databasen på flera servrar.
 Det är dessutom lite oklart i nuläget vilka fields och scheman jag kommer att behöva i framtiden, och detta är ytterligare ett 
 skäl till att jag har valt MongoDB.
 Och det är även troligt att jag kommer att vilja göra komplicerade sökningar/beräkningar med snabba responstider 
@@ -13,14 +13,14 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 
 ### Redogör vad de olika teknikerna (ex. verktyg, npm-paket, etc.) gör i applikationen
 
-- bcrypt: Används för att kryptera (hasha) ett lösenord innan det sparas i databasen.
-- cookie-parser: Används för att läsa cookies från inkommande HTTP-förfrågningar i en Express-applikation.
-- cors: Används i en Express-applikation för att tillåta eller begränsa vilka domäner som får kommunicera med ditt API. Då jag använder Cookie-Token så behöver jag CORS då webbläsare inte tillåter att cookies skickas med cross-origin-förfrågningar utan korrekt CORS-inställning).
-- dotenv: Används för att läsa miljövariablerna från .env filen
-- express: Är ett webbramverk för Node.js som används för att bygga webbservrar och API:er på ett enkelt och effektivt sätt.
-- jsonwebtoken: Används för att signera och verifiera JSON Web Tokens (JWT).
-- lodash: Används vid PATCH för att 'deep merga' det existerande objektet i databasen med det patchade objektet. 
-- mongoose: Mongoose är ett ODM (Object Data Modeling) som hjälper mig att arbeta med MongoDB på ett strukturerat och typat sätt genom att definiera scheman och modeller, vilket gör databashantering enklare och säkrare.
+- ***bcrypt*** Används för att kryptera (hasha) ett lösenord innan det sparas i databasen.
+- ***cookie-parser*** Används för att läsa cookies från inkommande HTTP-förfrågningar i en Express-applikation.
+- ***cors*** Används i en Express-applikation för att tillåta eller begränsa vilka domäner som får kommunicera med ditt API. Då jag använder Cookie-Token så behöver jag CORS då webbläsare inte tillåter att cookies skickas med cross-origin-förfrågningar utan korrekt CORS-inställning).
+- ***dotenv*** Används för att läsa miljövariablerna från .env filen
+- ***express*** Är ett webbramverk för Node.js som används för att bygga webbservrar och API:er på ett enkelt och effektivt sätt.
+- ***jsonwebtoken*** Används för att signera och verifiera JSON Web Tokens (JWT).
+- ***lodash*** Används vid PATCH för att 'deep merga' det existerande objektet i databasen med det patchade objektet. 
+- ***mongoose*** Mongoose är ett ODM (Object Data Modeling) som hjälper mig att arbeta med MongoDB på ett strukturerat och typat sätt genom att definiera scheman och modeller, vilket gör databashantering enklare och säkrare.
 
 ### Redogör översiktligt hur applikationen fungerar
 
