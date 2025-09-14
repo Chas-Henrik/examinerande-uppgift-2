@@ -1,16 +1,12 @@
 // src/models/user.model.ts
 
-import mongoose, { Schema, InferSchemaType } from "mongoose";
+import mongoose, { Schema, InferSchemaType, Types } from "mongoose";
 import bcrypt from "bcrypt"
 import { UserLevel } from "../types/user.js"
 
 const numericEnumValues = Object.values(UserLevel).filter(v => typeof v === 'number');
 
 const userSchema = new Schema({
-	_id: { 
-		type: mongoose.Schema.Types.ObjectId, 
-		required: true
-	},
 	name: { 
 		type: String, 
 		required: true,
@@ -39,13 +35,29 @@ const userSchema = new Schema({
 	}
 });
 
-// Hash password before save
+// ✅ Pre-save hook (runs on .save())
 userSchema.pre('save', async function (next) {
+	// Hash password before save
 	if (!this.isModified('password')) return next();
 	this.password = await bcrypt.hash(this.password, 10);
 	next();
 });
 
-export type UserType = InferSchemaType<typeof userSchema>;
+// ✅ Pre-update hook (runs on findByIdAndUpdate, findOneAndUpdate)
+userSchema.pre('findOneAndUpdate', async function (next) {
+	// Hash password before findByIdAndUpdate, findOneAndUpdate
+	const update = this.getUpdate() as { [key: string]: any };
+	
+	if (!update) return next();
+
+	if (update.password) {
+		update.password = await bcrypt.hash(update.password, 10);
+		this.setUpdate(update);
+	}
+	next();
+});
+
+type UserBaseType = InferSchemaType<typeof userSchema>;
+export type UserType = UserBaseType & { _id: Types.ObjectId };
 
 export const User = mongoose.model("User", userSchema);

@@ -24,7 +24,7 @@ export const createTask = async (req: Request, res: Response) =>  {
 		}
 
 		const createdTask = await Task.create(taskData);
-		res.status(201).json(createdTask);
+		res.status(201).json({ message: 'Task created', task: createdTask });
 	} catch (error) {
 		console.error("Error creating task:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
@@ -44,7 +44,7 @@ export const getTasks = async (_req: Request, res: Response) => {
 	}
 };
 
-// GET /api/task/:id
+// GET /api/tasks/:id
 export const getTask = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
@@ -64,7 +64,7 @@ export const getTask = async (req: Request, res: Response) => {
 	}
 };
 
-// PATCH /api/task/:id
+// PATCH /api/tasks/:id
 export const patchTask = async (req: Request, res: Response) => {
 	try {
 		const taskData: TaskType = req.body;
@@ -106,7 +106,7 @@ export const patchTask = async (req: Request, res: Response) => {
 		if (!updatedTask) {
 			return res.status(404).json({ message: "Task not found" });
 		}
-		res.status(200).json(updatedTask);
+		res.status(200).json({ message: 'Task updated', task: updatedTask });
 	} catch (error) {
 		console.error("Error patching task:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
@@ -114,7 +114,7 @@ export const patchTask = async (req: Request, res: Response) => {
 	}
 };
 
-// DELETE /api/task/:id
+// DELETE /api/tasks/:id
 export const deleteTask = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;

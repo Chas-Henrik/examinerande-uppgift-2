@@ -7,7 +7,7 @@ import { UserLevel } from "../types/user.js";
 
 const router = express.Router();
 
-const COOKIE_OPTIONS = {
+export const COOKIE_OPTIONS = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax' as const,
@@ -25,14 +25,16 @@ export const register = async (req: Request, res: Response) =>  {
         }
 
         const existing = await User.findOne({ email });
-        if (existing) return res.status(409).json({ message: 'User already exists' });
+        if (existing) {
+            return res.status(409).json({ message: 'User already exists' });
+        }
 
         const user = new User({ name, email, password, userLevel: level });
         const savedUser = await user.save();
 
         const token = signToken(savedUser.toObject());
 
-        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User registered' });
+        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User registered', user: savedUser });
     } catch (err) {
         res.status(500).json({ message: 'Error registering user', error: err });
     }
