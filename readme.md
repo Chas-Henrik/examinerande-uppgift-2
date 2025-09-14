@@ -62,10 +62,9 @@ JWT_SECRET=I5YhOGe8MW2xsVbrH+QvH3LGYZsi3Cx1qEbP3yD2ZmKRCn4bWb8D6Pyi/7TFEL17
 
 1. ***MONGODB_URI*** Hämta din egen MongoDB connection string från Atlas och lägg till `/trulloDatabase` som databas namn (se .env fil exempel ovan).
 2. ***JWT_SECRET*** Generera en JWT_SECRET via att köra följande kommando i terminalen: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
-3. ***Seed Command*** `npm run seed`
-4. ***Start Command*** `npm run dev`
-5. ***Admin Account E-mail*** `admin@example.com`
-6. ***Admin Account Password*** `topsecret`
+3. ***Seed Kommando*** `npm run seed`
+4. ***Start Kommando*** `npm run dev`
+5. ***Inloggningsuppgifter*** E-mail: `admin@example.com`, Password: `topsecret`
 
 ## Mål
 
