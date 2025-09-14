@@ -53,10 +53,17 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 6. Användaren kan ändra sitt eget lösenord medan administratören kan ändra lösenord för vilken användare som helst
 7. Endast autentiserade användare kan ändra sina egna uppgifter medan administratören kan ändra uppgifter för vilken användare som helst
 
-### Test information
+### Körguide 
+***.env file example***
+```bash
+MONGODB_URI=mongodb+srv://henriksuurik:Dq7JXt3eQbtxZJM0@cluster0.r6jzab0.mongodb.net/trulloDatabase?retryWrites=true&w=majority&appName=Cluster0
+JWT_SECRET=I5YhOGe8MW2xsVbrH+QvH3LGYZsi3Cx1qEbP3yD2ZmKRCn4bWb8D6Pyi/7TFEL17
+```
 
-- ***Seed Command*** `npm run seed`
-- ***Admin Account*** E-mail: `admin@example.com`, Password: `topsecret`
+1. ***.env File (MONGODB_URI)*** Hämta din MongoDB connection string från Atlas och lägg till `/trulloDatabase` som databas namn.
+2. ***.env File (JWT_SECRET)*** Generera en JWT_SECRET via att köra följande kommando i terminalen: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
+3. ***Seed Command*** `npm run seed`
+4. ***Admin Account*** E-mail: `admin@example.com`, Password: `topsecret`
 
 ## Mål
 
