@@ -37,7 +37,7 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 - `GET localhost:3000/api/users/:id` Hämta en användare
 - `PATCH localhost:3000/api/users/:id` Patcha en användare
 - `DELETE localhost:3000/api/users/:id` Ta bort en användare  
-    
+    <br>
 - `POST localhost:3000/api/tasks` Skapa en ny task
 - `GET localhost:3000/api/tasks` Hämta alla task
 - `GET localhost:3000/api/tasks/:id` Hämta en task
