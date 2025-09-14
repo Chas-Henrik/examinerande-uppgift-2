@@ -23,7 +23,7 @@ const userSchema = new Schema({
         match: [/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/, "Invalid email address"],
     },
 	password: { 
-		type: String, 
+		type: String,
 		required: true, 
 		minlength: [8, "Password must be at least 8 characters long"],
 	},

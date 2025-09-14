@@ -7,22 +7,23 @@ import { UserLevel } from '../types/user.js';
 import { signToken } from '../utils/jwt.js'
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
+import { ZodUserSchema } from "../validation/user.validation.js";
 
 // POST /api/users
 export const createUser = async (req: Request, res: Response) =>  {
     try {
         const authReq = req as AuthenticatedRequest;
         const { name, email, password, userLevel } = req.body as UserType;
-        const level = typeof userLevel === 'string' ? UserLevel[userLevel as keyof typeof UserLevel] : userLevel;
         
+        // Validate input
+        const result = ZodUserSchema.safeParse(req.body);
+        if (!result.success) {
+            return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+        }
+
         // Only admins can create new users
         if (authReq.user.userLevel < UserLevel.ADMIN) {
             return res.status(403).json({ message: "Forbidden" });
-        }
-
-        // Validate user level
-        if (level === undefined || !Object.values(UserLevel).includes(level)) {
-            return res.status(400).json({ message: 'Invalid user level' });
         }
 
         // Check if user already exists
@@ -31,20 +32,15 @@ export const createUser = async (req: Request, res: Response) =>  {
             return res.status(409).json({ message: 'User already exists' });
         }
 
-        // Check password length
-        if (password.length < 8) {
-            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
-        }
-
         // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ name, email, password, userLevel: level });
+        const createdUser = await User.create({ name, email, password, userLevel: UserLevel[userLevel] });
 
         // Generate JWT token
         const token = signToken(createdUser.toObject());
 
-        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User registered', user: createdUser });
+        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User created', user: createdUser });
     } catch (err) {
-        res.status(500).json({ message: 'Error registering user', error: err });
+        res.status(500).json({ message: 'Error creating user', error: err });
     }
 };
 
@@ -112,6 +108,12 @@ export const patchUser = async (req: Request, res: Response) => {
         const userData: UserType = req.body;
         const authReq = req as AuthenticatedRequest;
 
+        // Validate input
+        const result = ZodUserSchema.safeParse(userData);
+        if (!result.success) {
+            return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+        }
+
         // Validate the id format
         if (!mongoose.isValidObjectId(id)) {
             return res.status(400).json({ message: "Invalid user ID format" });
@@ -131,13 +133,7 @@ export const patchUser = async (req: Request, res: Response) => {
         if(userData.userLevel) {
             const level = typeof userData.userLevel === 'string' ? UserLevel[userData.userLevel as keyof typeof UserLevel] : userData.userLevel;
 
-            // Validate user level
-            if (level === undefined || !Object.values(UserLevel).includes(level)) {
-                return res.status(400).json({ message: 'Invalid user level' });
-            }
-
             // Validate that you cannot assign a user level higher than your own
-            console.log(`Auth user level: ${authReq.user.userLevel}, Trying to assign level: ${level}`);
             if(level > authReq.user.userLevel) {
                 return res.status(403).json({ message: 'Cannot assign a user level higher than your own' });
             }
@@ -151,12 +147,8 @@ export const patchUser = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // If password is being updated, check length and hash it
+        // If password is being updated, hash it
         if(userData.password) {
-            // Check password length
-            if (userData.password.length < 8) {
-                return res.status(400).json({ message: 'Password must be at least 8 characters long' });
-            }
             userData.password = await bcrypt.hash(userData.password, 10);
         }
 

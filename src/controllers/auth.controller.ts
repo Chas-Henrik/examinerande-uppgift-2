@@ -4,6 +4,7 @@ import bcrypt from "bcrypt"
 import { signToken } from '../utils/jwt.js'
 import { UserType, User } from '../models/user.model.js';
 import { UserLevel } from "../types/user.js";
+import { ZodUserSchema } from "../validation/user.validation.js";
 
 const router = express.Router();
 
@@ -20,7 +21,13 @@ export const register = async (req: Request, res: Response) =>  {
         const { name, email, password } = req.body as UserType;
 
         // For security reasons, force new users to have DEVELOPER level
-        const userLevel = UserLevel.DEVELOPER; 
+        const userLevel = "DEVELOPER";
+
+        // Validate input
+        const result = ZodUserSchema.safeParse({ name, email, password, userLevel });
+        if (!result.success) {
+            return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+        }
 
         // Check if user already exists
         const existing = await User.findOne({ email });
@@ -28,13 +35,8 @@ export const register = async (req: Request, res: Response) =>  {
             return res.status(409).json({ message: 'User already exists' });
         }
 
-        // Check password length
-        if (password.length < 8) {
-            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
-        }
-
         // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ name, email, password, userLevel });
+        const createdUser = await User.create({ name, email, password, userLevel: UserLevel[userLevel] });
 
         // Generate JWT token
         const token = signToken(createdUser.toObject());
