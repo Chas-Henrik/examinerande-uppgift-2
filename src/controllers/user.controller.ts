@@ -1,10 +1,52 @@
 import { Request, Response } from 'express';
 import merge from 'lodash/merge.js';
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 import { User, UserType } from "../models/user.model.js"
 import { UserLevel } from '../types/user.js';
+import { signToken } from '../utils/jwt.js'
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
+
+// POST /api/users
+export const createUser = async (req: Request, res: Response) =>  {
+    try {
+        const authReq = req as AuthenticatedRequest;
+        const { name, email, password, userLevel } = req.body as UserType;
+        const level = typeof userLevel === 'string' ? UserLevel[userLevel as keyof typeof UserLevel] : userLevel;
+        
+        // Only admins can create new users
+        if (authReq.user.userLevel < UserLevel.ADMIN) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        // Validate user level
+        if (level === undefined || !Object.values(UserLevel).includes(level)) {
+            return res.status(400).json({ message: 'Invalid user level' });
+        }
+
+        // Check if user already exists
+        const existing = await User.findOne({ email });
+        if (existing) {
+            return res.status(409).json({ message: 'User already exists' });
+        }
+
+        // Check password length
+        if (password.length < 8) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
+
+        // Create user (password will be hashed in pre-save hook in user model)
+        const createdUser = await User.create({ name, email, password, userLevel: level });
+
+        // Generate JWT token
+        const token = signToken(createdUser.toObject());
+
+        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User registered', user: createdUser });
+    } catch (err) {
+        res.status(500).json({ message: 'Error registering user', error: err });
+    }
+};
 
 // GET /api/users
 export const getUsers = async (req: Request, res: Response) => {
@@ -85,10 +127,37 @@ export const patchUser = async (req: Request, res: Response) => {
             return res.status(403).json({ message: "Forbidden" });
         }
 
+        // Validate user level if provided
+        if(userData.userLevel) {
+            const level = typeof userData.userLevel === 'string' ? UserLevel[userData.userLevel as keyof typeof UserLevel] : userData.userLevel;
+
+            // Validate user level
+            if (level === undefined || !Object.values(UserLevel).includes(level)) {
+                return res.status(400).json({ message: 'Invalid user level' });
+            }
+
+            // Validate that you cannot assign a user level higher than your own
+            console.log(`Auth user level: ${authReq.user.userLevel}, Trying to assign level: ${level}`);
+            if(level > authReq.user.userLevel) {
+                return res.status(403).json({ message: 'Cannot assign a user level higher than your own' });
+            }
+
+            userData.userLevel = level;
+        }
+
         // Ensure the user exists
         const existing = await User.findById(id);
         if (!existing) {
             return res.status(404).json({ message: "User not found" });
+        }
+
+        // If password is being updated, check length and hash it
+        if(userData.password) {
+            // Check password length
+            if (userData.password.length < 8) {
+                return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+            }
+            userData.password = await bcrypt.hash(userData.password, 10);
         }
 
         // Deep merge the existing user with the patch input

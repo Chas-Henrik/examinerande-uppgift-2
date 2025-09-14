@@ -23,6 +23,11 @@ const taskSchema = new mongoose.Schema({
         ref: 'User',
         default: null,
     },
+    finishedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null,
+    },
     finishedAt : {
         type: Date,
         default: null,
@@ -30,39 +35,6 @@ const taskSchema = new mongoose.Schema({
 },
 {
     timestamps: true,
-});
-
-// Set finishedAt to current date when status is set to 'done'
-taskSchema.pre('save', function(next) {
-    if (this.isModified('status')) {
-        if(this.status === 'done' && !this.finishedAt) {
-            this.finishedAt = new Date();
-        }
-    }
-    next();
-});
-
-// ✅ Pre-save hook (runs on .save())
-taskSchema.pre('save', function (next) {
-    // Set finishedAt to current date when status is set to 'done'
-    if (this.isModified('status') && this.status === 'done' && !this.finishedAt) {
-        this.finishedAt = new Date();
-    }
-    next();
-});
-
-// ✅ Pre-update hook (runs on findByIdAndUpdate, findOneAndUpdate)
-taskSchema.pre('findOneAndUpdate', function (next) {
-    // Set finishedAt to current date when status is set to 'done'
-    const update = this.getUpdate() as { [key: string]: any };
-    
-    if (!update) return next();
-
-    if (update.status && update.status === 'done' && !update.finishedAt) {
-        update.finishedAt = new Date();
-        this.setUpdate(update);
-    }
-    next();
 });
 
 export type TaskType = InferSchemaType<typeof taskSchema>;

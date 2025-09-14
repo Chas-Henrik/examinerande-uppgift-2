@@ -17,24 +17,29 @@ export const COOKIE_OPTIONS = {
 // POST /api/auth/register
 export const register = async (req: Request, res: Response) =>  {
     try {
-        const { name, email, password, userLevel } = req.body as UserType;
-        const level = typeof userLevel === 'string' ? UserLevel[userLevel as keyof typeof UserLevel] : userLevel;
-        
-        if (level === undefined || !Object.values(UserLevel).includes(level)) {
-            return res.status(400).json({ message: 'Invalid user level' });
-        }
+        const { name, email, password } = req.body as UserType;
 
+        // For security reasons, force new users to have DEVELOPER level
+        const userLevel = UserLevel.DEVELOPER; 
+
+        // Check if user already exists
         const existing = await User.findOne({ email });
         if (existing) {
             return res.status(409).json({ message: 'User already exists' });
         }
 
-        const user = new User({ name, email, password, userLevel: level });
-        const savedUser = await user.save();
+        // Check password length
+        if (password.length < 8) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
 
-        const token = signToken(savedUser.toObject());
+        // Create user (password will be hashed in pre-save hook in user model)
+        const createdUser = await User.create({ name, email, password, userLevel });
 
-        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User registered', user: savedUser });
+        // Generate JWT token
+        const token = signToken(createdUser.toObject());
+
+        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User registered', user: createdUser });
     } catch (err) {
         res.status(500).json({ message: 'Error registering user', error: err });
     }

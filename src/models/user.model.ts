@@ -38,21 +38,8 @@ const userSchema = new Schema({
 // ✅ Pre-save hook (runs on .save())
 userSchema.pre('save', async function (next) {
 	// Hash password before save
-	if (!this.isModified('password')) return next();
-	this.password = await bcrypt.hash(this.password, 10);
-	next();
-});
-
-// ✅ Pre-update hook (runs on findByIdAndUpdate, findOneAndUpdate)
-userSchema.pre('findOneAndUpdate', async function (next) {
-	// Hash password before findByIdAndUpdate, findOneAndUpdate
-	const update = this.getUpdate() as { [key: string]: any };
-	
-	if (!update) return next();
-
-	if (update.password) {
-		update.password = await bcrypt.hash(update.password, 10);
-		this.setUpdate(update);
+	if (this.isModified('password')) {
+		this.password = await bcrypt.hash(this.password, 10);
 	}
 	next();
 });

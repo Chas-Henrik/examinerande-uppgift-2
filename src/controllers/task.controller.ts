@@ -3,24 +3,31 @@ import merge from 'lodash/merge.js';
 import mongoose from 'mongoose';
 import { Task, TaskType } from "../models/task.model.js"
 import { User } from '../models/user.model.js';
-//import { AuthenticatedRequest } from "../middleware/authorize.js";
+import { AuthenticatedRequest } from "../middleware/authorize.js";
 
 // POST /api/tasks
 export const createTask = async (req: Request, res: Response) =>  {
 	try {
-		// const authReq = req as AuthenticatedRequest;
+		const authReq = req as AuthenticatedRequest;
 		const taskData: TaskType = req.body;
 
 		// Validate assignedTo field if provided
 		if (taskData.assignedTo && !mongoose.isValidObjectId(taskData.assignedTo)) {
 			return res.status(400).json({ error: "Invalid assignedTo user ID format" });
 		}
+
 		// If assignedTo is provided, check that the user exists
 		if(taskData.assignedTo) {
 			const user = await User.findById(taskData.assignedTo);
 			if (!user) {
 				return res.status(404).json({ error: "assignedTo user not found" });
 			}
+		}
+
+		// Set finishedAt and finishedBy if status is 'done'
+		if(taskData.status === 'done' && !taskData.finishedBy) {
+			if(!taskData.finishedAt) taskData.finishedAt = new Date();
+			if(!taskData.finishedBy) taskData.finishedBy = authReq?.user?._id || null;
 		}
 
 		const createdTask = await Task.create(taskData);
@@ -67,6 +74,7 @@ export const getTask = async (req: Request, res: Response) => {
 // PATCH /api/tasks/:id
 export const patchTask = async (req: Request, res: Response) => {
 	try {
+		const authReq = req as AuthenticatedRequest;
 		const taskData: TaskType = req.body;
 		const { id } = req.params;
 	
@@ -92,6 +100,12 @@ export const patchTask = async (req: Request, res: Response) => {
 			if (!user) {
 				return res.status(404).json({ error: "assignedTo user not found" });
 			}
+		}
+
+		// Set finishedAt and finishedBy if status is 'done'
+		if(taskData.status && taskData.status === 'done' && !taskData.finishedBy) {
+			if(!taskData.finishedAt) taskData.finishedAt = new Date();
+			if(!taskData.finishedBy) taskData.finishedBy = authReq?.user?._id || null;
 		}
 
 		// Deep merge the existing task with the patch input
