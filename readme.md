@@ -13,6 +13,7 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 
 ### Redogör vad de olika teknikerna (ex. verktyg, npm-paket, etc.) gör i applikationen
 
+- ***@faker-js/faker*** Används för att seeda databasen med fake data.
 - ***bcrypt*** Används för att kryptera (hasha) ett lösenord innan det sparas i databasen.
 - ***cookie-parser*** Används för att läsa cookies från inkommande HTTP-förfrågningar i en Express-applikation.
 - ***cors*** Används i en Express-applikation för att tillåta eller begränsa vilka domäner som får kommunicera med ditt API. Då jag använder Cookie-Token så behöver jag CORS då webbläsare inte tillåter att cookies skickas med cross-origin-förfrågningar utan korrekt CORS-inställning).
@@ -23,6 +24,38 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 - ***mongoose*** Mongoose är ett ODM (Object Data Modeling) som hjälper mig att arbeta med MongoDB på ett strukturerat och typat sätt genom att definiera scheman och modeller, vilket gör databashantering enklare och säkrare.
 
 ### Redogör översiktligt hur applikationen fungerar
+
+***Applicationen stöder följande routes:***
+- `POST localhost:3000/api/auth/register` Registrera en ny developer användare (med UserLevel DEVELOPER)
+- `POST localhost:3000/api/auth/login` Logga in en användare
+- `POST localhost:3000/api/auth/logout` Logga ut en användare
+
+***Applicationen stöder följande routes (för autentiserade användare):***
+- `POST localhost:3000/api/users` Skapa en ny användare
+- `GET localhost:3000/api/users` Hämta alla användare
+- `GET localhost:3000/api/users/:id` Hämta en användare
+- `PATCH localhost:3000/api/users/:id` Patcha en användare
+- `DELETE localhost:3000/api/users/:id` Ta bort en användare
+
+- `POST localhost:3000/api/tasks` Skapa en ny task
+- `GET localhost:3000/api/tasks` Hämta alla task
+- `GET localhost:3000/api/tasks/:id` Hämta en task
+- `PATCH localhost:3000/api/tasks/:id` Patcha en task
+- `DELETE localhost:3000/api/tasks/:id` Ta bort en task
+
+***Applicationen stöder följande features:***
+1. User & Task collections
+2. Autentisering med JWT (som HTTP-only cookie)
+3. ADMIN & DEVELOPER User Level
+4. Stöder fältet `finishedBy`
+5. Lösenordet är krypterat i databasen (hash + salt)
+6. Användaren kan ändra sitt eget lösenord medan administratören kan ändra lösenord för vilken användare som helst
+7. Endast autentiserade användare kan ändra sina egna uppgifter medan administratören kan ändra uppgifter för vilken användare som helst
+
+### Test information
+
+- ***Seed Command*** `npm run seed`
+- ***Admin Account*** E-mail: `admin@example.com`, Password: `topsecret`
 
 ## Mål
 
