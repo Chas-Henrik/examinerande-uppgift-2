@@ -26,12 +26,12 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 
 ### Redogör översiktligt hur applikationen fungerar
 
-***Applicationen stöder följande endpoints:***
+***Applikationen stöder följande endpoints:***
 - `POST localhost:3000/api/auth/register` Registrera en ny developer användare (med UserLevel DEVELOPER)
 - `POST localhost:3000/api/auth/login` Logga in en användare
 - `POST localhost:3000/api/auth/logout` Logga ut en användare
 
-***Applicationen stöder följande endpoints (för autentiserade användare):***
+***Applikationen stöder följande endpoints (för autentiserade användare):***
 - `POST localhost:3000/api/users` Skapa en ny användare
 - `GET localhost:3000/api/users` Hämta alla användare
 - `GET localhost:3000/api/users/:id` Hämta en användare
@@ -44,7 +44,7 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 - `PATCH localhost:3000/api/tasks/:id` Patcha en task
 - `DELETE localhost:3000/api/tasks/:id` Ta bort en task
 
-***Applicationen stöder följande features:***
+***Applikationen stöder följande features:***
 1. User & Task collections
 2. Autentisering med JWT (som HTTP-only cookie)
 3. ADMIN & DEVELOPER User Level
@@ -59,8 +59,7 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 MONGODB_URI=mongodb+srv://henriksuurik:Dq7JXt3eQbtxZJM0@cluster0.r6jzab0.mongodb.net/trulloDatabase?retryWrites=true&w=majority&appName=Cluster0
 JWT_SECRET=I5YhOGe8MW2xsVbrH+QvH3LGYZsi3Cx1qEbP3yD2ZmKRCn4bWb8D6Pyi/7TFEL17
 ```
-  
-  
+<br>
 1. ***MONGODB_URI*** Hämta din egen MongoDB connection string från Atlas och lägg till `/trulloDatabase` som databas namn.
 2. ***JWT_SECRET*** Generera en JWT_SECRET via att köra följande kommando i terminalen: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
 3. ***Seed Command*** `npm run seed`
