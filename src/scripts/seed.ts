@@ -8,6 +8,13 @@ import bcrypt from "bcrypt";
 const UserCount = 5;
 const TaskCount = 10;
 
+function getRandomUserId(users: any[]) : string | null {
+    const randomUser = users[Math.floor(Math.random() * users.length)];
+    const userId = (Math.random() < 0.3) ? null : randomUser._id.toString() || null; // 30% chance of unassigned task
+
+    return userId;
+}
+
 function buildAdmin() {
     return {
         name: "Admin User",
@@ -26,11 +33,12 @@ async function buildUser() {
     };
 }
 
-function buildTask() {
+function buildTask(users: any[]) {
     return {
         title: faker.company.catchPhrase(),
         description: faker.hacker.phrase(),
         status: faker.helpers.arrayElement(['to-do', 'in progress', 'blocked']),
+        assignedTo: getRandomUserId(users),
     };
 }
 
@@ -51,16 +59,16 @@ async function seedDB() {
 
     // generate users
     const users = await Promise.all(Array.from({ length: UserCount }, buildUser));
-    await User.insertMany(users);
+    const insertedUsers = await User.insertMany(users);
     console.log(`🌱 ${UserCount} users seeded!`);
 
     // generate tasks
-    const tasks = await Promise.all(Array.from({ length: TaskCount }, buildTask));
-    await Task.insertMany(tasks);
+    const tasks = Array.from({ length: TaskCount }, () => buildTask(insertedUsers));
+    const insertedTasks = await Task.insertMany(tasks);
     console.log(`🌱 ${TaskCount} tasks seeded!`);
 
     await mongoose.disconnect();
-    console.log(`👋 Seed complete. AdminUsers: 1, RegularUsers: ${users.length}, Tasks: ${tasks.length}`);
+    console.log(`👋 Seed complete. AdminUsers: 1, RegularUsers: ${insertedUsers.length}, Tasks: ${insertedTasks.length}`);
 }
 
 seedDB().catch((err) => {
