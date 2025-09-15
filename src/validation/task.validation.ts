@@ -13,6 +13,6 @@ export const ZodTaskSchema = z.object({
         .max(500, "Description can't be more than 500 characters long")
         .optional(),
     status: z.enum(['to-do', 'in progress', 'blocked', 'done']).optional(),
-    assignedTo: z.string().optional()
+    assignedTo: z.string().optional().nullable()
 });
 
