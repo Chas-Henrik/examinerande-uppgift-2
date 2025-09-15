@@ -3,6 +3,7 @@ import merge from 'lodash/merge.js';
 import mongoose from 'mongoose';
 import { Task, TaskType } from "../models/task.model.js"
 import { User } from '../models/user.model.js';
+import { ZodTaskSchema } from '../validation/task.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 
 // POST /api/tasks
@@ -10,6 +11,12 @@ export const createTask = async (req: Request, res: Response) =>  {
 	try {
 		const authReq = req as AuthenticatedRequest;
 		const taskData: TaskType = req.body;
+
+		// Validate input
+		const result = ZodTaskSchema.safeParse(taskData);
+		if (!result.success) {
+			return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+		}
 
 		// Validate assignedTo field if provided
 		if (taskData.assignedTo && !mongoose.isValidObjectId(taskData.assignedTo)) {
@@ -77,7 +84,13 @@ export const patchTask = async (req: Request, res: Response) => {
 		const authReq = req as AuthenticatedRequest;
 		const taskData: TaskType = req.body;
 		const { id } = req.params;
-	
+
+		// Validate input
+		const result = ZodTaskSchema.safeParse(taskData);
+		if (!result.success) {
+			return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+		}
+
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
 			return res.status(400).json({ message: "Invalid task ID format" });

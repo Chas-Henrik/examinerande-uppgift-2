@@ -1,5 +1,6 @@
 // src/models/task.model.ts
 
+import { max } from "lodash";
 import mongoose, { Schema, InferSchemaType } from "mongoose";
 
 const taskSchema = new mongoose.Schema({
@@ -7,10 +8,13 @@ const taskSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+        minlength: [2, "Title must be at least 2 characters long"],
+        maxlength: [100, "Title must be at most 100 characters long"],
     },
     description: {
         type: String,
         default: '',
+        maxlength: [500, "Description must be at most 500 characters long"],
     },
     status: {
         type: String,

@@ -193,6 +193,11 @@ export const deleteUser = async (req: Request, res: Response) => {
             return res.status(403).json({ message: "Forbidden" });
         }
 
+        // admins cannot delete themselves
+        if (authReq.user._id.toString() === id && authReq.user.userLevel === UserLevel.ADMIN) {
+            return res.status(403).json({ message: "Admin users cannot delete themselves" });
+        }
+
         // Delete the user
         const deleted = await User.findByIdAndDelete(id);
         if (!deleted) {
