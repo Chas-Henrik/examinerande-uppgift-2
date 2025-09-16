@@ -26,7 +26,9 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 
 ### Redogör översiktligt hur applikationen fungerar
 
-***Applikationen stöder följande endpoints:***
+Trullo är ett projekt hanteringssystem som för närvarande har två collections, User & Task.
+
+***Applikationen stöder följande publika endpoints:***
 - `POST localhost:3000/api/auth/register` Registrera en ny developer användare (med UserLevel DEVELOPER)
 - `POST localhost:3000/api/auth/login` Logga in en användare
 - `POST localhost:3000/api/auth/logout` Logga ut en användare
@@ -50,8 +52,11 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 3. ADMIN & DEVELOPER User Level
 4. Stöder fältet `finishedBy`
 5. Lösenordet är krypterat i databasen (hash + salt)
-6. Användaren kan ändra sitt eget lösenord medan administratören kan ändra lösenord för vilken användare som helst
-7. Endast autentiserade användare kan ändra sina egna uppgifter medan administratören kan ändra uppgifter för vilken användare som helst
+6. Registrering av nya developer konton, vem som helst kan registrera ett nytt developer konto.
+7. Endast administratören kan skapa nya administratörs konton.
+8. Användaren kan ändra sitt eget lösenord medan administratören kan ändra lösenord för vilken användare som helst
+9. Användaren kan endast ta bort sitt eget användarkonto medan en administratör kan ta bort vilka användarkonton som helst utom sitt eget konto (för att garantera att det alltid finns minst ett administratörs konto i systemet).
+10. Endast autentiserade användare kan ändra sina egna uppgifter medan administratören kan ändra uppgifter för vilken användare som helst
 
 ### Körguide 
 ***.env fil exempel***
@@ -64,7 +69,10 @@ JWT_SECRET=I5YhOGe8MW2xsVbrH+QvH3LGYZsi3Cx1qEbP3yD2ZmKRCn4bWb8D6Pyi/7TFEL17
 2. ***JWT_SECRET*** Generera en JWT_SECRET via att köra följande kommando i terminalen: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
 3. ***Seed Kommando*** `npm run seed`
 4. ***Start Kommando*** `npm run dev`
-5. ***Inloggningsuppgifter*** E-mail: `admin@example.com`, Password: `topsecret`
+5. ***Inloggningsuppgifter för admin*** E-mail: `admin@example.com`, Password: `topsecret`
+6. ***Thunder Client*** Använd Thunderclient (eller Postman) för att skicka requests till endpointsen.
+7. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
+8. ***Test*** Kör valfria tester efter att du har loggat in.
 
 ## Mål
 
