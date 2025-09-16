@@ -49,7 +49,10 @@ export const createTask = async (req: Request, res: Response) =>  {
 // GET /api/tasks
 export const getTasks = async (_req: Request, res: Response) => {
 	try {
-		const tasks = await Task.find();
+		const tasks = await Task.find().populate({
+            path: "assignedTo",
+			select: "name email", // Select only specific fields to return
+        });
 		res.status(200).json(tasks);
 	} catch (error) {
 		console.error("Error fetching tasks:", error);
@@ -66,7 +69,10 @@ export const getTask = async (req: Request, res: Response) => {
 		if (!mongoose.isValidObjectId(id)) {
 			return res.status(400).json({ message: "Invalid task ID format" });
 		}
-		const task = await Task.findById(id);
+		const task = await Task.findById(id).populate({
+            path: "assignedTo",
+			select: "name email", // Select only specific fields to return
+        });
 		if (!task) {
 			return res.status(404).json({ message: "Task not found" });
 		}
