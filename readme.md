@@ -59,15 +59,10 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 9. Användaren kan endast ta bort sitt eget användarkonto medan en administratör kan ta bort vilka användarkonton som helst utom sitt eget konto (för att garantera att det alltid finns minst ett administratörs konto i systemet).
 10. Endast autentiserade användare kan ändra sina egna uppgifter medan administratören kan ändra uppgifter för vilken användare som helst
 
-### Körguide 
-***.env fil exempel***
-```bash
-MONGODB_URI=mongodb+srv://henriksuurik:Dq7JXt3eQbtxZJM0@cluster0.r6jzab0.mongodb.net/trulloDatabase?retryWrites=true&w=majority&appName=Cluster0
-JWT_SECRET=I5YhOGe8MW2xsVbrH+QvH3LGYZsi3Cx1qEbP3yD2ZmKRCn4bWb8D6Pyi/7TFEL17
-```  
+### Körguide  
   
-1. ***MONGODB_URI*** Hämta din egen MongoDB connection string från Atlas och lägg till `/trulloDatabase` som databas namn (se .env fil exempel ovan).
-2. ***JWT_SECRET*** Generera en JWT_SECRET via att köra följande kommando i terminalen: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
+1. ***MONGODB_URI*** Hämta din egen MongoDB connection string från Atlas och lägg till `/trulloDatabase` som databas namn (se `.env_example`).
+2. ***JWT_SECRET*** Generera en JWT_SECRET (se `.env_example`) via att köra följande kommando i terminalen: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
 3. ***Seed Kommando*** `npm run seed`
 4. ***Start Kommando*** `npm run dev`
 5. ***Inloggningsuppgifter för admin*** E-mail: `admin@example.com`, Password: `topsecret`
