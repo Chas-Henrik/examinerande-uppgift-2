@@ -55,7 +55,7 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 5. Lösenordet är krypterat i databasen (hash + salt)
 6. Registrering av nya developer konton, vem som helst kan registrera ett nytt developer konto.
 7. Endast administratören kan skapa nya administratörs konton.
-8. Användaren kan ändra sitt eget lösenord medan administratören kan ändra lösenord för vilken användare som helst
+8. Användaren kan endast ändra uppgifter (t.ex. lösenord) i sitt eget användarkonto, medan administratören kan ändra uppgifter i vilka användarkonton som helst
 9. Användaren kan endast ta bort sitt eget användarkonto medan en administratör kan ta bort vilka användarkonton som helst utom sitt eget konto (för att garantera att det alltid finns minst ett administratörs konto i systemet).
 10. Endast autentiserade användare kan ändra sina egna uppgifter medan administratören kan ändra uppgifter för vilken användare som helst
 
