@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import bcrypt from "bcrypt"
 import { signToken } from '../utils/jwt.js'
 import { UserType, User } from '../models/user.model.js';
-import { UserLevel } from "../types/user.js";
+import { UserLevel, UserApiResponse } from "../types/user.js";
 import { ZodUserSchema } from "../validation/user.validation.js";
 
 const router = express.Router();
@@ -16,7 +16,7 @@ export const COOKIE_OPTIONS = {
 };
 
 // POST /api/auth/register
-export const register = async (req: Request, res: Response<{ message:string; user?: UserType; error?: string }>) =>  {
+export const register = async (req: Request, res: Response<UserApiResponse>) =>  {
     try {
         const { name, email, password } = req.body as UserType;
 
@@ -26,13 +26,13 @@ export const register = async (req: Request, res: Response<{ message:string; use
         // Validate input
         const result = ZodUserSchema.safeParse({ name, email, password, userLevel });
         if (!result.success) {
-            return res.status(400).json({ message: 'Invalid input', error: result.error.issues.toString() });
+            return res.status(400).json({ ok: false, message: 'Invalid input', error: result.error.issues.toString() });
         }
 
         // Check if user already exists
         const existing = await User.findOne({ email });
         if (existing) {
-            return res.status(409).json({ message: 'User already exists' });
+            return res.status(409).json({ ok: false, message: 'User already exists' });
         }
 
         // Create user (password will be hashed in pre-save hook in user model)
@@ -41,42 +41,42 @@ export const register = async (req: Request, res: Response<{ message:string; use
         // Generate JWT token
         const token = signToken(createdUser.toObject());
 
-        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User registered', user: createdUser });
+        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', user: createdUser });
     } catch (error) {
         console.error("Error registering user:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
-		res.status(500).json({ message: "Internal server error", error: errorMessage });
+		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
     }
 };
 
 // POST /api/auth/login
-export const login = async (req: Request, res: Response<{ message:string; error?: string }>) =>  {
+export const login = async (req: Request, res: Response<UserApiResponse>) =>  {
     try {
         const { email, password } = req.body as { email: string, password: string};
         const user = await User.findOne({ email }).lean();
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({ ok: false, message: 'Invalid credentials' });
         }
 
         const token = signToken(user);
 
-        res.cookie('token', token, COOKIE_OPTIONS).json({ message: 'Logged in successfully' });
+        res.cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'Logged in successfully' });
     } catch (error) {
         console.error("Login failed:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
-		res.status(500).json({ message: "Internal server error", error: errorMessage });
+		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
     }
 };
 
 // POST /api/auth/logout
-export const logout = async (req: Request, res: Response<{ message:string; error?: string }>) =>  {
+export const logout = async (req: Request, res: Response<UserApiResponse>) =>  {
     try {
         res.clearCookie('token', COOKIE_OPTIONS);
-        res.json({ message: 'Logged out successfully' }); 
+        res.json({ ok: false, message: 'Logged out successfully' }); 
     } catch (error) {
         console.error("Logout failed:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
-		res.status(500).json({ message: "Internal server error", error: errorMessage });
+		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
     }
 };
 
