@@ -7,7 +7,7 @@ import { ZodTaskSchema } from '../validation/task.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 
 // POST /api/tasks
-export const createTask = async (req: Request, res: Response) =>  {
+export const createTask = async (req: Request, res: Response<{ message:string; task?: TaskType; error?: string }>) =>  {
 	try {
 		const authReq = req as AuthenticatedRequest;
 		const taskData: TaskType = req.body;
@@ -15,19 +15,19 @@ export const createTask = async (req: Request, res: Response) =>  {
 		// Validate input
 		const result = ZodTaskSchema.safeParse(taskData);
 		if (!result.success) {
-			return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+			return res.status(400).json({ message: 'Invalid input', error: result.error.issues.toString() });
 		}
 
 		// Validate assignedTo field if provided
 		if (taskData.assignedTo && !mongoose.isValidObjectId(taskData.assignedTo)) {
-			return res.status(400).json({ error: "Invalid assignedTo user ID format" });
+			return res.status(400).json({ message: "Invalid assignedTo user ID format" });
 		}
 
 		// If assignedTo is provided, check that the user exists
 		if(taskData.assignedTo) {
 			const user = await User.findById(taskData.assignedTo);
 			if (!user) {
-				return res.status(404).json({ error: "assignedTo user not found" });
+				return res.status(404).json({ message: "assignedTo user not found" });
 			}
 		}
 
@@ -47,7 +47,7 @@ export const createTask = async (req: Request, res: Response) =>  {
 };
 
 // GET /api/tasks
-export const getTasks = async (_req: Request, res: Response) => {
+export const getTasks = async (_req: Request, res: Response<TaskType[] | { message:string; error?: string }>) => {
 	try {
 		const tasks = await Task.find().populate({
             path: "assignedTo",
@@ -62,7 +62,7 @@ export const getTasks = async (_req: Request, res: Response) => {
 };
 
 // GET /api/tasks/:id
-export const getTask = async (req: Request, res: Response) => {
+export const getTask = async (req: Request, res: Response<TaskType | { message:string; error?: string }>) => {
 	try {
 		const { id } = req.params;
 		// Validate the id format
@@ -85,7 +85,7 @@ export const getTask = async (req: Request, res: Response) => {
 };
 
 // PATCH /api/tasks/:id
-export const patchTask = async (req: Request, res: Response) => {
+export const patchTask = async (req: Request, res: Response<{ message:string; task?: TaskType; error?: string }>) => {
 	try {
 		const authReq = req as AuthenticatedRequest;
 		const taskData: TaskType = req.body;
@@ -94,7 +94,7 @@ export const patchTask = async (req: Request, res: Response) => {
 		// Validate input
 		const result = ZodTaskSchema.safeParse(taskData);
 		if (!result.success) {
-			return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+			return res.status(400).json({ message: 'Invalid input', error: result.error.issues.toString() });
 		}
 
 		// Validate the id format
@@ -110,14 +110,14 @@ export const patchTask = async (req: Request, res: Response) => {
 
 		// Validate assignedTo field if provided
 		if (taskData.assignedTo && !mongoose.isValidObjectId(taskData.assignedTo)) {
-			return res.status(400).json({ error: "Invalid assignedTo user ID format" });
+			return res.status(400).json({ message: "Invalid assignedTo user ID format" });
 		}
 
 		// If assignedTo is provided, check that the user exists
 		if(taskData.assignedTo) {
 			const user = await User.findById(taskData.assignedTo);
 			if (!user) {
-				return res.status(404).json({ error: "assignedTo user not found" });
+				return res.status(404).json({ message: "assignedTo user not found" });
 			}
 		}
 
@@ -148,7 +148,7 @@ export const patchTask = async (req: Request, res: Response) => {
 };
 
 // DELETE /api/tasks/:id
-export const deleteTask = async (req: Request, res: Response) => {
+export const deleteTask = async (req: Request, res: Response<{ message:string; error?: string }>) => {
 	try {
 		const { id } = req.params;
 

@@ -10,7 +10,7 @@ import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema } from "../validation/user.validation.js";
 
 // POST /api/users
-export const createUser = async (req: Request, res: Response) =>  {
+export const createUser = async (req: Request, res: Response<{ message:string; user?: UserType; error?: string }>) =>  {
     try {
         const authReq = req as AuthenticatedRequest;
         const { name, email, password, userLevel } = req.body as UserType;
@@ -18,7 +18,7 @@ export const createUser = async (req: Request, res: Response) =>  {
         // Validate input
         const result = ZodUserSchema.safeParse(req.body);
         if (!result.success) {
-            return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+            return res.status(400).json({ message: 'Invalid input', error: result.error.issues.toString() });
         }
 
         // Only admins can create new users
@@ -39,13 +39,15 @@ export const createUser = async (req: Request, res: Response) =>  {
         const token = signToken(createdUser.toObject());
 
         res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User created', user: createdUser });
-    } catch (err) {
-        res.status(500).json({ message: 'Error creating user', error: err });
+    } catch (error) {
+        console.error("Error creating user:", error);
+		const errorMessage = (error instanceof Error) ? error.message : String(error);
+		res.status(500).json({ message: "Internal server error", error: errorMessage });
     }
 };
 
 // GET /api/users
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response<UserType[] | { message:string; error?: string }>) => {
 	try {
         const authReq = req as AuthenticatedRequest;
 
@@ -69,7 +71,7 @@ export const getUsers = async (req: Request, res: Response) => {
 };
 
 // GET /api/users/:id
-export const getUser = async (req: Request, res: Response) => {
+export const getUser = async (req: Request, res: Response<UserType | { message:string; error?: string }>) => {
     try {
         const { id } = req.params;
         const authReq = req as AuthenticatedRequest;
@@ -102,7 +104,7 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 // PATCH /api/users/:id
-export const patchUser = async (req: Request, res: Response) => {
+export const patchUser = async (req: Request, res: Response<{ message:string; user?:UserType; error?: string }>) => {
     try {
         const { id } = req.params;
         const userData: UserType = req.body;
@@ -111,7 +113,7 @@ export const patchUser = async (req: Request, res: Response) => {
         // Validate input
         const result = ZodUserSchema.safeParse(userData);
         if (!result.success) {
-            return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+            return res.status(400).json({ message: 'Invalid input', error: result.error.issues.toString() });
         }
 
         // Validate the id format
@@ -173,7 +175,7 @@ export const patchUser = async (req: Request, res: Response) => {
 };
 
 // DELETE /api/users/:id
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response<{ message:string; error?: string }>) => {
     try {
         const { id } = req.params;
         const authReq = req as AuthenticatedRequest;

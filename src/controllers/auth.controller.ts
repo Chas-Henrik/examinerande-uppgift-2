@@ -16,7 +16,7 @@ export const COOKIE_OPTIONS = {
 };
 
 // POST /api/auth/register
-export const register = async (req: Request, res: Response) =>  {
+export const register = async (req: Request, res: Response<{ message:string; user?: UserType; error?: string }>) =>  {
     try {
         const { name, email, password } = req.body as UserType;
 
@@ -26,7 +26,7 @@ export const register = async (req: Request, res: Response) =>  {
         // Validate input
         const result = ZodUserSchema.safeParse({ name, email, password, userLevel });
         if (!result.success) {
-            return res.status(400).json({ message: 'Invalid input', error: result.error.issues });
+            return res.status(400).json({ message: 'Invalid input', error: result.error.issues.toString() });
         }
 
         // Check if user already exists
@@ -42,13 +42,15 @@ export const register = async (req: Request, res: Response) =>  {
         const token = signToken(createdUser.toObject());
 
         res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ message: 'User registered', user: createdUser });
-    } catch (err) {
-        res.status(500).json({ message: 'Error registering user', error: err });
+    } catch (error) {
+        console.error("Error registering user:", error);
+		const errorMessage = (error instanceof Error) ? error.message : String(error);
+		res.status(500).json({ message: "Internal server error", error: errorMessage });
     }
 };
 
 // POST /api/auth/login
-export const login = async (req: Request, res: Response) =>  {
+export const login = async (req: Request, res: Response<{ message:string; error?: string }>) =>  {
     try {
         const { email, password } = req.body as { email: string, password: string};
         const user = await User.findOne({ email }).lean();
@@ -59,15 +61,23 @@ export const login = async (req: Request, res: Response) =>  {
         const token = signToken(user);
 
         res.cookie('token', token, COOKIE_OPTIONS).json({ message: 'Logged in successfully' });
-    } catch (err) {
-        res.status(500).json({ message: 'Login failed', error: err });
+    } catch (error) {
+        console.error("Login failed:", error);
+		const errorMessage = (error instanceof Error) ? error.message : String(error);
+		res.status(500).json({ message: "Internal server error", error: errorMessage });
     }
 };
 
 // POST /api/auth/logout
-export const logout = async (req: Request, res: Response) =>  {
-    res.clearCookie('token', COOKIE_OPTIONS);
-    res.json({ message: 'Logged out successfully' });
+export const logout = async (req: Request, res: Response<{ message:string; error?: string }>) =>  {
+    try {
+        res.clearCookie('token', COOKIE_OPTIONS);
+        res.json({ message: 'Logged out successfully' }); 
+    } catch (error) {
+        console.error("Logout failed:", error);
+		const errorMessage = (error instanceof Error) ? error.message : String(error);
+		res.status(500).json({ message: "Internal server error", error: errorMessage });
+    }
 };
 
 export default router;
