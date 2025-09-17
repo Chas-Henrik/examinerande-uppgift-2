@@ -4,13 +4,14 @@ import { User } from "../models/user.model.js";
 import { Task } from "../models/task.model.js";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import { UserType } from "../models/user.model.js";
 
 const UserCount = 5;
 const TaskCount = 10;
 
-function getRandomUserId(users: any[]) : string | null {
+function getRandomUserId(users: UserType[]) : string | null {
     const randomUser = users[Math.floor(Math.random() * users.length)];
-    const userId = (Math.random() < 0.3) ? null : randomUser._id.toString() || null; // 30% chance of unassigned task
+    const userId = (Math.random() < 0.3) ? null : randomUser?._id.toString() || null; // 30% chance of unassigned task
 
     return userId;
 }
@@ -33,7 +34,7 @@ async function buildUser() {
     };
 }
 
-function buildTask(users: any[]) {
+function buildTask(users: UserType[]) {
     return {
         title: faker.company.catchPhrase(),
         description: faker.hacker.phrase(),
