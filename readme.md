@@ -27,6 +27,7 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 ### Redogör översiktligt hur applikationen fungerar
 
 Trullo är ett projekt hanteringssystem som för närvarande har två collections, User & Task.
+Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehåller även PUT.
 
 ***Applikationen stöder följande publika endpoints:***
 - `POST localhost:3000/api/auth/register` Registrera en ny developer användare (med UserLevel DEVELOPER)
