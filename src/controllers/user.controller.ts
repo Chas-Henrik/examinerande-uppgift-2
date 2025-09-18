@@ -4,10 +4,12 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import { User, UserType } from "../models/user.model.js"
 import { UserLevel, UserApiResponse } from '../types/user.js';
+import { TaskApiResponse } from '../types/task.js';
 import { signToken } from '../utils/jwt.js'
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema } from "../validation/user.validation.js";
+import { Task } from '../models/task.model.js';
 
 // POST /api/users
 export const createUser = async (req: Request, res: Response<UserApiResponse>) =>  {
@@ -214,6 +216,36 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
         res.status(200).json({ ok: true, message: "User deleted" });
     } catch (error) {
         console.error("Error deleting user:", error);
+        const errorMessage = (error instanceof Error) ? error.message : String(error);
+        res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+    }
+};
+
+// GET /api/users/:id/tasks
+export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>) => {
+    try {
+        const { id } = req.params;
+        const authReq = req as AuthenticatedRequest;
+
+        // Validate the id format
+        if (!mongoose.isValidObjectId(id)) {
+            return res.status(400).json({ ok: false, message: "Invalid user ID format" });
+        }
+
+        // Check authentication
+        if (!authReq || !authReq.user || !authReq.user._id.toString()) {
+            return res.status(401).json({ ok: false, message: "Unauthorized" });
+        }
+
+        // Only admins can get tasks for any user
+        if(authReq.user.userLevel < UserLevel.ADMIN && authReq.user._id.toString() !== id) {
+            return res.status(403).json({ ok: false, message: "Forbidden" });
+        }
+
+        const tasks = await Task.find({ assignedTo: id });
+        res.status(200).json({ ok: true, tasks: tasks });
+    } catch (error) {
+        console.error("Error fetching user tasks:", error);
         const errorMessage = (error instanceof Error) ? error.message : String(error);
         res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
     }

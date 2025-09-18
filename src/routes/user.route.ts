@@ -1,6 +1,6 @@
 import express from "express"
 import { authMiddleware } from "../middleware/authorize.js";
-import { createUser, getUsers, getUser, patchUser, deleteUser } from "../controllers/user.controller.js";
+import { createUser, getUsers, getUser, patchUser, deleteUser, getUserTasks } from "../controllers/user.controller.js";
 
 const router = express.Router()
 
@@ -11,5 +11,7 @@ router.get("/:id", authMiddleware, getUser);
 router.patch("/:id", authMiddleware, patchUser);
 router.delete("/:id", authMiddleware, deleteUser);
 
+// Additional routes for users
+router.get("/:id/tasks", authMiddleware, getUserTasks); // Example: Get tasks for a specific user
 
 export default router;

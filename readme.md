@@ -39,13 +39,14 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 - `GET localhost:3000/api/users` Hämta alla användare
 - `GET localhost:3000/api/users/:id` Hämta en användare
 - `PATCH localhost:3000/api/users/:id` Patcha en användare
-- `DELETE localhost:3000/api/users/:id` Ta bort en användare  
+- `DELETE localhost:3000/api/users/:id` Ta bort en användare
+- `GET localhost:3000/api/users/:id/tasks` Hämta alla tasks för en användare  
     <br>
 - `POST localhost:3000/api/tasks` Skapa en ny task
 - `GET localhost:3000/api/tasks` Hämta alla task
 - `GET localhost:3000/api/tasks/:id` Hämta en task
 - `PATCH localhost:3000/api/tasks/:id` Patcha en task
-- `DELETE localhost:3000/api/tasks/:id` Ta bort en task
+- `DELETE localhost:3000/api/tasks/:id` Ta bort en task  
 
 ***Applikationen stöder följande features:***
 1. User & Task collections
