@@ -47,18 +47,25 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 - `GET localhost:3000/api/tasks/:id` Hämta en task
 - `PATCH localhost:3000/api/tasks/:id` Patcha en task
 - `DELETE localhost:3000/api/tasks/:id` Ta bort en task  
-
+    <br>
+- `POST localhost:3000/api/projects` Skapa ett nytt projekt
+- `GET localhost:3000/api/projects` Hämta alla projekt
+- `GET localhost:3000/api/projects/:id` Hämta ett projekt
+- `PATCH localhost:3000/api/projects/:id` Patcha ett projekt
+- `DELETE localhost:3000/api/projects/:id` Ta bort ett projekt  
+- `GET localhost:3000/api/projects/:id/tasks` Hämta alla tasks för ett projekt
 ***Applikationen stöder följande features:***
-1. User & Task collections
-2. Autentisering med JWT (som HTTP-only cookie)
+1. User, Task & Project collections
+2. Autentisering med JWT (som HTTP-only cookie med 1h expiration time)
 3. ADMIN & DEVELOPER User Level
-4. Stöder fältet `finishedBy`
+4. Task stöder fältet `finishedBy` (ref. till User) och `project` (ref. till Project)
 5. Lösenordet är krypterat i databasen (hash + salt)
 6. Registrering av nya developer konton, vem som helst kan registrera ett nytt developer konto.
 7. Endast administratören kan skapa nya administratörs konton.
 8. Användaren kan endast ändra uppgifter (t.ex. lösenord) i sitt eget användarkonto, medan administratören kan ändra uppgifter i vilka användarkonton som helst
 9. Användaren kan endast ta bort sitt eget användarkonto medan en administratör kan ta bort vilka användarkonton som helst utom sitt eget konto (för att garantera att det alltid finns minst ett administratörs konto i systemet).
 10. Endast autentiserade användare kan ändra sina egna uppgifter medan administratören kan ändra uppgifter för vilken användare som helst
+11. Project collection med `owner` fält där endast ägaren av projektet eller en administratör kan ändra `owner` eller ta bort ett project, och ägaren sätts automatiskt till den inloggade användaren som skapade projektet.
 
 ### Körguide  
   

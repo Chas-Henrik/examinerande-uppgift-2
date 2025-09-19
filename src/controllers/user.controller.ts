@@ -232,14 +232,10 @@ export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>)
             return res.status(400).json({ ok: false, message: "Invalid user ID format" });
         }
 
-        // Check authentication
-        if (!authReq || !authReq.user || !authReq.user._id.toString()) {
-            return res.status(401).json({ ok: false, message: "Unauthorized" });
-        }
-
-        // Only admins can get tasks for any user
-        if(authReq.user.userLevel < UserLevel.ADMIN && authReq.user._id.toString() !== id) {
-            return res.status(403).json({ ok: false, message: "Forbidden" });
+        // Check that the user exists
+        const userExists = await User.exists({ _id: id });
+        if (!userExists) {
+            return res.status(404).json({ ok: false, message: "User not found" });
         }
 
         const tasks = await Task.find({ assignedTo: id });

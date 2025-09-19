@@ -12,6 +12,6 @@ router.patch("/:id", authMiddleware, patchUser);
 router.delete("/:id", authMiddleware, deleteUser);
 
 // Additional routes for users
-router.get("/:id/tasks", authMiddleware, getUserTasks); // Example: Get tasks for a specific user
+router.get("/:id/tasks", authMiddleware, getUserTasks); // Get tasks for a specific user
 
 export default router;

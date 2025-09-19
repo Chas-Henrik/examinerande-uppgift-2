@@ -32,6 +32,19 @@ export const createTask = async (req: Request, res: Response<TaskApiResponse>) =
 			}
 		}
 
+		// Validate project field if provided
+		if (taskData.project && !mongoose.isValidObjectId(taskData.project)) {
+			return res.status(400).json({ ok: false, message: "Invalid project ID format" });
+		}
+		
+		// If project is provided, check that the project exists
+		if(taskData.project) {
+			const projectExists = await mongoose.model('Project').exists({ _id: taskData.project });
+			if (!projectExists) {
+				return res.status(404).json({ ok: false, message: "Project not found" });
+			}
+		}
+
 		// Set finishedAt and finishedBy if status is 'done'
 		if(taskData.status === 'done' && !taskData.finishedBy) {
 			if(!taskData.finishedAt) taskData.finishedAt = new Date();
@@ -119,6 +132,19 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 			const user = await User.findById(taskData.assignedTo);
 			if (!user) {
 				return res.status(404).json({ ok: false, message: "assignedTo user not found" });
+			}
+		}
+
+		// Validate project field if provided
+		if (taskData.project && !mongoose.isValidObjectId(taskData.project)) {
+			return res.status(400).json({ ok: false, message: "Invalid project ID format" });
+		}
+
+		// If project is provided, check that the project exists
+		if(taskData.project) {
+			const projectExists = await mongoose.model('Project').exists({ _id: taskData.project });
+			if (!projectExists) {
+				return res.status(404).json({ ok: false, message: "Project not found" });
 			}
 		}
 

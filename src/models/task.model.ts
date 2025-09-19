@@ -1,7 +1,6 @@
 // src/models/task.model.ts
 
-import { max } from "lodash";
-import mongoose, { Schema, InferSchemaType } from "mongoose";
+import mongoose, { InferSchemaType, Types } from "mongoose";
 
 const taskSchema = new mongoose.Schema({
     title: {
@@ -27,6 +26,11 @@ const taskSchema = new mongoose.Schema({
         ref: 'User',
         default: null,
     },
+    project: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project',
+        default: null,
+    },
     finishedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -41,6 +45,7 @@ const taskSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-export type TaskType = InferSchemaType<typeof taskSchema>;
+type TaskBaseType = InferSchemaType<typeof taskSchema>;
+export type TaskType = TaskBaseType & { _id: Types.ObjectId };
 
 export const Task = mongoose.model("Task", taskSchema);
