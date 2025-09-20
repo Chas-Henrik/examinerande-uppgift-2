@@ -53,7 +53,8 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 - `GET localhost:3000/api/projects/:id` Hämta ett projekt
 - `PATCH localhost:3000/api/projects/:id` Patcha ett projekt
 - `DELETE localhost:3000/api/projects/:id` Ta bort ett projekt  
-- `GET localhost:3000/api/projects/:id/tasks` Hämta alla tasks för ett projekt
+- `GET localhost:3000/api/projects/:id/tasks` Hämta alla tasks för ett projekt  
+    <br>
 ***Applikationen stöder följande features:***
 1. User, Task & Project collections
 2. Autentisering med JWT (som HTTP-only cookie med 1h expiration time)
@@ -76,7 +77,104 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 5. ***Inloggningsuppgifter för admin*** E-mail: `admin@example.com`, Password: `topsecret`
 6. ***Thunder Client*** Använd Thunderclient (eller Postman) för att skicka requests till endpointsen.
 7. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
-8. ***Test*** Kör valfria tester efter att du har loggat in.
+8. ***Test*** Kör valfria tester efter att du har loggat in (välj från endpointsen nedan).
+
+### publika endpoints  
+
+***Registrera en ny användare (developer)***
+`POST localhost:3000/api/auth/register`
+
+***Body***
+```json
+{ 
+  "name": "Lena Andersson",
+  "email": "lena.andersson@gmail.com", 
+  "password": "topsecret"
+}
+```
+
+***Logga in en användare***
+`POST localhost:3000/api/auth/login`
+
+***Body***
+```json
+{ 
+  "email": "lena.andersson@gmail.com", 
+  "password": "topsecret"
+}
+```
+
+***Logga ut en användare***
+`POST localhost:3000/api/auth/logout`
+
+***Body***
+```json
+
+```
+
+### users endpoints  
+
+***Skapa en ny användare***
+- `POST localhost:3000/api/users`
+
+***Body***
+```json
+{ 
+  "name": "Bertil Bertilsson",
+  "email": "bertil.bertilsson@company.com", 
+  "password": "topsecret",
+  "userLevel": "admin"
+}
+```
+
+***Hämta alla användare***
+- `GET localhost:3000/api/users`
+
+***Body***
+```json
+
+```
+
+***Hämta en användare***
+- `GET localhost:3000/api/users/68ce5784e2da8623257e2736`
+
+***Body***
+```json
+
+```
+
+***Patcha en användare***
+- `PATCH localhost:3000/api/users/68ce5784e2da8623257e2736`
+
+***Body***
+```json
+{ 
+  "name": "Lisa Andersson",
+  "email": "lisa.andersson@gmail.com"
+}
+```
+
+***Ta bort en användare***
+- `DELETE localhost:3000/api/users/68ce5810e2da8623257e273a`
+
+***Body***
+```json
+
+```
+
+***Hämta alla tasks för en användare***
+- `GET localhost:3000/api/users/:id/tasks`
+
+***Body***
+```json
+
+```
+
+
+### tasks endpoints  
+
+### projects endpoints  
+
 
 ## Mål
 
