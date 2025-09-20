@@ -123,17 +123,17 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 			if (!user) {
 				return res.status(404).json({ ok: false, message: "Owner user not found" });
 			}
+
+			// Ensure the authenticated user is the current owner or admin user
+			if (existing.owner && existing.owner.toString() !== authReq.user._id.toString()) {
+				if (authReq.user.userLevel < UserLevel.ADMIN) {
+					return res.status(403).json({ ok: false, message: "Forbidden, only admins or the current project owner can change owner" });
+				}
+			}
 		}
 
 		// Deep merge the existing project with the patch input
 		const mergedData = merge({}, existing.toObject(), projectData);
-
-        // Ensure the authenticated user is the current owner or admin user
-		if (mergedData.owner && mergedData.owner.toString() !== authReq.user._id.toString()) {
-			if (authReq.user.userLevel < UserLevel.ADMIN) {
-				return res.status(403).json({ ok: false, message: "Forbidden: You are not allowed to change the project owner" });
-			}
-		}
 
 		// Update the project in the database
 		const updatedProject = await Project.findByIdAndUpdate(id, mergedData, {
