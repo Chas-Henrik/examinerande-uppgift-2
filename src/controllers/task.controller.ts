@@ -6,6 +6,7 @@ import { User } from '../models/user.model.js';
 import { TaskApiResponse } from "../types/task.js";
 import { ZodTaskSchema } from '../validation/task.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
+import { z } from 'zod';
 
 // POST /api/tasks
 export const createTask = async (req: Request, res: Response<TaskApiResponse>) =>  {
@@ -16,7 +17,7 @@ export const createTask = async (req: Request, res: Response<TaskApiResponse>) =
 		// Validate input
 		const result = ZodTaskSchema.safeParse(taskData);
 		if (!result.success) {
-			return res.status(400).json({ ok: false, message: 'Invalid input', error: result.error.issues.toString() });
+			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
 		}
 
 		// Validate assignedTo field if provided
@@ -108,7 +109,7 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 		// Validate input
 		const result = ZodTaskSchema.safeParse(taskData);
 		if (!result.success) {
-			return res.status(400).json({ ok: false, message: 'Invalid input', error: result.error.issues.toString() });
+			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
 		}
 
 		// Validate the id format

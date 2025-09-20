@@ -10,6 +10,7 @@ import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema } from "../validation/user.validation.js";
 import { Task } from '../models/task.model.js';
+import { z } from 'zod';
 
 // POST /api/users
 export const createUser = async (req: Request, res: Response<UserApiResponse>) =>  {
@@ -20,12 +21,12 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
         // Validate input
         const result = ZodUserSchema.safeParse(req.body);
         if (!result.success) {
-            return res.status(400).json({ ok: false, message: 'Invalid input', error: result.error.issues.toString() });
+            return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
         }
 
         // Only admins can create new users
         if (authReq.user.userLevel < UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Forbidden" });
+            return res.status(403).json({ ok: false, message: "Forbidden, only admins can create new users" });
         }
 
         // Check if user already exists
@@ -115,7 +116,7 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         // Validate input
         const result = ZodUserSchema.safeParse(userData);
         if (!result.success) {
-            return res.status(400).json({ ok: false, message: 'Invalid input', error: result.error.issues.toString() });
+            return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
         }
 
         // Validate the id format
@@ -130,7 +131,7 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
 
         // Only admins can patch other users
         if ( authReq.user._id.toString() !== id && authReq.user.userLevel < UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Forbidden" });
+            return res.status(403).json({ ok: false, message: "Forbidden, only admins can patch other users" });
         }
 
         // Validate user level if provided

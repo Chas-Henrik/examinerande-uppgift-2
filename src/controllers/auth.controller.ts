@@ -5,6 +5,7 @@ import { signToken } from '../utils/jwt.js'
 import { UserType, User } from '../models/user.model.js';
 import { UserLevel, UserApiResponse } from "../types/user.js";
 import { ZodUserSchema } from "../validation/user.validation.js";
+import { z } from 'zod';
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ export const register = async (req: Request, res: Response<UserApiResponse>) => 
         // Validate input
         const result = ZodUserSchema.safeParse({ name, email, password, userLevel });
         if (!result.success) {
-            return res.status(400).json({ ok: false, message: 'Invalid input', error: result.error.issues.toString() });
+            return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
         }
 
         // Check if user already exists

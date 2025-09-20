@@ -7,5 +7,5 @@ export enum UserLevel {
 }
 
 type UserApiOK = { ok: true; message?: string; user?: UserType; users?: UserType[]};
-type UserApiErr = { ok: false; message: string; error?: string };
+type UserApiErr = { ok: false; message: string; error?: string | object };
 export type UserApiResponse = UserApiOK | UserApiErr;

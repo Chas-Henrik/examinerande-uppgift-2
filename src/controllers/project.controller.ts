@@ -9,6 +9,7 @@ import { ProjectApiResponse } from "../types/project.js";
 import { TaskApiResponse } from '../types/task.js';
 import { ZodProjectSchema } from '../validation/project.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
+import { z } from 'zod';
 
 // POST /api/projects
 export const createProject = async (req: Request, res: Response<ProjectApiResponse>) =>  {
@@ -19,7 +20,7 @@ export const createProject = async (req: Request, res: Response<ProjectApiRespon
 		// Validate input
 		const result = ZodProjectSchema.safeParse(projectData);
 		if (!result.success) {
-			return res.status(400).json({ ok: false, message: 'Invalid input', error: result.error.issues.toString() });
+			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
 		}
 
         // Validate authenticated user
@@ -97,7 +98,7 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 		// Validate input
 		const result = ZodProjectSchema.safeParse(projectData);
 		if (!result.success) {
-			return res.status(400).json({ ok: false, message: 'Invalid input', error: result.error.issues.toString() });
+			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
 		}
 
 		// Validate the id format
