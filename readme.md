@@ -244,7 +244,10 @@ POST localhost:3000/api/projects
 ```  
 _Body (JSON):_
 ```json
-
+{
+  "name": "Trullo",
+  "description": "Trullo project description"
+}
 ```
 
 #### Hämta alla projekt
@@ -256,23 +259,27 @@ GET localhost:3000/api/projects
 #### Hämta ett projekt
 _Endpoint:_  
 ```
-GET localhost:3000/api/projects/68ce78e4af8e379dbf9b1e87
+GET localhost:3000/api/projects/68ce9e5f2dde32359e5d814b
 ```  
 
 #### Patcha ett projekt
 _Endpoint:_  
 ```
-PATCH localhost:3000/api/projects/68ce78e4af8e379dbf9b1e87
+PATCH localhost:3000/api/projects/68ce9e5f2dde32359e5d814b
 ```  
 _Body (JSON):_
 ```json
-
-```  
+{
+  "name": "Trello Project",
+  "description": "Trello project description",
+  "owner": "68ce78e4af8e379dbf9b1e83"
+}
+```
 
 #### Ta bort ett projekt
 _Endpoint:_  
 ```
-DELETE localhost:3000/api/projects/68ce78e4af8e379dbf9b1e87
+DELETE localhost:3000/api/projects/68ce9e5f2dde32359e5d814b
 ```  
 
 #### Hämta alla tasks för ett projekt
