@@ -82,11 +82,11 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 ### Publika Endpoints  
 
 ***Registrera en ny användare (DEVELOPER)***  
-_Endpoint_  
+_Endpoint:_  
 ```
 POST localhost:3000/api/auth/register
 ```  
-_Body(JSON)_
+_Body (JSON):_
 ```json
 { 
   "name": "Lena Andersson",
@@ -96,11 +96,11 @@ _Body(JSON)_
 ```
 
 ***Logga in en användare***  
-_Endpoint_  
+_Endpoint:_  
 ```
 POST localhost:3000/api/auth/login
 ```  
-_Body(JSON)_
+_Body (JSON):_
 ```json
 { 
   "email": "lena.andersson@gmail.com", 
@@ -109,7 +109,7 @@ _Body(JSON)_
 ```
 
 ***Logga ut en användare***  
-_Endpoint_  
+_Endpoint:_  
 ```
 POST localhost:3000/api/auth/logout
 ```  
@@ -117,11 +117,11 @@ POST localhost:3000/api/auth/logout
 ### users Endpoints  
 
 ***Skapa en ny användare***  
-_Endpoint_  
+_Endpoint:_  
 ```
 POST localhost:3000/api/users
 ```  
-_Body(JSON)_
+_Body (JSON):_
 ```json
 { 
   "name": "Bertil Bertilsson",
@@ -132,23 +132,23 @@ _Body(JSON)_
 ```
 
 ***Hämta alla användare***  
-_Endpoint_  
+_Endpoint:_  
 ```
 GET localhost:3000/api/users
 ```  
 
 ***Hämta en användare***  
-_Endpoint_  
+_Endpoint:_  
 ```
 GET localhost:3000/api/users/68ce5784e2da8623257e2736
 ```  
 
 ***Patcha en användare***  
-_Endpoint_  
+_Endpoint:_  
 ```
 PATCH localhost:3000/api/users/68ce5784e2da8623257e2736
 ```  
-_Body(JSON)_
+_Body (JSON):_
 ```json
 { 
   "name": "Lisa Andersson",
@@ -157,13 +157,13 @@ _Body(JSON)_
 ```
 
 ***Ta bort en användare***  
-_Endpoint_  
+_Endpoint:_  
 ```
 DELETE localhost:3000/api/users/68ce5810e2da8623257e273a
 ```  
 
 ***Hämta alla tasks för en användare***  
-_Endpoint_  
+_Endpoint:_  
 ```
 GET localhost:3000/api/users/68ce5810e2da8623257e273a/tasks
 ```  
