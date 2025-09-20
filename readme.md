@@ -79,14 +79,14 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 7. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
 8. ***Test*** Kör valfria tester efter att du har loggat in (välj från endpointsen nedan).
 
-### publika endpoints  
+### Publika Endpoints  
 
-***Registrera en ny användare (developer)***  
+***Registrera en ny användare (DEVELOPER)***  
 _Endpoint_  
 ```
 POST localhost:3000/api/auth/register
 ```  
-_Body_
+_Body(JSON)_
 ```json
 { 
   "name": "Lena Andersson",
@@ -100,7 +100,7 @@ _Endpoint_
 ```
 POST localhost:3000/api/auth/login
 ```  
-_Body_
+_Body(JSON)_
 ```json
 { 
   "email": "lena.andersson@gmail.com", 
@@ -113,19 +113,15 @@ _Endpoint_
 ```
 POST localhost:3000/api/auth/logout
 ```  
-_Body_
-```json
-
-```
-
-### users endpoints  
+<br>  
+### users Endpoints  
 
 ***Skapa en ny användare***  
 _Endpoint_  
 ```
 POST localhost:3000/api/users
 ```  
-_Body_
+_Body(JSON)_
 ```json
 { 
   "name": "Bertil Bertilsson",
@@ -140,27 +136,19 @@ _Endpoint_
 ```
 GET localhost:3000/api/users
 ```  
-_Body_
-```json
-
-```
 
 ***Hämta en användare***  
 _Endpoint_  
 ```
 GET localhost:3000/api/users/68ce5784e2da8623257e2736
 ```  
-_Body_
-```json
-
-```
 
 ***Patcha en användare***  
 _Endpoint_  
 ```
 PATCH localhost:3000/api/users/68ce5784e2da8623257e2736
 ```  
-_Body_
+_Body(JSON)_
 ```json
 { 
   "name": "Lisa Andersson",
@@ -173,10 +161,6 @@ _Endpoint_
 ```
 DELETE localhost:3000/api/users/68ce5810e2da8623257e273a
 ```  
-_Body_
-```json
-
-```
 
 ***Hämta alla tasks för en användare***  
 _Endpoint_  
@@ -184,15 +168,10 @@ _Endpoint_
 GET localhost:3000/api/users/68ce5810e2da8623257e273a/tasks
 ```  
 
-_Body_
-```json
 
-```
+### tasks Endpoints  
 
-
-### tasks endpoints  
-
-### projects endpoints  
+### projects Endpoints  
 
 
 ## Mål
