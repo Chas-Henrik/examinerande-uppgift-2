@@ -81,10 +81,10 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 
 ### publika endpoints  
 
-***Registrera en ny användare (developer)***
-`POST localhost:3000/api/auth/register`
-
-***Body***
+***Registrera en ny användare (developer)***  
+`POST localhost:3000/api/auth/register`  
+<br>  
+_Body_
 ```json
 { 
   "name": "Lena Andersson",
@@ -93,10 +93,10 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 }
 ```
 
-***Logga in en användare***
-`POST localhost:3000/api/auth/login`
-
-***Body***
+***Logga in en användare***  
+`POST localhost:3000/api/auth/login`  
+<br>  
+_Body_
 ```json
 { 
   "email": "lena.andersson@gmail.com", 
@@ -104,20 +104,20 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 }
 ```
 
-***Logga ut en användare***
-`POST localhost:3000/api/auth/logout`
-
-***Body***
+***Logga ut en användare***  
+`POST localhost:3000/api/auth/logout`  
+<br>  
+_Body_
 ```json
 
 ```
 
 ### users endpoints  
 
-***Skapa en ny användare***
-- `POST localhost:3000/api/users`
-
-***Body***
+***Skapa en ny användare***  
+`POST localhost:3000/api/users`  
+<br>  
+_Body_
 ```json
 { 
   "name": "Bertil Bertilsson",
@@ -127,26 +127,26 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 }
 ```
 
-***Hämta alla användare***
-- `GET localhost:3000/api/users`
-
-***Body***
+***Hämta alla användare***  
+`GET localhost:3000/api/users`  
+<br>  
+_Body_
 ```json
 
 ```
 
-***Hämta en användare***
-- `GET localhost:3000/api/users/68ce5784e2da8623257e2736`
-
-***Body***
+***Hämta en användare***  
+`GET localhost:3000/api/users/68ce5784e2da8623257e2736`  
+<br>  
+_Body_
 ```json
 
 ```
 
-***Patcha en användare***
-- `PATCH localhost:3000/api/users/68ce5784e2da8623257e2736`
-
-***Body***
+***Patcha en användare***  
+`PATCH localhost:3000/api/users/68ce5784e2da8623257e2736`  
+<br>  
+_Body_
 ```json
 { 
   "name": "Lisa Andersson",
@@ -155,17 +155,17 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 ```
 
 ***Ta bort en användare***
-- `DELETE localhost:3000/api/users/68ce5810e2da8623257e273a`
-
-***Body***
+`DELETE localhost:3000/api/users/68ce5810e2da8623257e273a`
+<br>  
+_Body_
 ```json
 
 ```
 
 ***Hämta alla tasks för en användare***
-- `GET localhost:3000/api/users/:id/tasks`
-
-***Body***
+`GET localhost:3000/api/users/:id/tasks`  
+<br>  
+_Body_
 ```json
 
 ```
