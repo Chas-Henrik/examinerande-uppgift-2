@@ -82,8 +82,8 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 ### publika endpoints  
 
 ***Registrera en ny användare (developer)***  
-`POST localhost:3000/api/auth/register`  
-<br>  
+_Endpoint_  
+`POST localhost:3000/api/auth/register`   
 _Body_
 ```json
 { 
@@ -94,8 +94,8 @@ _Body_
 ```
 
 ***Logga in en användare***  
+_Endpoint_  
 `POST localhost:3000/api/auth/login`  
-<br>  
 _Body_
 ```json
 { 
@@ -105,8 +105,8 @@ _Body_
 ```
 
 ***Logga ut en användare***  
+_Endpoint_  
 `POST localhost:3000/api/auth/logout`  
-<br>  
 _Body_
 ```json
 
@@ -115,8 +115,8 @@ _Body_
 ### users endpoints  
 
 ***Skapa en ny användare***  
+_Endpoint_  
 `POST localhost:3000/api/users`  
-<br>  
 _Body_
 ```json
 { 
@@ -128,24 +128,24 @@ _Body_
 ```
 
 ***Hämta alla användare***  
+_Endpoint_  
 `GET localhost:3000/api/users`  
-<br>  
 _Body_
 ```json
 
 ```
 
 ***Hämta en användare***  
+_Endpoint_  
 `GET localhost:3000/api/users/68ce5784e2da8623257e2736`  
-<br>  
 _Body_
 ```json
 
 ```
 
 ***Patcha en användare***  
+_Endpoint_  
 `PATCH localhost:3000/api/users/68ce5784e2da8623257e2736`  
-<br>  
 _Body_
 ```json
 { 
@@ -155,16 +155,16 @@ _Body_
 ```
 
 ***Ta bort en användare***
+_Endpoint_  
 `DELETE localhost:3000/api/users/68ce5810e2da8623257e273a`
-<br>  
 _Body_
 ```json
 
 ```
 
 ***Hämta alla tasks för en användare***
+_Endpoint_  
 `GET localhost:3000/api/users/:id/tasks`  
-<br>  
 _Body_
 ```json
 
