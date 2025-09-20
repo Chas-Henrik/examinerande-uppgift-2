@@ -83,7 +83,9 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 
 ***Registrera en ny användare (developer)***  
 _Endpoint_  
-`POST localhost:3000/api/auth/register`   
+```
+POST localhost:3000/api/auth/register
+```  
 _Body_
 ```json
 { 
@@ -95,7 +97,9 @@ _Body_
 
 ***Logga in en användare***  
 _Endpoint_  
-`POST localhost:3000/api/auth/login`  
+```
+POST localhost:3000/api/auth/login
+```  
 _Body_
 ```json
 { 
@@ -106,7 +110,9 @@ _Body_
 
 ***Logga ut en användare***  
 _Endpoint_  
-`POST localhost:3000/api/auth/logout`  
+```
+POST localhost:3000/api/auth/logout
+```  
 _Body_
 ```json
 
@@ -116,7 +122,9 @@ _Body_
 
 ***Skapa en ny användare***  
 _Endpoint_  
-`POST localhost:3000/api/users`  
+```
+POST localhost:3000/api/users
+```  
 _Body_
 ```json
 { 
@@ -129,7 +137,9 @@ _Body_
 
 ***Hämta alla användare***  
 _Endpoint_  
-`GET localhost:3000/api/users`  
+```
+GET localhost:3000/api/users
+```  
 _Body_
 ```json
 
@@ -137,7 +147,9 @@ _Body_
 
 ***Hämta en användare***  
 _Endpoint_  
-`GET localhost:3000/api/users/68ce5784e2da8623257e2736`  
+```
+GET localhost:3000/api/users/68ce5784e2da8623257e2736
+```  
 _Body_
 ```json
 
@@ -145,7 +157,9 @@ _Body_
 
 ***Patcha en användare***  
 _Endpoint_  
-`PATCH localhost:3000/api/users/68ce5784e2da8623257e2736`  
+```
+PATCH localhost:3000/api/users/68ce5784e2da8623257e2736
+```  
 _Body_
 ```json
 { 
@@ -154,17 +168,22 @@ _Body_
 }
 ```
 
-***Ta bort en användare***
+***Ta bort en användare***  
 _Endpoint_  
-`DELETE localhost:3000/api/users/68ce5810e2da8623257e273a`
+```
+DELETE localhost:3000/api/users/68ce5810e2da8623257e273a
+```  
 _Body_
 ```json
 
 ```
 
-***Hämta alla tasks för en användare***
+***Hämta alla tasks för en användare***  
 _Endpoint_  
-`GET localhost:3000/api/users/:id/tasks`  
+```
+GET localhost:3000/api/users/68ce5810e2da8623257e273a/tasks
+```  
+
 _Body_
 ```json
 
