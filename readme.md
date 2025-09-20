@@ -169,11 +169,109 @@ _Endpoint:_
 GET localhost:3000/api/users/68ce5810e2da8623257e273a/tasks
 ```  
 
-
 ### tasks Endpoints  
+
+#### Skapa en ny task 
+_Endpoint:_  
+```
+POST localhost:3000/api/tasks
+```  
+_Body (JSON):_
+```json
+{ 
+  "title": "Trullo subtask 1",
+  "description": "Implement task endpoints",
+  "status": "to-do",
+  "assignedTo": "68ce78e4af8e379dbf9b1e83",
+  "project": "68ce78e4af8e379dbf9b1e89"
+}
+```
+
+#### Hämta alla task
+_Endpoint:_  
+```
+GET localhost:3000/api/tasks
+```  
+
+#### Hämta en task
+_Endpoint:_  
+```
+GET localhost:3000/api/tasks/68ce78e4af8e379dbf9b1e8d
+```  
+
+#### Patcha en task
+_Endpoint:_  
+```
+PATCH localhost:3000/api/tasks/68ce78e4af8e379dbf9b1e8d
+```  
+_Body (JSON):_
+```json
+{ 
+  "title": "Trullo Subtask 1",
+  "description": "Implement task models & endpoints",
+  "status": "in progress",
+  "assignedTo": "68ce78e4af8e379dbf9b1e84",
+  "project": "68ce78e4af8e379dbf9b1e88"
+}
+
+{ 
+  "status": "done"
+}
+```
+
+#### Ta bort en task
+_Endpoint:_  
+```
+DELETE localhost:3000/api/tasks/68ce78e4af8e379dbf9b1e8d
+``` 
+
 
 ### projects Endpoints  
 
+#### Skapa ett nytt projekt
+_Endpoint:_  
+```
+POST localhost:3000/api/projects
+```  
+_Body (JSON):_
+```json
+
+```
+
+#### Hämta alla projekt
+_Endpoint:_  
+```
+GET localhost:3000/api/projects
+```  
+
+#### Hämta ett projekt
+_Endpoint:_  
+```
+GET localhost:3000/api/projects/68ce78e4af8e379dbf9b1e87
+```  
+
+#### Patcha ett projekt
+_Endpoint:_  
+```
+PATCH localhost:3000/api/projects/68ce78e4af8e379dbf9b1e87
+```  
+_Body (JSON):_
+```json
+
+```  
+
+#### Ta bort ett projekt
+_Endpoint:_  
+```
+DELETE localhost:3000/api/projects/68ce78e4af8e379dbf9b1e87
+```  
+
+#### Hämta alla tasks för ett projekt
+_Endpoint:_  
+```
+GET localhost:3000/api/projects/68ce78e4af8e379dbf9b1e88/tasks
+```  
+  
 
 ## Mål
 
