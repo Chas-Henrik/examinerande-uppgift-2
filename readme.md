@@ -116,7 +116,7 @@ POST localhost:3000/api/auth/logout
 ```  
 <br>  
 
-### users Endpoints  
+### 'users' Endpoints  
 
 #### Skapa en ny användare  
 _Endpoint:_  
@@ -177,7 +177,7 @@ _Endpoint:_
 GET localhost:3000/api/users/68ce5810e2da8623257e273a/tasks
 ```  
 
-### tasks Endpoints  
+### 'tasks' Endpoints  
 
 #### Skapa en ny task 
 _Endpoint:_  
@@ -236,7 +236,7 @@ DELETE localhost:3000/api/tasks/68ce78e4af8e379dbf9b1e8d
 ``` 
 
 
-### projects Endpoints  
+### 'projects' Endpoints  
 
 #### Skapa ett nytt projekt
 _Endpoint:_  
