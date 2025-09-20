@@ -61,7 +61,7 @@ export const getUsers = async (req: Request, res: Response<UserApiResponse>) => 
 
         // Only admins can get all users
         if (authReq.user.userLevel < UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Forbidden" });
+            return res.status(403).json({ ok: false, message: "Forbidden, only admins can get all users" });
         }
 
 		const users = await User.find();
@@ -89,9 +89,9 @@ export const getUser = async (req: Request, res: Response<UserApiResponse>) => {
             return res.status(401).json({ ok: false, message: "Unauthorized" });
         }
 
-        // Only admins can get all users
+        // Only admins can get other users
         if(authReq.user.userLevel < UserLevel.ADMIN && authReq.user._id.toString() !== id) {
-            return res.status(403).json({ ok: false, message: "Forbidden" });
+            return res.status(403).json({ ok: false, message: "Forbidden, only admins can get other users" });
         }
 
         const user = await User.findById(id);
@@ -195,12 +195,12 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
 
         // Only admins can delete other users
         if ( authReq.user._id.toString() !== id && authReq.user.userLevel < UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Forbidden" });
+            return res.status(403).json({ ok: false, message: "Forbidden, only admins can delete other users" });
         }
 
-        // admins cannot delete themselves
+        // admins cannot delete themselves (to guarantee at least one admin user exists)
         if (authReq.user._id.toString() === id && authReq.user.userLevel === UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Admin users cannot delete themselves" });
+            return res.status(403).json({ ok: false, message: "Forbidden, admin users cannot delete themselves" });
         }
 
         // Delete the user
