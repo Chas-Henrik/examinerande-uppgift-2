@@ -127,7 +127,7 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 			// Ensure the authenticated user is the current owner or admin user
 			if (existing.owner && existing.owner.toString() !== authReq.user._id.toString()) {
 				if (authReq.user.userLevel < UserLevel.ADMIN) {
-					return res.status(403).json({ ok: false, message: "Forbidden, only admins or the current project owner can change owner" });
+					return res.status(403).json({ ok: false, message: "Forbidden, only admins or the project owner can change owner" });
 				}
 			}
 		}
@@ -172,7 +172,7 @@ export const deleteProject = async (req: Request, res: Response<ProjectApiRespon
         // Ensure the authenticated user is the current owner or admin user
 		if (project.owner && project.owner.toString() !== authReq.user._id.toString()) {
 			if (authReq.user.userLevel < UserLevel.ADMIN) {
-				return res.status(403).json({ ok: false, message: "Forbidden: You are not allowed to change the project owner" });
+				return res.status(403).json({ ok: false, message: "Forbidden, only admins or the project owner can delete this project" });
 			}
 		}
 
