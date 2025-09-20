@@ -81,7 +81,7 @@ Jag använder PATCH istället för PUT då PATCH är mer flexibel och innehålle
 
 ### Publika Endpoints  
 
-***Registrera en ny användare (DEVELOPER)***  
+#### Registrera en ny användare (DEVELOPER) 
 _Endpoint:_  
 ```
 POST localhost:3000/api/auth/register
