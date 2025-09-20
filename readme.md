@@ -149,13 +149,20 @@ _Endpoint:_
 ```
 PATCH localhost:3000/api/users/68ce5784e2da8623257e2736
 ```  
-_Body (JSON):_
+_Body Example 1 (JSON):_
 ```json
 { 
   "name": "Lisa Andersson",
   "email": "lisa.andersson@gmail.com"
 }
 ```
+_Body Example 2 (JSON):_
+```json
+{ 
+  "password": "mysecretpsw"
+}
+```
+
 
 #### Ta bort en användare  
 _Endpoint:_  
@@ -204,7 +211,7 @@ _Endpoint:_
 ```
 PATCH localhost:3000/api/tasks/68ce78e4af8e379dbf9b1e8d
 ```  
-_Body (JSON):_
+_Body Example 1 (JSON):_
 ```json
 { 
   "title": "Trullo Subtask 1",
@@ -213,11 +220,13 @@ _Body (JSON):_
   "assignedTo": "68ce78e4af8e379dbf9b1e84",
   "project": "68ce78e4af8e379dbf9b1e88"
 }
-
+```
+_Body Example 2 (JSON):_
+```json
 { 
   "status": "done"
 }
-```
+```  
 
 #### Ta bort en task
 _Endpoint:_  
