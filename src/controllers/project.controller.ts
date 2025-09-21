@@ -28,14 +28,6 @@ export const createProject = async (req: Request, res: Response<ProjectApiRespon
             return res.status(401).json({ ok: false, message: "Unauthorized: User not authenticated" });
         }
 
-        // Validate that the authenticated user exists
-		if(authReq.user._id) {
-			const user = await User.findById(authReq.user._id);
-			if (!user) {
-				return res.status(404).json({ ok: false, message: "Authenticated user not found" });
-			}
-		}
-
 		const createdProject = await Project.create({ ...projectData, owner: authReq.user._id });
 		res.status(201).json({ ok: true, message: 'Project created', project: createdProject });
 	} catch (error) {
@@ -48,7 +40,7 @@ export const createProject = async (req: Request, res: Response<ProjectApiRespon
 // GET /api/projects
 export const getProjects = async (_req: Request, res: Response<ProjectApiResponse>) => {
 	try {
-		const projects = await Project.find().populate({
+		const projects = await Project.find().lean().populate({
             path: "owner",
 			select: "name email", // Select only specific fields to return
         });
@@ -70,7 +62,7 @@ export const getProject = async (req: Request, res: Response<ProjectApiResponse>
 		}
 
         // Fetch the project and populate the owner field
-		const project = await Project.findById(id).populate({
+		const project = await Project.findById(id).lean().populate({
             path: "owner",
 			select: "name email", // Select only specific fields to return
         });
@@ -112,6 +104,11 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 			return res.status(404).json({ ok: false, message: "Project not found" });
 		}
 
+		// Ensure the authenticated user is the current owner or admin user
+		if (existing.owner?.toString() !== authReq.user._id && authReq.user.userLevel < UserLevel.ADMIN) {
+			return res.status(403).json({ ok: false, message: "Forbidden, only the owner or an admin can update this project" });
+		}
+
         // Validate owner field if provided
 		if (projectData.owner && !mongoose.isValidObjectId(projectData.owner)) {
 			return res.status(400).json({ ok: false, message: "Invalid owner user ID format" });
@@ -122,13 +119,6 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 			const user = await User.findById(projectData.owner);
 			if (!user) {
 				return res.status(404).json({ ok: false, message: "Owner user not found" });
-			}
-
-			// Ensure the authenticated user is the current owner or admin user
-			if (existing.owner && existing.owner.toString() !== authReq.user._id) {
-				if (authReq.user.userLevel < UserLevel.ADMIN) {
-					return res.status(403).json({ ok: false, message: "Forbidden, only admins or the project owner can change owner" });
-				}
 			}
 		}
 
@@ -160,7 +150,7 @@ export const deleteProject = async (req: Request, res: Response<ProjectApiRespon
 
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
-			return res.status(400).json({ ok: false, message: "Invalid task ID format" });
+			return res.status(400).json({ ok: false, message: "Invalid project ID format" });
 		}
 
         // Ensure the project exists
