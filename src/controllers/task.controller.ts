@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import merge from 'lodash/merge.js';
 import mongoose from 'mongoose';
 import { Task, TaskType } from "../models/task.model.js"
 import { User } from '../models/user.model.js';
 import { TaskApiResponse } from "../types/task.js";
-import { ZodTaskSchema } from '../validation/task.validation.js';
+import { ZodTaskSchema, ZodTaskPatchSchema } from '../validation/task.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { z } from 'zod';
+import { Project } from '../models/project.model.js';
 
 // POST /api/tasks
 export const createTask = async (req: Request, res: Response<TaskApiResponse>) =>  {
@@ -40,7 +40,7 @@ export const createTask = async (req: Request, res: Response<TaskApiResponse>) =
 		
 		// If project is provided, check that the project exists
 		if(taskData.project) {
-			const projectExists = await mongoose.model('Project').exists({ _id: taskData.project });
+			const projectExists = await Project.exists({ _id: taskData.project });
 			if (!projectExists) {
 				return res.status(404).json({ ok: false, message: "Project not found" });
 			}
@@ -109,10 +109,12 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 		const { id } = req.params;
 
 		// Validate input
-		const result = ZodTaskSchema.safeParse(taskData);
+		const result = ZodTaskPatchSchema.safeParse(taskData);
 		if (!result.success) {
 			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
 		}
+
+		const patchData = result.data;
 
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
@@ -126,42 +128,39 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 		}
 
 		// Validate assignedTo field if provided
-		if (taskData.assignedTo && !mongoose.isValidObjectId(taskData.assignedTo)) {
+		if (patchData.assignedTo && !mongoose.isValidObjectId(patchData.assignedTo)) {
 			return res.status(400).json({ ok: false, message: "Invalid assignedTo user ID format" });
 		}
 
 		// If assignedTo is provided, check that the user exists
-		if(taskData.assignedTo) {
-			const user = await User.findById(taskData.assignedTo);
+		if(patchData.assignedTo) {
+			const user = await User.findById(patchData.assignedTo);
 			if (!user) {
 				return res.status(404).json({ ok: false, message: "assignedTo user not found" });
 			}
 		}
 
 		// Validate project field if provided
-		if (taskData.project && !mongoose.isValidObjectId(taskData.project)) {
+		if (patchData.project && !mongoose.isValidObjectId(patchData.project)) {
 			return res.status(400).json({ ok: false, message: "Invalid project ID format" });
 		}
 
 		// If project is provided, check that the project exists
-		if(taskData.project) {
-			const projectExists = await mongoose.model('Project').exists({ _id: taskData.project });
+		if(patchData.project) {
+			const projectExists = await Project.exists({ _id: patchData.project });
 			if (!projectExists) {
 				return res.status(404).json({ ok: false, message: "Project not found" });
 			}
 		}
 
 		// Set finishedAt and finishedBy if status is 'done'
-		if(taskData.status && taskData.status === 'done' && !taskData.finishedBy) {
-			if(!taskData.finishedAt) taskData.finishedAt = new Date();
-			if(!taskData.finishedBy &&  mongoose.isValidObjectId(authReq.user?._id)) taskData.finishedBy = new mongoose.Types.ObjectId(authReq?.user?._id);
+		if(patchData.status === 'done' && !patchData.finishedBy) {
+			if(!patchData.finishedAt) patchData.finishedAt = new Date();
+			if(!patchData.finishedBy ) patchData.finishedBy = authReq?.user?._id;
 		}
 
-		// Deep merge the existing task with the patch input
-		const mergedData = merge({}, existing.toObject(), taskData);
-
 		// Update the task in the database
-		const updatedTask = await Task.findByIdAndUpdate(id, mergedData, {
+		const updatedTask = await Task.findByIdAndUpdate(id, patchData, {
 			new: true,
 			runValidators: true,
 			upsert: false  // Do not create a new document if it doesn't exist
