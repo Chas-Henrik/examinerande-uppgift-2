@@ -7,20 +7,19 @@ export const ZodUserSchema = z.object({
         .string()
         .trim()
         .min(2, "Name must be at least 2 characters long")
-        .max(50, "Name must be at most 50 characters long")
-        .optional(),
+        .max(50, "Name must be at most 50 characters long"),
     email: z.string()
         .trim()
         .toLowerCase()
-        .email("Invalid email address")
-        .optional(),
+        .email("Invalid email address"),
     password: z.coerce
         .string()
         .min(8, "Password must be at least 8 characters long")
-        .max(100, "Password must be at most 100 characters long")
-        .optional(),
-    userLevel: z.enum(Object.values(UserLevel) as string[]).optional()
+        .max(100, "Password must be at most 100 characters long"),
+    userLevel: z.enum(Object.values(UserLevel) as string[])
 });
+
+export const ZodUserPatchSchema = ZodUserSchema.partial();
 
 export const ZodLoginSchema = z.object({
     email: z.string()

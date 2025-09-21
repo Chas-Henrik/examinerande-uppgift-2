@@ -1,5 +1,5 @@
+// src/controllers/user.controller.ts
 import { Request, Response } from 'express';
-import merge from 'lodash/merge.js';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import { User, UserType, serializeUser } from "../models/user.model.js"
@@ -7,9 +7,10 @@ import { UserLevel, UserApiResponse } from '../types/user.js';
 import { TaskApiResponse } from '../types/task.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
-import { ZodUserSchema } from "../validation/user.validation.js";
+import { ZodUserSchema, ZodUserPatchSchema } from "../validation/user.validation.js";
 import { Task } from '../models/task.model.js';
 import { z } from 'zod';
+import { normalizeUserLevel } from '../utils/utils.js';
 
 // POST /api/users
 export const createUser = async (req: Request, res: Response<UserApiResponse>) =>  {
@@ -34,8 +35,14 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
             return res.status(409).json({ ok: false, message: 'User already exists' });
         }
 
+        // Normalize and validate userLevel
+        const level = normalizeUserLevel(userLevel);
+        if (level === undefined) {
+            return res.status(400).json({ ok: false, message: "Invalid user level" });
+        }
+
         // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ name, email, password, userLevel: UserLevel[userLevel] });
+        const createdUser = await User.create({ name, email, password, userLevel: level });
 
         res.status(201).json({ ok: true, message: 'User created', user: serializeUser(createdUser) });
     } catch (error) {
@@ -90,7 +97,7 @@ export const getUser = async (req: Request, res: Response<UserApiResponse>) => {
             return res.status(403).json({ ok: false, message: "Forbidden, only admins can get other users" });
         }
 
-        const user = await User.findById(id);
+        const user = await User.findById(id).lean();
         if (!user) {
             return res.status(404).json({ ok: false, message: "User not found" });
         }
@@ -110,10 +117,12 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         const authReq = req as AuthenticatedRequest;
 
         // Validate input
-        const result = ZodUserSchema.safeParse(userData);
+        const result = ZodUserPatchSchema.safeParse(userData);
         if (!result.success) {
             return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
         }
+
+        const patchData = result.data;
 
         // Validate the id format
         if (!mongoose.isValidObjectId(id)) {
@@ -130,34 +139,29 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
             return res.status(403).json({ ok: false, message: "Forbidden, only admins can patch other users" });
         }
 
-        // Validate user level if provided
-        if(userData.userLevel) {
-            const level = typeof userData.userLevel === 'string' ? UserLevel[userData.userLevel as keyof typeof UserLevel] : userData.userLevel;
-
-            // Validate that you cannot assign a user level higher than your own
-            if(level > authReq.user.userLevel) {
-                return res.status(403).json({ ok: false, message: 'Cannot assign a user level higher than your own' });
-            }
-
-            userData.userLevel = level;
-        }
-
         // Ensure the user exists
-        const existing = await User.findById(id);
+        const existing = await User.findById(id).lean();
         if (!existing) {
             return res.status(404).json({ ok: false, message: "User not found" });
         }
 
-        // If password is being updated, hash it
-        if(userData.password) {
-            userData.password = await bcrypt.hash(userData.password, 10);
-        }
-
-        // Deep merge the existing user with the patch input
-        const mergedData = merge({}, existing.toObject(), userData);
+        // Only include fields that were provided in the patch
+        const updatePayload: Partial<UserType> = {};
+        if (patchData.name !== undefined) updatePayload.name = patchData.name;
+        if (patchData.email !== undefined) updatePayload.email = patchData.email;
+        if (patchData.userLevel !== undefined) {
+            const level : UserLevel | undefined = normalizeUserLevel(patchData.userLevel);
+            if(level !== undefined) {
+                if(level > authReq.user.userLevel) {
+                    return res.status(403).json({ ok: false, message: 'Cannot assign a user level higher than your own' });
+                }
+                updatePayload.userLevel = level;
+            }
+        } 
+        if (patchData.password) updatePayload.password = await bcrypt.hash(patchData.password, 10);
 
         // Update the user in the database
-        const updatedUser = await User.findByIdAndUpdate(id, mergedData, {
+        const updatedUser = await User.findByIdAndUpdate(id, updatePayload, {
             new: true,
             runValidators: true,
             upsert: false  // Do not create a new document if it doesn't exist

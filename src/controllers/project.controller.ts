@@ -1,3 +1,4 @@
+// src/controllers/project.controller.ts
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { Project, ProjectType } from "../models/project.model.js"
