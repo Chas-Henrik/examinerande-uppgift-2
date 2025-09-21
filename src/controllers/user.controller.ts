@@ -39,7 +39,7 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
         const createdUser = await User.create({ name, email, password, userLevel: UserLevel[userLevel] });
 
         // Generate JWT token
-        const token = signToken(createdUser.toObject());
+        const token = signToken({_id: createdUser._id.toString(), userLevel: userLevel });
 
         res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User created', user: createdUser });
     } catch (error) {
@@ -85,12 +85,12 @@ export const getUser = async (req: Request, res: Response<UserApiResponse>) => {
         }
 
         // Check authentication
-        if (!authReq || !authReq.user || !authReq.user._id.toString()) {
+        if (!authReq || !authReq.user || !authReq.user._id) {
             return res.status(401).json({ ok: false, message: "Unauthorized" });
         }
 
         // Only admins can get other users
-        if(authReq.user.userLevel < UserLevel.ADMIN && authReq.user._id.toString() !== id) {
+        if(authReq.user.userLevel < UserLevel.ADMIN && authReq.user._id !== id) {
             return res.status(403).json({ ok: false, message: "Forbidden, only admins can get other users" });
         }
 
@@ -130,7 +130,7 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         }
 
         // Only admins can patch other users
-        if ( authReq.user._id.toString() !== id && authReq.user.userLevel < UserLevel.ADMIN) {
+        if ( authReq.user._id !== id && authReq.user.userLevel < UserLevel.ADMIN) {
             return res.status(403).json({ ok: false, message: "Forbidden, only admins can patch other users" });
         }
 
@@ -194,12 +194,12 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
         }
 
         // Only admins can delete other users
-        if ( authReq.user._id.toString() !== id && authReq.user.userLevel < UserLevel.ADMIN) {
+        if ( authReq.user._id !== id && authReq.user.userLevel < UserLevel.ADMIN) {
             return res.status(403).json({ ok: false, message: "Forbidden, only admins can delete other users" });
         }
 
         // admins cannot delete themselves (to guarantee at least one admin user exists)
-        if (authReq.user._id.toString() === id && authReq.user.userLevel === UserLevel.ADMIN) {
+        if (authReq.user._id === id && authReq.user.userLevel === UserLevel.ADMIN) {
             return res.status(403).json({ ok: false, message: "Forbidden, admin users cannot delete themselves" });
         }
 
@@ -210,7 +210,7 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
         }
 
         // If the user deleted themselves, clear their cookie
-        if (authReq.user._id.toString() === id) {
+        if (authReq.user._id === id) {
             res.clearCookie('token', COOKIE_OPTIONS);
         }
 
@@ -226,7 +226,6 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
 export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>) => {
     try {
         const { id } = req.params;
-        const authReq = req as AuthenticatedRequest;
 
         // Validate the id format
         if (!mongoose.isValidObjectId(id)) {

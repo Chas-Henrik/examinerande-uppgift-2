@@ -125,7 +125,7 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 			}
 
 			// Ensure the authenticated user is the current owner or admin user
-			if (existing.owner && existing.owner.toString() !== authReq.user._id.toString()) {
+			if (existing.owner && existing.owner.toString() !== authReq.user._id) {
 				if (authReq.user.userLevel < UserLevel.ADMIN) {
 					return res.status(403).json({ ok: false, message: "Forbidden, only admins or the project owner can change owner" });
 				}
@@ -170,7 +170,7 @@ export const deleteProject = async (req: Request, res: Response<ProjectApiRespon
 		}
 
         // Ensure the authenticated user is the current owner or admin user
-		if (project.owner && project.owner.toString() !== authReq.user._id.toString()) {
+		if (project.owner && project.owner.toString() !== authReq.user._id) {
 			if (authReq.user.userLevel < UserLevel.ADMIN) {
 				return res.status(403).json({ ok: false, message: "Forbidden, only admins or the project owner can delete this project" });
 			}
@@ -194,7 +194,6 @@ export const deleteProject = async (req: Request, res: Response<ProjectApiRespon
 export const getProjectTasks = async (req: Request, res: Response<TaskApiResponse>) => {
     try {
         const { id } = req.params;
-        const authReq = req as AuthenticatedRequest;
 
         // Validate the id format
         if (!mongoose.isValidObjectId(id)) {

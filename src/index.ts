@@ -4,7 +4,12 @@ import cookieParser from "cookie-parser";
 import cors, { CorsOptions } from "cors";
 import { connectDB } from "./db.js";
 
-dotenv.config();
+const result = dotenv.config();
+
+if (result.error) {
+	console.error('Failed to load .env file:', result.error);
+	process.exit(1);
+}
 
 const app = express();
 

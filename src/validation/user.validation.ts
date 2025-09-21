@@ -16,7 +16,17 @@ export const ZodUserSchema = z.object({
     password: z.coerce
         .string()
         .min(8, "Password must be at least 8 characters long")
+        .max(100, "Password must be at most 100 characters long")
         .optional(),
     userLevel: z.enum(Object.values(UserLevel) as string[]).optional()
 });
 
+export const ZodLoginSchema = z.object({
+    email: z.string()
+        .trim()
+        .toLowerCase()
+        .email("Invalid email address"),
+    password: z.string()
+        .min(8, "Password must be at least 8 characters long")
+        .max(100, "Password must be at most 100 characters long")
+});

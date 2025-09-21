@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.js"
 import { User, UserType } from "../models/user.model.js";
-import { UserLevel } from "../types/user.js";
+import { UserLevel, AuthUserType } from "../types/user.js";
 
 // Extend Express Request type to include 'user'
 export interface AuthenticatedRequest extends Request {
-	user: UserType;
+	user: AuthUserType;
 }
 
 // Middleware 
@@ -28,7 +28,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     // Check that token is valid
     try {
         const payload = verifyToken(token);
-        authReq.user = payload as UserType;
+        authReq.user = payload as AuthUserType;
 
         // Ensure authReq.user._id is defined
         if (!authReq.user || !authReq.user._id) {

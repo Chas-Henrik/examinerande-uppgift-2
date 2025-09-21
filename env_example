@@ -1,2 +1,3 @@
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.r6jzab0.mongodb.net/trulloDatabase?retryWrites=true&w=majority&appName=Cluster0
 JWT_SECRET=<secret-key>
+NODE_ENV=development
