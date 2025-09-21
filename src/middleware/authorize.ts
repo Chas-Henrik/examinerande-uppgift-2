@@ -1,3 +1,4 @@
+// src/middleware/authorize.ts
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.js"
 import { User, UserType } from "../models/user.model.js";
@@ -55,7 +56,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
         // Ensure UserLevel is above or equal to DEVELOPER level access
         if (user.userLevel < UserLevel.DEVELOPER) {
-            return res.status(403).json({ error: "Forbidden, missing or insufficient user level" });
+            return res.status(403).json({ message: "Forbidden, missing or insufficient user level" });
         }
 
         next();

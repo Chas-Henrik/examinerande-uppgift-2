@@ -2,7 +2,7 @@
 import express, { Request, Response } from 'express';
 import bcrypt from "bcrypt"
 import { signToken } from '../utils/jwt.js'
-import { UserType, User } from '../models/user.model.js';
+import { UserType, User, serializeUser } from '../models/user.model.js';
 import { UserLevel, UserApiResponse } from "../types/user.js";
 import { ZodUserSchema, ZodLoginSchema } from "../validation/user.validation.js";
 import { z } from 'zod';
@@ -39,7 +39,7 @@ export const register = async (req: Request, res: Response<UserApiResponse>) => 
         // Generate JWT token
         const token = signToken({ _id: createdUser._id.toString(), userLevel });
 
-        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', user: createdUser });
+        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', user: serializeUser(createdUser) });
     } catch (error) {
         console.error("Error registering user:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
@@ -59,8 +59,8 @@ export const login = async (req: Request, res: Response<UserApiResponse>) =>  {
         const { email, password } = result.data;
         const user = await User.findOne({ email }).select('+password').lean();
 
-        // To mitigate timing attacks, always perform a bcrypt comparison
         if (!user?.password || !await bcrypt.compare(password, user.password)) {
+            // Dummy bcrypt hash to mitigate timing attacks
             const dummyHash = '$2b$10$invalidsaltinvalidsaltinv.uFzQxGZ7yQzW9X0mFq2e2K';
             await bcrypt.compare(password, dummyHash); // for timing consistency
             res.clearCookie('token', COOKIE_OPTIONS);
@@ -69,7 +69,7 @@ export const login = async (req: Request, res: Response<UserApiResponse>) =>  {
 
         const token = signToken({ _id: user._id.toString(), userLevel: user.userLevel });
 
-        return res.cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'Logged in successfully', user: user });
+        return res.cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'Logged in successfully', user: serializeUser(user) });
     } catch (error) {
         res.clearCookie('token', COOKIE_OPTIONS);
         console.error("Login failed:", error);

@@ -49,7 +49,7 @@ export const createTask = async (req: Request, res: Response<TaskApiResponse>) =
 		// Set finishedAt and finishedBy if status is 'done'
 		if(taskData.status === 'done' && !taskData.finishedBy) {
 			if(!taskData.finishedAt) taskData.finishedAt = new Date();
-			if(!taskData.finishedBy) taskData.finishedBy = authReq?.user?._id || null;
+			if(!taskData.finishedBy &&  mongoose.isValidObjectId(authReq.user?._id)) taskData.finishedBy = new mongoose.Types.ObjectId(authReq.user?._id);
 		}
 
 		const createdTask = await Task.create(taskData);
@@ -152,7 +152,7 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 		// Set finishedAt and finishedBy if status is 'done'
 		if(taskData.status && taskData.status === 'done' && !taskData.finishedBy) {
 			if(!taskData.finishedAt) taskData.finishedAt = new Date();
-			if(!taskData.finishedBy) taskData.finishedBy = authReq?.user?._id || null;
+			if(!taskData.finishedBy &&  mongoose.isValidObjectId(authReq.user?._id)) taskData.finishedBy = new mongoose.Types.ObjectId(authReq?.user?._id);
 		}
 
 		// Deep merge the existing task with the patch input

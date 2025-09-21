@@ -2,10 +2,9 @@ import { Request, Response } from 'express';
 import merge from 'lodash/merge.js';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import { User, UserType } from "../models/user.model.js"
+import { User, UserType, serializeUser } from "../models/user.model.js"
 import { UserLevel, UserApiResponse } from '../types/user.js';
 import { TaskApiResponse } from '../types/task.js';
-import { signToken } from '../utils/jwt.js'
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema } from "../validation/user.validation.js";
@@ -38,10 +37,7 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
         // Create user (password will be hashed in pre-save hook in user model)
         const createdUser = await User.create({ name, email, password, userLevel: UserLevel[userLevel] });
 
-        // Generate JWT token
-        const token = signToken({_id: createdUser._id.toString(), userLevel: userLevel });
-
-        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User created', user: createdUser });
+        res.status(201).json({ ok: true, message: 'User created', user: serializeUser(createdUser) });
     } catch (error) {
         console.error("Error creating user:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
@@ -55,7 +51,7 @@ export const getUsers = async (req: Request, res: Response<UserApiResponse>) => 
         const authReq = req as AuthenticatedRequest;
 
         // Check authentication
-        if (!authReq || !authReq.user || !authReq.user.userLevel) {
+        if (!authReq.user?.userLevel) {
             return res.status(401).json({ ok: false, message: "Unauthorized" });
         }
 
@@ -64,8 +60,8 @@ export const getUsers = async (req: Request, res: Response<UserApiResponse>) => 
             return res.status(403).json({ ok: false, message: "Forbidden, only admins can get all users" });
         }
 
-		const users = await User.find();
-		res.status(200).json({ ok: true, users: users });
+		const users = await User.find().lean();
+		res.status(200).json({ ok: true, users: users.map(user => serializeUser(user)) });
 	} catch (error) {
 		console.error("Error fetching users:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
@@ -85,7 +81,7 @@ export const getUser = async (req: Request, res: Response<UserApiResponse>) => {
         }
 
         // Check authentication
-        if (!authReq || !authReq.user || !authReq.user._id) {
+        if (!authReq.user?.userLevel) {
             return res.status(401).json({ ok: false, message: "Unauthorized" });
         }
 
@@ -98,7 +94,7 @@ export const getUser = async (req: Request, res: Response<UserApiResponse>) => {
         if (!user) {
             return res.status(404).json({ ok: false, message: "User not found" });
         }
-        res.status(200).json({ ok: true, user: user });
+        res.status(200).json({ ok: true, user: serializeUser(user) });
     } catch (error) {
         console.error("Error fetching user:", error);
         const errorMessage = (error instanceof Error) ? error.message : String(error);
@@ -125,7 +121,7 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         }
 
         // Check authentication
-        if (!authReq || !authReq.user || !authReq.user.userLevel) {
+        if (!authReq.user?.userLevel) {
             return res.status(401).json({ ok: false, message: "Unauthorized" });
         }
 
@@ -169,7 +165,7 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         if (!updatedUser) {
             return res.status(404).json({ ok: false, message: "User not found" });
         }
-        res.status(200).json({ ok: true, message: 'User updated', user: updatedUser });
+        res.status(200).json({ ok: true, message: 'User updated', user: serializeUser(updatedUser) });
     } catch (error) {
         console.error("Error patching user:", error);
         const errorMessage = (error instanceof Error) ? error.message : String(error);
@@ -189,7 +185,7 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
         }
 
         // Check authentication
-        if (!authReq || !authReq.user || !authReq.user.userLevel) {
+        if (!authReq.user?.userLevel) {
             return res.status(401).json({ ok: false, message: "Unauthorized" });
         }
 
@@ -238,7 +234,7 @@ export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>)
             return res.status(404).json({ ok: false, message: "User not found" });
         }
 
-        const tasks = await Task.find({ assignedTo: id });
+        const tasks = await Task.find({ assignedTo: id }).lean();
         res.status(200).json({ ok: true, tasks: tasks });
     } catch (error) {
         console.error("Error fetching user tasks:", error);

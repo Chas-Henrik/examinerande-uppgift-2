@@ -47,4 +47,11 @@ userSchema.pre('save', async function (next) {
 type UserBaseType = InferSchemaType<typeof userSchema>;
 export type UserType = UserBaseType & { _id: Types.ObjectId };
 
+export const serializeUser = (user: UserType) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  userLevel: user.userLevel
+});
+
 export const User = mongoose.model("User", userSchema);
