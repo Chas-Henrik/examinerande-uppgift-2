@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import merge from 'lodash/merge.js';
 import mongoose from 'mongoose';
 import { Project, ProjectType } from "../models/project.model.js"
 import { User } from '../models/user.model.js';
@@ -7,7 +6,7 @@ import { Task } from '../models/task.model.js';
 import { UserLevel } from "../types/user.js";
 import { ProjectApiResponse } from "../types/project.js";
 import { TaskApiResponse } from '../types/task.js';
-import { ZodProjectSchema } from '../validation/project.validation.js';
+import { ZodProjectSchema, ZodProjectPatchSchema } from '../validation/project.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { z } from 'zod';
 
@@ -88,10 +87,12 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 		const { id } = req.params;
 
 		// Validate input
-		const result = ZodProjectSchema.safeParse(projectData);
+		const result = ZodProjectPatchSchema.safeParse(projectData);
 		if (!result.success) {
 			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
 		}
+
+		const patchData = result.data;
 
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
@@ -110,23 +111,20 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 		}
 
         // Validate owner field if provided
-		if (projectData.owner && !mongoose.isValidObjectId(projectData.owner)) {
+		if (patchData.owner && !mongoose.isValidObjectId(patchData.owner)) {
 			return res.status(400).json({ ok: false, message: "Invalid owner user ID format" });
 		}
 
 		// If owner is provided, check that the user exists
-		if (projectData.owner) {
-			const user = await User.findById(projectData.owner);
+		if (patchData.owner) {
+			const user = await User.findById(patchData.owner);
 			if (!user) {
 				return res.status(404).json({ ok: false, message: "Owner user not found" });
 			}
 		}
 
-		// Deep merge the existing project with the patch input
-		const mergedData = merge({}, existing.toObject(), projectData);
-
 		// Update the project in the database
-		const updatedProject = await Project.findByIdAndUpdate(id, mergedData, {
+		const updatedProject = await Project.findByIdAndUpdate(id, patchData, {
 			new: true,
 			runValidators: true,
 			upsert: false  // Do not create a new document if it doesn't exist
