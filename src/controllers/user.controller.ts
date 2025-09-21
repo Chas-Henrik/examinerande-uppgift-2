@@ -150,13 +150,16 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         if (patchData.name !== undefined) updatePayload.name = patchData.name;
         if (patchData.email !== undefined) updatePayload.email = patchData.email;
         if (patchData.userLevel !== undefined) {
-            const level : UserLevel | undefined = normalizeUserLevel(patchData.userLevel);
-            if(level !== undefined) {
-                if(level > authReq.user.userLevel) {
-                    return res.status(403).json({ ok: false, message: 'Cannot assign a user level higher than your own' });
-                }
-                updatePayload.userLevel = level;
+            const level = normalizeUserLevel(patchData.userLevel);
+
+            if(level === undefined) {
+                return res.status(400).json({ ok: false, message: "Invalid user level" });
             }
+
+            if(level > authReq.user.userLevel) {
+                return res.status(403).json({ ok: false, message: 'Cannot assign a user level higher than your own' });
+            }
+            updatePayload.userLevel = level;
         } 
         if (patchData.password) updatePayload.password = await bcrypt.hash(patchData.password, 10);
 
