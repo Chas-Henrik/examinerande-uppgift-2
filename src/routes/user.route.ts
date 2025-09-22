@@ -1,3 +1,4 @@
+// src/routes/user.route.ts
 import express from "express"
 import { authMiddleware } from "../middleware/authorize.js";
 import { createUser, getUsers, getUser, patchUser, deleteUser, getUserTasks } from "../controllers/user.controller.js";

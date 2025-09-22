@@ -1,3 +1,4 @@
+// src/routes/project.route.ts
 import express from "express"
 import { createProject, getProjects, getProject, patchProject, deleteProject, getProjectTasks } from "../controllers/project.controller.js";
 import { authMiddleware } from "../middleware/authorize.js";

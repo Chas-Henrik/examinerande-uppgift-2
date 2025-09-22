@@ -22,6 +22,7 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 - ***jsonwebtoken*** Används för att signera och verifiera JSON Web Tokens (JWT).
 - ***mongoose*** Mongoose är ett ODM (Object Data Modeling) som hjälper mig att arbeta med MongoDB på ett strukturerat och typat sätt genom att definiera scheman och modeller, vilket gör databashantering enklare och säkrare.
 - ***zod*** Används för parameter validering i backend.
+- ***express-rate-limit*** Används för rate-limiting för känsliga routes som `/api/auth/...` och `/api/user/...`.
 
 ### Redogör översiktligt hur applikationen fungerar
 

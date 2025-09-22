@@ -18,7 +18,11 @@ export const createTask = async (req: Request, res: Response<TaskApiResponse>) =
 		// Validate input
 		const result = ZodTaskSchema.safeParse(taskData);
 		if (!result.success) {
-			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
+			return res.status(400).json({ 
+				ok: false, 
+				message: 'Invalid input', 
+				error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+			});
 		}
 
 		// Validate assignedTo field if provided
@@ -112,7 +116,11 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 		// Validate input
 		const result = ZodTaskPatchSchema.safeParse(taskData);
 		if (!result.success) {
-			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
+			return res.status(400).json({ 
+				ok: false, 
+				message: 'Invalid input', 
+				error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+			});
 		}
 
 		const patchData = result.data;

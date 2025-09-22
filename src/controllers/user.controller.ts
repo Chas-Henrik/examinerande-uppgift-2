@@ -21,7 +21,11 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
         // Validate input
         const result = ZodUserSchema.safeParse(req.body);
         if (!result.success) {
-            return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
+            return res.status(400).json({ 
+                ok: false, 
+                message: 'Invalid input', 
+                error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message }))
+            });
         }
 
         // Only admins can create new users
@@ -119,7 +123,11 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         // Validate input
         const result = ZodUserPatchSchema.safeParse(userData);
         if (!result.success) {
-            return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
+            return res.status(400).json({ 
+                ok: false, 
+                message: 'Invalid input', 
+                error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+            });
         }
 
         const patchData = result.data;

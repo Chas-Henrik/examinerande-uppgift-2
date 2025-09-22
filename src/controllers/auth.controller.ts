@@ -23,7 +23,11 @@ export const register = async (req: Request, res: Response<UserApiResponse>) => 
         // Validate input
         const result = ZodUserSchema.safeParse({ ...req.body, userLevel: UserLevel[userLevel] });
         if (!result.success) {
-            return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
+            return res.status(400).json({ 
+                ok: false, 
+                message: 'Invalid input',
+                error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+            });
         }
         const { name, email, password } = result.data;
 
@@ -39,7 +43,7 @@ export const register = async (req: Request, res: Response<UserApiResponse>) => 
         // Generate JWT token
         const token = signToken({ _id: createdUser._id.toString(), userLevel });
 
-        res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', user: serializeUser(createdUser) });
+        return res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', user: serializeUser(createdUser) });
     } catch (error) {
         console.error("Error registering user:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
@@ -54,10 +58,14 @@ export const login = async (req: Request, res: Response<UserApiResponse>) =>  {
         const result = ZodLoginSchema.safeParse(req.body);
         if (!result.success) {
             res.clearCookie('token', COOKIE_OPTIONS);
-            return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
+            return res.status(400).json({ 
+                ok: false, 
+                message: 'Invalid input', 
+                error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+            });
         }
         const { email, password } = result.data;
-        const user = await User.findOne({ email }).select('+password').lean();
+        const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password').lean();
 
         if (!user?.password || !await bcrypt.compare(password, user.password)) {
             // Dummy bcrypt hash to mitigate timing attacks
@@ -82,7 +90,7 @@ export const login = async (req: Request, res: Response<UserApiResponse>) =>  {
 export const logout = async (req: Request, res: Response<UserApiResponse>) =>  {
     try {
         res.clearCookie('token', COOKIE_OPTIONS);
-        res.json({ ok: true, message: 'Logged out successfully' }); 
+        return res.json({ ok: true, message: 'Logged out successfully' }); 
     } catch (error) {
         console.error("Logout failed:", error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
