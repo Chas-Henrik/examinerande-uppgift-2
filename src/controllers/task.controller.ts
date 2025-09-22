@@ -48,9 +48,9 @@ export const createTask = async (req: Request, res: Response<TaskApiResponse>) =
 		}
 
 		// Set finishedAt and finishedBy if status is 'done'
-		if(taskData.status === 'done' && !taskData.finishedBy) {
+		if(taskData.status === 'done') {
 			if(!taskData.finishedAt) taskData.finishedAt = new Date();
-			if(!taskData.finishedBy &&  mongoose.isValidObjectId(authReq.user?._id)) taskData.finishedBy = new mongoose.Types.ObjectId(authReq.user?._id);
+			if(!taskData.finishedBy) taskData.finishedBy = new mongoose.Types.ObjectId(authReq.user._id);
 		}
 
 		const createdTask = await Task.create(taskData);
@@ -104,10 +104,10 @@ export const getTask = async (req: Request, res: Response<TaskApiResponse>) => {
 
 // PATCH /api/tasks/:id
 export const patchTask = async (req: Request, res: Response<TaskApiResponse>) => {
+	const { id } = req.params;
 	try {
 		const authReq = req as AuthenticatedRequest;
 		const taskData: TaskType = req.body;
-		const { id } = req.params;
 
 		// Validate input
 		const result = ZodTaskPatchSchema.safeParse(taskData);
@@ -154,24 +154,48 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 			}
 		}
 
-		// Set finishedAt and finishedBy if status is 'done'
-		if(patchData.status === 'done' && !patchData.finishedBy) {
-			if(!patchData.finishedAt) patchData.finishedAt = new Date();
-			if(!patchData.finishedBy ) patchData.finishedBy = authReq?.user?._id;
-		}
-
+		let updatedTask;
+		
 		// Update the task in the database
-		const updatedTask = await Task.findByIdAndUpdate(id, patchData, {
-			new: true,
-			runValidators: true,
-			upsert: false  // Do not create a new document if it doesn't exist
-		});
+		if(patchData.status && patchData.status === 'done' && existing.status !== 'done') {
+			// Set finishedAt and finishedBy if status is 'done'
+			updatedTask = await Task.findByIdAndUpdate(
+				id,  
+				{ $set: {...patchData, finishedAt: new Date(), finishedBy: new mongoose.Types.ObjectId(authReq.user._id)} },
+				{
+					new: true,
+					runValidators: true,
+					upsert: false  // Do not create a new document if it doesn't exist
+				}
+			);
+		} else if(patchData.status && patchData.status !== 'done' && existing.status === 'done') {
+			updatedTask = await Task.findByIdAndUpdate(
+				id,  
+				{ $set: patchData, finishedAt: null, finishedBy: null },
+				{
+					new: true,
+					runValidators: true,
+					upsert: false  // Do not create a new document if it doesn't exist
+				}
+			);
+		} else {
+			updatedTask = await Task.findByIdAndUpdate(
+				id,  
+				{ $set: patchData },
+				{
+					new: true,
+					runValidators: true,
+					upsert: false  // Do not create a new document if it doesn't exist
+				}
+			);
+		}
 		if (!updatedTask) {
 			return res.status(404).json({ ok: false, message: "Task not found" });
 		}
+
 		res.status(200).json({ ok: true, message: 'Task updated', task: updatedTask });
 	} catch (error) {
-		console.error("Error patching task:", error);
+		console.error(`Error patching task ${id}:`, error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
 		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
 	}
@@ -179,9 +203,8 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 
 // DELETE /api/tasks/:id
 export const deleteTask = async (req: Request, res: Response<TaskApiResponse>) => {
+	const { id } = req.params;
 	try {
-		const { id } = req.params;
-
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
 			return res.status(400).json({ ok: false, message: "Invalid task ID format" });
@@ -195,7 +218,7 @@ export const deleteTask = async (req: Request, res: Response<TaskApiResponse>) =
 
 		res.status(200).json({ ok: true, message: "Task deleted" });
 	} catch (error) {
-		console.error("Error deleting task:", error);
+		console.error(`Error deleting task ${id}:`, error);
 		const errorMessage = (error instanceof Error) ? error.message : String(error);
 		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
 	}

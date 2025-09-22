@@ -14,9 +14,7 @@ export const ZodTaskSchema = z.object({
         .optional(),
     status: z.enum(['to-do', 'in progress', 'blocked', 'done']),
     assignedTo: z.string().optional().nullable(),
-    project: z.string().optional().nullable(),
-    finishedBy: z.string().optional().nullable(),
-    finishedAt : z.date().optional().nullable()
+    project: z.string().optional().nullable()
 });
 
 export const ZodTaskPatchSchema = ZodTaskSchema.partial();

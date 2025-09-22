@@ -1,3 +1,4 @@
+// src/types/task.ts
 import { TaskType } from '../models/task.model.js';
 
 type TaskApiOK = { ok: true; message?: string; task?: TaskType; tasks?: TaskType[] };

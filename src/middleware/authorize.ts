@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.js"
 import { User, UserType } from "../models/user.model.js";
 import { UserLevel, AuthUserType } from "../types/user.js";
+import mongoose from "mongoose";
 
 // Extend Express Request type to include 'user'
 export interface AuthenticatedRequest extends Request {
@@ -32,7 +33,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
         authReq.user = payload as AuthUserType;
 
         // Ensure authReq.user._id is defined
-        if (!authReq.user || !authReq.user._id) {
+        if (!authReq.user || !authReq.user._id || !mongoose.isValidObjectId(authReq.user._id)) {
             return res.status(401).json({ message: 'Unauthorized, invalid token payload' });
         }
 

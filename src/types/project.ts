@@ -1,3 +1,4 @@
+// src/types/project.ts
 import { ProjectType } from '../models/project.model.js';
 
 type ProjectApiOK = { ok: true; message?: string; project?: ProjectType; projects?: ProjectType[] };
