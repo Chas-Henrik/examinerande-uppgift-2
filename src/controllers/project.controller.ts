@@ -20,7 +20,11 @@ export const createProject = async (req: Request, res: Response<ProjectApiRespon
 		// Validate input
 		const result = ZodProjectSchema.safeParse(projectData);
 		if (!result.success) {
-			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
+			return res.status(400).json({ 
+				ok: false, 
+				message: 'Invalid input', 
+				error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+			});
 		}
 
 		const createdProject = await Project.create({ ...projectData, owner: authReq.user._id });
@@ -85,7 +89,11 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 		// Validate input
 		const result = ZodProjectPatchSchema.safeParse(projectData);
 		if (!result.success) {
-			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
+			return res.status(400).json({ 
+				ok: false, 
+				message: 'Invalid input', 
+				error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message }))
+			});
 		}
 
 		const patchData = result.data;
