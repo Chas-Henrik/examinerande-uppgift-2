@@ -23,11 +23,6 @@ export const createProject = async (req: Request, res: Response<ProjectApiRespon
 			return res.status(400).json({ ok: false, message: 'Invalid input', error: z.treeifyError(result.error) });
 		}
 
-        // Validate authenticated user
-        if (!authReq?.user?._id) {
-            return res.status(401).json({ ok: false, message: "Unauthorized: User not authenticated" });
-        }
-
 		const createdProject = await Project.create({ ...projectData, owner: authReq.user._id });
 		res.status(201).json({ ok: true, message: 'Project created', project: createdProject });
 	} catch (error) {

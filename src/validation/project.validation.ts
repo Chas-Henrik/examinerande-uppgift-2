@@ -12,7 +12,7 @@ export const ZodProjectSchema = z.object({
         .trim()
         .max(500, "Description must be at most 500 characters long")
         .optional(),
-    owner: z.string().nullable()
+    owner: z.string().nullable().optional()
 });
 
 export const ZodProjectPatchSchema = ZodProjectSchema.partial();
