@@ -1,7 +1,7 @@
 // middleware/rateLimiters.ts
 import rateLimit from 'express-rate-limit';
 
-export const authLimiter = rateLimit({
+export const sensitiveActionLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 20, // Limit each IP to 20 requests per windowMs
   message: {

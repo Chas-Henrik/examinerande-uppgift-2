@@ -5,7 +5,6 @@ import { signToken } from '../utils/jwt.js'
 import { UserType, User, serializeUser } from '../models/user.model.js';
 import { UserLevel, UserApiResponse } from "../types/user.js";
 import { ZodUserSchema, ZodLoginSchema } from "../validation/user.validation.js";
-import { z } from 'zod';
 
 export const COOKIE_OPTIONS = {
     httpOnly: true,

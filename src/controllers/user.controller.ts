@@ -9,7 +9,6 @@ import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema, ZodUserPatchSchema } from "../validation/user.validation.js";
 import { Task } from '../models/task.model.js';
-import { z } from 'zod';
 import { normalizeUserLevel } from '../utils/utils.js';
 
 // POST /api/users

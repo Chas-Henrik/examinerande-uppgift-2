@@ -9,7 +9,6 @@ import { ProjectApiResponse } from "../types/project.js";
 import { TaskApiResponse } from '../types/task.js';
 import { ZodProjectSchema, ZodProjectPatchSchema } from '../validation/project.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
-import { z } from 'zod';
 
 // POST /api/projects
 export const createProject = async (req: Request, res: Response<ProjectApiResponse>) =>  {

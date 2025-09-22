@@ -6,7 +6,6 @@ import { User } from '../models/user.model.js';
 import { TaskApiResponse } from "../types/task.js";
 import { ZodTaskSchema, ZodTaskPatchSchema } from '../validation/task.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
-import { z } from 'zod';
 import { Project } from '../models/project.model.js';
 
 // POST /api/tasks
