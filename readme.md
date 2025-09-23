@@ -67,6 +67,9 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 9. Användaren kan endast ta bort sitt eget användarkonto medan en administratör kan ta bort vilka användarkonton som helst utom sitt eget konto (för att garantera att det alltid finns minst ett administratörs konto i systemet).
 10. Endast autentiserade användare kan ändra sina egna uppgifter medan administratören kan ändra uppgifter för vilken användare som helst
 11. Project collection med `owner` fält där endast ägaren av projektet eller en administratör kan ändra `owner` eller ta bort ett project, och ägaren sätts automatiskt till den inloggade användaren som skapade projektet.
+12. Rate Limiter på känsliga routes, som t.ex. `localhost:3000/api/auth/login`.
+13. Dummy bcrypt-hash för att mildra timingattacker.
+14. Authorization middleware
 
 ### Körguide  
   

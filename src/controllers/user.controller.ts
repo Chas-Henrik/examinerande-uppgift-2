@@ -27,11 +27,6 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
             });
         }
 
-        // Only admins can create new users
-        if (authReq.user.userLevel < UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Forbidden, only admins can create new users" });
-        }
-
         // Check if user already exists
         const existing = await User.findOne({ email });
         if (existing) {
@@ -58,19 +53,8 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
 // GET /api/users
 export const getUsers = async (req: Request, res: Response<UserApiResponse>) => {
 	try {
-        const authReq = req as AuthenticatedRequest;
+        const users = await User.find().lean();
 
-        // Check authentication
-        if (!authReq.user?.userLevel) {
-            return res.status(401).json({ ok: false, message: "Unauthorized" });
-        }
-
-        // Only admins can get all users
-        if (authReq.user.userLevel < UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Forbidden, only admins can get all users" });
-        }
-
-		const users = await User.find().lean();
 		res.status(200).json({ ok: true, users: users.map(user => serializeUser(user)) });
 	} catch (error) {
 		console.error("Error fetching users:", error);
@@ -83,24 +67,8 @@ export const getUsers = async (req: Request, res: Response<UserApiResponse>) => 
 export const getUser = async (req: Request, res: Response<UserApiResponse>) => {
     try {
         const { id } = req.params;
-        const authReq = req as AuthenticatedRequest;
-
-        // Validate the id format
-        if (!mongoose.isValidObjectId(id)) {
-            return res.status(400).json({ ok: false, message: "Invalid user ID format" });
-        }
-
-        // Check authentication
-        if (!authReq.user?.userLevel) {
-            return res.status(401).json({ ok: false, message: "Unauthorized" });
-        }
-
-        // Only admins can get other users
-        if(authReq.user.userLevel < UserLevel.ADMIN && authReq.user._id !== id) {
-            return res.status(403).json({ ok: false, message: "Forbidden, only admins can get other users" });
-        }
-
         const user = await User.findById(id).lean();
+
         if (!user) {
             return res.status(404).json({ ok: false, message: "User not found" });
         }
@@ -130,21 +98,6 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         }
 
         const patchData = result.data;
-
-        // Validate the id format
-        if (!mongoose.isValidObjectId(id)) {
-            return res.status(400).json({ ok: false, message: "Invalid user ID format" });
-        }
-
-        // Check authentication
-        if (!authReq.user?.userLevel) {
-            return res.status(401).json({ ok: false, message: "Unauthorized" });
-        }
-
-        // Only admins can patch other users
-        if ( authReq.user._id !== id && authReq.user.userLevel < UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Forbidden, only admins can patch other users" });
-        }
 
         // Ensure the user exists
         const existing = await User.findById(id).lean();
@@ -193,21 +146,6 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
         const { id } = req.params;
         const authReq = req as AuthenticatedRequest;
 
-        // Validate the id format
-        if (!mongoose.isValidObjectId(id)) {
-            return res.status(400).json({ ok: false, message: "Invalid user ID format" });
-        }
-
-        // Check authentication
-        if (!authReq.user?.userLevel) {
-            return res.status(401).json({ ok: false, message: "Unauthorized" });
-        }
-
-        // Only admins can delete other users
-        if ( authReq.user._id !== id && authReq.user.userLevel < UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Forbidden, only admins can delete other users" });
-        }
-
         // admins cannot delete themselves (to guarantee at least one admin user exists)
         if (authReq.user._id === id && authReq.user.userLevel === UserLevel.ADMIN) {
             return res.status(403).json({ ok: false, message: "Forbidden, admin users cannot delete themselves" });
@@ -219,7 +157,7 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
             return res.status(404).json({ ok: false, message: "User not found" });
         }
 
-        // If the user deleted themselves, clear their cookie
+        // If the user deleted itself, clear their cookie
         if (authReq.user._id === id) {
             res.clearCookie('token', COOKIE_OPTIONS);
         }
@@ -236,11 +174,6 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
 export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>) => {
     try {
         const { id } = req.params;
-
-        // Validate the id format
-        if (!mongoose.isValidObjectId(id)) {
-            return res.status(400).json({ ok: false, message: "Invalid user ID format" });
-        }
 
         // Check that the user exists
         const userExists = await User.exists({ _id: id });
