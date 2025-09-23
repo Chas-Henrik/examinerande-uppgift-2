@@ -29,15 +29,16 @@ export const register = async (req: Request, res: Response<UserApiResponse>) => 
             });
         }
         const { name, email, password } = result.data;
+        const normalizedEmail = email.trim().toLowerCase();
 
         // Check if user already exists
-        const existing = await User.findOne({ email });
+        const existing = await User.findOne({ email:normalizedEmail });
         if (existing) {
             return res.status(409).json({ ok: false, message: 'User already exists' });
         }
 
         // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ name, email, password, userLevel });
+        const createdUser = await User.create({ name, email:normalizedEmail, password, userLevel });
 
         // Generate JWT token
         const token = signToken({ _id: createdUser._id.toString(), userLevel });

@@ -19,13 +19,14 @@ const userSchema = new Schema({
         required: true,
 		unique: true,
         trim: true,
-        lowercase: true,	// this converts to lowercase before saving
+        lowercase: true,	// This converts to lowercase before saving
         match: [/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/, "Invalid email address"],
     },
 	password: { 
 		type: String,
 		required: true, 
 		minlength: [8, "Password must be at least 8 characters long"],
+		select: false,		// Avoid accidental exposure of password
 	},
 	userLevel: {
 		type: Number,
@@ -39,7 +40,10 @@ const userSchema = new Schema({
 userSchema.pre('save', async function (next) {
 	// Hash password before save
 	if (this.isModified('password')) {
-		this.password = await bcrypt.hash(this.password, 10);
+		//Don't rehash if already hashed
+		if (typeof this.password === 'string' && !this.password.startsWith('$2b$')) {
+			this.password = await bcrypt.hash(this.password, 10);
+		}
 	}
 	next();
 });
