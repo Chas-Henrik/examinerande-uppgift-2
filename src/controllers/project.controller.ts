@@ -109,8 +109,10 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 		}
 
 		// Ensure the authenticated user is the current owner or admin user
-		if (existing.owner?.toString() !== authReq.user._id && authReq.user.userLevel < UserLevel.ADMIN) {
-			return res.status(403).json({ ok: false, message: "Forbidden, only the owner or an admin can update this project" });
+		if (existing.owner && existing.owner.toString() !== authReq.user._id) {
+			if (authReq.user.userLevel < UserLevel.ADMIN) {
+				return res.status(403).json({ ok: false, message: "Forbidden, only the owner or an admin can update this project" });
+			}
 		}
 
         // Validate owner field if provided
