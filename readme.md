@@ -77,16 +77,19 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
   
 1. ***MONGODB_URI*** Hämta din egen MongoDB connection string från Atlas och lägg till `/trulloDatabase` som databas namn (se `env_example`).
 2. ***JWT_SECRET*** Generera en JWT_SECRET (se `.env_example`) via att köra följande kommando i terminalen: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
-3. ***Seed Kommando*** `npm run seed`
-4. ***Start Kommando*** `npm run dev`
-5. ***Inloggningsuppgifter för admin*** E-mail: `admin@example.com`, Password: `topsecret`
-6. ***Inloggningsuppgifter för seeded users*** E-mail: `user@example.com`, Password: `topsecret`
-7. ***Thunder Client*** Använd Thunderclient (eller Postman) för att skicka requests till endpointsen.
-8. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
-9. ***Rate Limiting*** Att tänka på vid test: Jag har lagt in rate limiting med 20 requets / 10 min för POST `/api/auth/register`, `/api/auth/login` & `/api/users` för att t.ex. förhindra 'brute force inloggnings attacker'.
-10. ***Test*** Kör valfria tester efter att du har loggat in (välj från endpointsen nedan).  
+3. ***NODE_ENV*** Välj vilken version du ska bygga (`development` eller `production`), se `env_example` för mer info.
+4. ***PORT*** Välj TCP port (3000 eller 3001 för `development` versionen & 3443 för `production` versionen)
+5. ***FRONTEND_URL*** Konfigurera frontend URL:en `http://localhost:<port>` för `development` versionen, och `http://localhost:3443` för `production` versionen.
+6. ***Seed Kommando*** `npm run seed`
+7. ***Start Kommando*** `npm run dev`
+8. ***Inloggningsuppgifter för admin*** E-mail: `admin@example.com`, Password: `topsecret`
+9. ***Inloggningsuppgifter för seeded users*** E-mail: `user@example.com`, Password: `topsecret`
+10. ***Thunder Client*** Använd Thunderclient (eller Postman) för att skicka requests till endpointsen.
+11. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
+12. ***Rate Limiting*** Att tänka på vid test: Jag har lagt in rate limiting med 20 requets / 10 min för POST `/api/auth/register`, `/api/auth/login` & `/api/users` för att t.ex. förhindra 'brute force inloggnings attacker'.
+13. ***Test*** Kör valfria tester efter att du har loggat in (välj från endpointsen nedan).  
   
-***production version:***  
+***Production Version:***  
 Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production`), så använd `PORT` 3443 och skapa dina egna lokala SSL certificat med:  
 ```bash
 mkdir certs
