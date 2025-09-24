@@ -23,6 +23,8 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 - ***mongoose*** Mongoose är ett ODM (Object Data Modeling) som hjälper mig att arbeta med MongoDB på ett strukturerat och typat sätt genom att definiera scheman och modeller, vilket gör databashantering enklare och säkrare.
 - ***zod*** Används för parameter validering i backend.
 - ***express-rate-limit*** Används för rate-limiting för känsliga routes som `/api/auth/...` och `/api/user/...`.
+- ***helmet*** Används för att skydda applikationen från vanliga webbsäkerhetshot genom att ställa in olika HTTP-rubriker (headers) på rätt sätt.
+- ***compress*** Används för att komprimera HTTP-svar (t.ex. HTML, CSS, JavaScript, JSON) innan de skickas till klienten.
 
 ### Redogör översiktligt hur applikationen fungerar
 

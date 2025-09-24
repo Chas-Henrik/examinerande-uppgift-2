@@ -1,3 +1,4 @@
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.r6jzab0.mongodb.net/trulloDatabase?retryWrites=true&w=majority&appName=Cluster0
+PORT=<port> # Note that 3000 and 3001 is allowed by CORS configuration
 JWT_SECRET=<secret-key>
 NODE_ENV=development
