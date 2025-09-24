@@ -1,6 +1,5 @@
 // src/controllers/user.controller.ts
 import { Request, Response } from 'express';
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import { User, UserType, serializeUser } from "../models/user.model.js"
 import { UserLevel, UserApiResponse } from '../types/user.js';
@@ -16,7 +15,6 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
     try {
         const authReq = req as AuthenticatedRequest;
         const { name, email, password, userLevel } = req.body as UserType;
-        const normalizedEmail = email.trim().toLowerCase();
         
         // Validate input
         const result = ZodUserSchema.safeParse(req.body);
@@ -29,7 +27,7 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
         }
 
         // Check if user already exists
-        const existing = await User.findOne({ email:normalizedEmail });
+        const existing = await User.findOne({ email });
         if (existing) {
             return res.status(409).json({ ok: false, message: 'User already exists' });
         }
@@ -41,7 +39,7 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
         }
 
         // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ name, email:normalizedEmail, password, userLevel: level });
+        const createdUser = await User.create({ name, email, password, userLevel: level });
 
         res.status(201).json({ ok: true, message: 'User created', user: serializeUser(createdUser) });
     } catch (error) {
@@ -109,7 +107,7 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         // Only include fields that were provided in the patch
         const updatePayload: Partial<UserType> = {};
         if (patchData.name !== undefined) updatePayload.name = patchData.name;
-        if (patchData.email !== undefined) updatePayload.email = patchData.email.trim().toLowerCase();
+        if (patchData.email !== undefined) updatePayload.email = patchData.email;
         if (patchData.userLevel !== undefined) {
             const level = normalizeUserLevel(patchData.userLevel);
 

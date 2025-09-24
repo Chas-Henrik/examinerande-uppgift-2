@@ -1,8 +1,8 @@
 // src/controllers/auth.controller.ts
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import bcrypt from "bcrypt"
 import { signToken } from '../utils/jwt.js'
-import { UserType, User, serializeUser } from '../models/user.model.js';
+import { User, serializeUser } from '../models/user.model.js';
 import { UserLevel, UserApiResponse } from "../types/user.js";
 import { ZodUserSchema, ZodLoginSchema } from "../validation/user.validation.js";
 
@@ -29,16 +29,15 @@ export const register = async (req: Request, res: Response<UserApiResponse>) => 
             });
         }
         const { name, email, password } = result.data;
-        const normalizedEmail = email.trim().toLowerCase();
 
         // Check if user already exists
-        const existing = await User.findOne({ email:normalizedEmail });
+        const existing = await User.findOne({ email });
         if (existing) {
             return res.status(409).json({ ok: false, message: 'User already exists' });
         }
 
         // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ name, email:normalizedEmail, password, userLevel });
+        const createdUser = await User.create({ name, email, password, userLevel });
 
         // Generate JWT token
         const token = signToken({ _id: createdUser._id.toString(), userLevel });
