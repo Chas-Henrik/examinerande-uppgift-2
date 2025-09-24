@@ -1,3 +1,7 @@
+// src/index.ts
+import https from "https";
+import fs from "fs";
+import config from "./config.js";
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -7,24 +11,23 @@ import mongoose from "mongoose";
 import helmet from "helmet";
 import compression from "compression";
 
-const result = dotenv.config();
-
-if (result.error) {
-	console.error('Failed to load .env file:', result.error);
-	process.exit(1);
-}
-
 const app = express();
 
-const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? [process.env.FRONTEND_URL?.toString() || ""]
-  : ["http://localhost:3000", "http://localhost:3001"];
+const allowedOrigins = config.isProduction && config.frontendUrl ? [ config.frontendUrl ] : ["http://localhost:3000", "http://localhost:3001"];
+
+console.log("Allowed origins for CORS:", allowedOrigins);
 
 const corsOptions: CorsOptions = {
     origin: allowedOrigins,
     methods: ["POST", "GET", "PUT", "DELETE"],
     optionsSuccessStatus: 200,
     credentials: true,
+};
+
+// HTTPS options - in production, use valid certs from a CA
+const sslOptions = {
+  key: fs.readFileSync("./certs/key.pem"),
+  cert: fs.readFileSync("./certs/cert.pem")
 };
 
 // Middleware
@@ -45,19 +48,32 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/projects", projectRoutes);
 
 
+
 await connectDB()
 	.then(() => {
-		const PORT = process.env.PORT || 3000;
-		app.listen(PORT, () => {
-			console.log("Server running on port: ", PORT);
-		});
+		const PORT = config.port;
+		if (config.isProduction) {
+			https.createServer(sslOptions, app).listen(PORT, () => {
+				console.log("HTTPS Server running on port: ", PORT);
+			});
+		} else {
+			app.listen(PORT, () => {
+				console.log("HTTP Server running on port: ", PORT);
+			});
+		}
 	})
 	.catch((err) => {
 		console.log("Error connecting to MongoDB");
 	});
 
 process.on("SIGINT", async () => {
-  console.log("Shutting down gracefully...");
-  await mongoose.disconnect();
-  process.exit(0);
+  try {
+    console.log("Shutting down gracefully...");
+    await mongoose.disconnect();
+    console.log("Disconnected from MongoDB");
+    process.exit(0);
+  } catch (err) {
+    console.error("Error during shutdown:", err);
+    process.exit(1);
+  }
 });

@@ -86,6 +86,13 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 9. ***Rate Limiting*** Att tänka på vid test: Jag har lagt in rate limiting med 20 requets / 10 min för POST `/api/auth/register`, `/api/auth/login` & `/api/users` för att t.ex. förhindra 'brute force inloggnings attacker'.
 10. ***Test*** Kör valfria tester efter att du har loggat in (välj från endpointsen nedan).
 
+Om du konfigurerar `.env` filen för `produktion`, så använd PORT 3443 och skapa dina egna lokala SSL certificat med:
+```bash
+mkdir certs
+openssl req -nodes -new -x509 -keyout certs/key.pem -out certs/cert.pem
+```
+Glöm inte att prefixa med `https://localhost:3443/` in Thunder Client när  du kör produktions versionen!
+
 ### Publika Endpoints  
 
 #### Registrera en ny användare (DEVELOPER)  

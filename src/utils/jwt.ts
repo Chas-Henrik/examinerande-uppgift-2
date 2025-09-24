@@ -1,9 +1,10 @@
 // src/utils/jwt.ts
 
+import config from "../config.js";
 import dotenv from "dotenv";
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = config.jwtSecret;
 
 export type JwtPayload = { 
 	_id: string; 

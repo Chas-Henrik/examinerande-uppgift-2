@@ -1,4 +1,5 @@
 // src/controllers/auth.controller.ts
+import config from '../config.js'
 import { Request, Response } from 'express';
 import bcrypt from "bcrypt"
 import { signToken } from '../utils/jwt.js'
@@ -8,7 +9,7 @@ import { ZodUserSchema, ZodLoginSchema } from "../validation/user.validation.js"
 
 export const COOKIE_OPTIONS = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: config.isProduction,
     sameSite: 'lax' as const,
     maxAge: 60 * 60 * 1000, // 1 hour
 };
