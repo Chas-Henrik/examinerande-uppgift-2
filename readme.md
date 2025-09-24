@@ -87,11 +87,11 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 10. ***Test*** Kör valfria tester efter att du har loggat in (välj från endpointsen nedan).  
   
 ***production version:***  
-Om du konfigurerar `.env` filen för `production`, så använd PORT 3443 och skapa dina egna lokala SSL certificat med:
+Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production`), så använd `PORT` 3443 och skapa dina egna lokala SSL certificat med:  
 ```bash
 mkdir certs
 openssl req -nodes -new -x509 -keyout certs/key.pem -out certs/cert.pem
-```
+```  
 Glöm inte att prefixa med `https://localhost:3443/` in Thunder Client när du kör produktions versionen!
 
 ### Publika Endpoints  
