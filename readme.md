@@ -83,7 +83,8 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 6. ***Inloggningsuppgifter för seeded users*** E-mail: `user@example.com`, Password: `topsecret`
 7. ***Thunder Client*** Använd Thunderclient (eller Postman) för att skicka requests till endpointsen.
 8. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
-9. ***Test*** Kör valfria tester efter att du har loggat in (välj från endpointsen nedan).
+9. ***Rate Limiting*** Att tänka på vid test: Jag har lagt in rate limiting med 20 requets / 10 min för POST `/api/auth/register`, `/api/auth/login` & `/api/users` för att t.ex. förhindra 'brute force inloggnings attacker'.
+10. ***Test*** Kör valfria tester efter att du har loggat in (välj från endpointsen nedan).
 
 ### Publika Endpoints  
 
