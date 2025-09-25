@@ -69,7 +69,7 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 9. Användaren kan endast ta bort sitt eget användarkonto medan en administratör kan ta bort vilka användarkonton som helst utom sitt eget konto (för att garantera att det alltid finns minst ett administratörs konto i systemet).
 10. Endast autentiserade användare kan ändra sina egna uppgifter medan administratören kan ändra uppgifter för vilken användare som helst
 11. Project collection med `owner` fält där endast ägaren av projektet eller en administratör kan ändra `owner` eller ta bort ett project, och ägaren sätts automatiskt till den inloggade användaren som skapade projektet.
-12. Rate Limiter på känsliga routes, som t.ex. `localhost:3000/api/auth/login`.
+12. Rate Limiter på känsliga routes, som t.ex. `localhost:3000/api/auth/login` och en generell Rate Limiter på övriga routes för att bibehålla stabilitet, säkerhet och tillgänglighet.
 13. Dummy bcrypt-hash för att mildra timingattacker.
 14. Authorization middleware
 15. Helmet skyddar applikationen från vanliga webbsäkerhetshot genom att ställa in olika HTTP-rubriker (headers) på rätt sätt.
@@ -94,8 +94,9 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 ***Att tänka på:***  
   
 _Rate Limiting_  
-Jag har lagt in rate limiting med _20 requests / 10 min_ för `POST` `/api/auth/register`, `/api/auth/login` & `/api/users` för att t.ex. förhindra 'brute force inloggnings attacker'.  
-    
+Känsliga routes (`POST` `/api/auth/register`, `/api/auth/login` & `/api/users`) har en rate limit på _20 requests / 10 min_ för att bla. förhindra 'brute force inloggnings attacker'.  
+Övriga routes har en rate limit på _100 requests / 10 min_ för att bibehålla stabilitet, säkerhet och tillgänglighet.  
+  
 _Production Version:_  
 Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production`), så använd `PORT` 3443 och skapa dina egna lokala SSL certificat med:  
 ```bash

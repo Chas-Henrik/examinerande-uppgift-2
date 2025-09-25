@@ -4,14 +4,14 @@ import { authMiddleware } from "../middleware/authorize.js";
 import { authorizeUser } from "../middleware/authorizeUser.js";
 import { UserLevel } from "../types/user.js";
 import { createUser, getUsers, getUser, patchUser, deleteUser, getUserTasks } from "../controllers/user.controller.js";
-import { sensitiveActionLimiter } from '../middleware/rateLimiters.js';
+import { generalLimiter, sensitiveActionLimiter } from '../middleware/rateLimiters.js';
 
 const router = express.Router()
 
 // CRUD for users
 router.post("/", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN }), sensitiveActionLimiter , createUser);
-router.get("/", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN }), getUsers);
-router.get("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), getUser);
+router.get("/", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN }), generalLimiter, getUsers);
+router.get("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), generalLimiter, getUser);
 router.patch("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), sensitiveActionLimiter, patchUser);
 router.delete("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), sensitiveActionLimiter, deleteUser);
 
