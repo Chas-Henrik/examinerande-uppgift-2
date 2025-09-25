@@ -72,6 +72,9 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 12. Rate Limiter på känsliga routes, som t.ex. `localhost:3000/api/auth/login`.
 13. Dummy bcrypt-hash för att mildra timingattacker.
 14. Authorization middleware
+15. Helmet skyddar applikationen från vanliga webbsäkerhetshot genom att ställa in olika HTTP-rubriker (headers) på rätt sätt.
+16. Compress komprimerar HTTP-svar (t.ex. HTML, CSS, JavaScript, JSON) innan de skickas till klienten.
+17. HTTPS för produktions versionen.
 
 ### Körguide  
   
