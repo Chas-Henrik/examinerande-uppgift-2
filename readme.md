@@ -101,11 +101,11 @@ _Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexib
 
 ### Rate Limiting & SSL certificat
   
-_Rate Limiting_  
+***Rate Limiting***  
 Känsliga routes (`POST` `/api/auth/register`, `/api/auth/login` & `/api/users`) har en rate limit på _20 requests / 10 min_ för att bla. förhindra 'brute force inloggnings attacker'.  
 Övriga routes har en rate limit på _100 requests / 10 min_ för att bibehålla stabilitet, säkerhet och tillgänglighet.  
   
-_SSL Certificat_ 
+***SSL Certificat***  
 Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production`), så använd `PORT` 3443 och skapa dina egna lokala SSL certificat med:  
 ```bash
 mkdir certs
