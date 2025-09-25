@@ -1,7 +1,6 @@
 // src/utils/jwt.ts
 
 import config from "../config.js";
-import dotenv from "dotenv";
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = config.jwtSecret;

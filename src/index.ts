@@ -1,9 +1,9 @@
 // src/index.ts
-import config from "./config.js"; // Load config as early as possible
+import "./loadEnv.js"; // Always first
+import config from "./config.js"; 
 import https from "https";
 import fs from "fs";
 import express from "express";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors, { CorsOptions } from "cors";
 import { connectDB } from "./db.js";
