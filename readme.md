@@ -36,7 +36,8 @@ _Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexib
 - `POST localhost:3000/api/auth/register` Registrera en ny developer användare (med UserLevel DEVELOPER)
 - `POST localhost:3000/api/auth/login` Logga in en användare
 - `POST localhost:3000/api/auth/logout` Logga ut en användare
-
+- `GET localhost:3000/api/health` Health Check för uptime checks (användbar för monitorering och last balanserare)  
+  <br>  
 ***Applikationen stöder följande endpoints (för autentiserade användare):***
 - `POST localhost:3000/api/users` Skapa en ny användare
 - `GET localhost:3000/api/users` Hämta alla användare
@@ -57,8 +58,6 @@ _Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexib
 - `PATCH localhost:3000/api/projects/:id` Patcha ett projekt
 - `DELETE localhost:3000/api/projects/:id` Ta bort ett projekt  
 - `GET localhost:3000/api/projects/:id/tasks` Hämta alla tasks för ett projekt  
-  <br>  
-- `GET localhost:3000/api/health` Health Check for uptime checks (useful for monitoring or load balancers)  
   <br>  
   
 ***Applikationen stöder följande _VG Features_:***  
@@ -96,7 +95,7 @@ _Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexib
 10. ***Inloggningsuppgifter för admin*** E-mail: `admin@example.com`, Password: `topsecret`
 11. ***Inloggningsuppgifter för seeded users*** E-mail: `user@example.com`, Password: `topsecret`
 12. ***Thunder Client*** Använd Thunder Client (eller Postman) för att skicka requests till endpointsen.
-13. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
+13. ***Inloggning*** Börja med att logga in (då endast 4 endpoints är publika).
 14. ***Test*** Kör sedan valfria tester efter att du har loggat in (välj från endpointsen nedan).  
 
 ### Rate Limiting & SSL certificat
