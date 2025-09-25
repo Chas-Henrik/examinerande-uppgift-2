@@ -4,6 +4,7 @@ import { verifyToken } from "../utils/jwt.js"
 import { User, UserType } from "../models/user.model.js";
 import { UserLevel, AuthUserType } from "../types/user.js";
 import mongoose from "mongoose";
+import { normalizeUserLevel } from "../utils/user.js";
 
 // Extend Express Request type to include 'user'
 export interface AuthenticatedRequest extends Request {
@@ -49,7 +50,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
         }
 
         // Ensure userLevel is valid enum value
-        const level = typeof user.userLevel === 'string' ? UserLevel[user.userLevel as keyof typeof UserLevel] : user.userLevel;
+        const level = normalizeUserLevel(user.userLevel);
         
         if (level === undefined || !Object.values(UserLevel).includes(level)) {
             return res.status(401).json({ message: 'Unauthorized, invalid user level' });
