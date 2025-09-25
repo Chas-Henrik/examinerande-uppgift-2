@@ -59,7 +59,7 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
     <br>
 - `GET localhost:3000/api/health` Health Check for uptime checks (useful for monitoring or load balancers)
     <br>
-***Applikationen stöder följande features:***
+***Applikationen stöder följande _VG Features_:***
 1. User, Task & Project collections.
 2. Autentisering med JWT (som HTTP-only cookie med 1h expiration time).
 3. ADMIN & DEVELOPER User Level.
@@ -78,6 +78,7 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 15. Helmet skyddar applikationen från vanliga webbsäkerhetshot genom att ställa in olika HTTP-rubriker (headers) på rätt sätt.
 16. Compress komprimerar HTTP-svar (t.ex. HTML, CSS, JavaScript, JSON) innan de skickas till klienten.
 17. HTTPS för produktions versionen.
+18. Health Check for uptime checks.
 
 ### Körguide  
   
