@@ -1,7 +1,7 @@
 // src/index.ts
+import config from "./config.js"; // Load config as early as possible
 import https from "https";
 import fs from "fs";
-import config from "./config.js";
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -25,10 +25,16 @@ const corsOptions: CorsOptions = {
 };
 
 // HTTPS options - in production, use valid certs from a CA
-const sslOptions = {
-  key: fs.readFileSync("./certs/key.pem"),
-  cert: fs.readFileSync("./certs/cert.pem")
-};
+let sslOptions;
+try {
+  sslOptions = {
+    key: fs.readFileSync("./certs/key.pem"),
+    cert: fs.readFileSync("./certs/cert.pem")
+  };
+} catch (err) {
+  console.error("Failed to load SSL certificates:", err);
+  process.exit(1);
+}
 
 // Middleware
 app.use(cookieParser()); // !!!Ensure cookie-parser is used before authMiddleware is called!!!
