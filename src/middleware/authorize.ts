@@ -1,7 +1,7 @@
 // src/middleware/authorize.ts
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.js"
-import { User, UserType } from "../models/user.model.js";
+import { User } from "../models/user.model.js";
 import { UserLevel, AuthUserType } from "../types/user.js";
 import mongoose from "mongoose";
 import { normalizeUserLevel } from "../utils/user.js";
@@ -51,7 +51,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
         // Ensure userLevel is valid enum value
         const level = normalizeUserLevel(user.userLevel);
-        
+
         if (level === undefined || !Object.values(UserLevel).includes(level)) {
             return res.status(401).json({ message: 'Unauthorized, invalid user level' });
         }
