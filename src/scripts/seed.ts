@@ -1,5 +1,6 @@
 // src/scripts/seed.ts
 
+import "../loadEnv.js"; // Always first
 import { faker } from "@faker-js/faker";
 import { connectDB } from "../db.js";      
 import { User, UserType } from "../models/user.model.js";
