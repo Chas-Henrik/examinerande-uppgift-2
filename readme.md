@@ -37,7 +37,7 @@ _Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexib
 - `POST localhost:3000/api/auth/login` Logga in en användare
 - `POST localhost:3000/api/auth/logout` Logga ut en användare
 - `GET localhost:3000/api/health` Health Check för uptime checks (användbar för monitorering och last balanserare)  
-  <br>  
+  
 ***Applikationen stöder följande endpoints (för autentiserade användare):***
 - `POST localhost:3000/api/users` Skapa en ny användare
 - `GET localhost:3000/api/users` Hämta alla användare
@@ -57,8 +57,7 @@ _Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexib
 - `GET localhost:3000/api/projects/:id` Hämta ett projekt
 - `PATCH localhost:3000/api/projects/:id` Patcha ett projekt
 - `DELETE localhost:3000/api/projects/:id` Ta bort ett projekt  
-- `GET localhost:3000/api/projects/:id/tasks` Hämta alla tasks för ett projekt  
-  <br>  
+- `GET localhost:3000/api/projects/:id/tasks` Hämta alla tasks för ett projekt   
   
 ***Applikationen stöder följande _VG Features_:***  
 1. User, Task & Project collections.
