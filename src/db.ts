@@ -1,3 +1,4 @@
+// src/db.ts
 import mongoose from "mongoose"; //med "type":"module"
 import dotenv from "dotenv";
 dotenv.config();

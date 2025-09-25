@@ -8,7 +8,7 @@ import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema, ZodUserPatchSchema, ZodUserPatchType } from "../validation/user.validation.js";
 import { Task } from '../models/task.model.js';
-import { normalizeUserLevel } from '../utils/utils.js';
+import { normalizeUserLevel } from '../utils/user.js';
 
 // POST /api/users
 export const createUser = async (req: Request, res: Response<UserApiResponse>) =>  {
