@@ -104,7 +104,7 @@ Känsliga routes (`POST` `/api/auth/register`, `/api/auth/login` & `/api/users`)
 Övriga routes har en rate limit på _100 requests / 10 min_ för att bibehålla stabilitet, säkerhet och tillgänglighet.  
   
 ***SSL Certificat***  
-Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production`), så använd `PORT` 3443 och skapa dina egna lokala SSL certificat med:  
+Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production`) så ska du använda `PORT` 3443, och du kan skapa ditt egna lokala SSL certificat med:  
 ```bash
 mkdir certs
 openssl req -nodes -new -x509 -keyout certs/key.pem -out certs/cert.pem
