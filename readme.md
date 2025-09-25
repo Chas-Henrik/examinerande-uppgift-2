@@ -22,14 +22,15 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 - ***jsonwebtoken*** Används för att signera och verifiera JSON Web Tokens (JWT).
 - ***mongoose*** Mongoose är ett ODM (Object Data Modeling) som hjälper mig att arbeta med MongoDB på ett strukturerat och typat sätt genom att definiera scheman och modeller, vilket gör databashantering enklare och säkrare.
 - ***zod*** Används för parameter validering i backend.
-- ***express-rate-limit*** Används för rate-limiting för känsliga routes som `/api/auth/...` och `/api/user/...`.
+- ***express-rate-limit*** Används för rate-limiting.
 - ***helmet*** Används för att skydda applikationen från vanliga webbsäkerhetshot genom att ställa in olika HTTP-rubriker (headers) på rätt sätt.
 - ***compress*** Används för att komprimera HTTP-svar (t.ex. HTML, CSS, JavaScript, JSON) innan de skickas till klienten.
 
 ### Redogör översiktligt hur applikationen fungerar
 
-Trullo är ett projekt hanteringssystem som för närvarande har tre collections, User, Task & Project.
-Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåller även PUT.
+Trullo är ett projekt hanteringssystem som för närvarande innehåller tre collections, User, Task & Project.  
+  
+_Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexibel & bandbredds effektiv än PUT då man endast behöver inkludera de fält man vill ändra i objektet som man skickar till servern.
 
 ***Applikationen stöder följande publika endpoints:***
 - `POST localhost:3000/api/auth/register` Registrera en ny developer användare (med UserLevel DEVELOPER)
@@ -43,22 +44,23 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 - `PATCH localhost:3000/api/users/:id` Patcha en användare
 - `DELETE localhost:3000/api/users/:id` Ta bort en användare
 - `GET localhost:3000/api/users/:id/tasks` Hämta alla tasks för en användare  
-    <br>
+<br>  
 - `POST localhost:3000/api/tasks` Skapa en ny task
 - `GET localhost:3000/api/tasks` Hämta alla task
 - `GET localhost:3000/api/tasks/:id` Hämta en task
 - `PATCH localhost:3000/api/tasks/:id` Patcha en task
 - `DELETE localhost:3000/api/tasks/:id` Ta bort en task  
-    <br>
+<br>  
 - `POST localhost:3000/api/projects` Skapa ett nytt projekt
 - `GET localhost:3000/api/projects` Hämta alla projekt
 - `GET localhost:3000/api/projects/:id` Hämta ett projekt
 - `PATCH localhost:3000/api/projects/:id` Patcha ett projekt
 - `DELETE localhost:3000/api/projects/:id` Ta bort ett projekt  
 - `GET localhost:3000/api/projects/:id/tasks` Hämta alla tasks för ett projekt  
-    <br>
+<br>  
 - `GET localhost:3000/api/health` Health Check for uptime checks (useful for monitoring or load balancers)
-    <br>
+<br>   
+  
 ***Applikationen stöder följande _VG Features_:***
 1. User, Task & Project collections.
 2. Autentisering med JWT (som HTTP-only cookie med 1h expiration time).
@@ -97,7 +99,7 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 13. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
 14. ***Test*** Kör sedan valfria tester efter att du har loggat in (välj från endpointsen nedan).  
 
-***Att tänka på:***  
+***!!!Att tänka på!!!***  
   
 _Rate Limiting_  
 Känsliga routes (`POST` `/api/auth/register`, `/api/auth/login` & `/api/users`) har en rate limit på _20 requests / 10 min_ för att bla. förhindra 'brute force inloggnings attacker'.  
@@ -109,7 +111,7 @@ Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production
 mkdir certs
 openssl req -nodes -new -x509 -keyout certs/key.pem -out certs/cert.pem
 ```  
-Glöm inte att prefixa med `https://localhost:3443/` in Thunder Client när du kör produktions versionen!
+Glöm inte att prefixa med `https://localhost:3443/` in Thunder Client när du kör produktions versionen!!!
   
   
 ### Publika Endpoints  
