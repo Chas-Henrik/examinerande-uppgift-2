@@ -1,11 +1,10 @@
 // src/db.ts
 import mongoose from "mongoose"; //med "type":"module"
-import dotenv from "dotenv";
-dotenv.config();
+import config from "./config.js";
 
 export async function connectDB() {
-    if (!process.env.MONGODB_URI) throw new Error("Missing MONGODB_URI");
-    await mongoose.connect(process.env.MONGODB_URI, {
+    if (!config.dbUri) throw new Error("Missing MONGODB_URI");
+    await mongoose.connect(config.dbUri, {
         dbName: "trulloDatabase", 
     });
     console.log("MongoDB connected");

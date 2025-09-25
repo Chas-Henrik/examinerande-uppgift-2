@@ -1,13 +1,15 @@
 # development example
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.r6jzab0.mongodb.net/trulloDatabase?retryWrites=true&w=majority&appName=Cluster0
+JWT_SECRET=<secret-key>
 PORT=<port>
 FRONTEND_URL=http://localhost:<port>
-JWT_SECRET=<secret-key>
 NODE_ENV=development
 
 # production example (prefix with https://localhost:3443/ in Thunder Client)
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.r6jzab0.mongodb.net/trulloDatabase?retryWrites=true&w=majority&appName=Cluster0
+JWT_SECRET=<secret-key>
 PORT=3443
 FRONTEND_URL=http://localhost:3443
-JWT_SECRET=<secret-key>
 NODE_ENV=production
+SSL_CERT_PATH=./certs/cert.pem
+SSL_KEY_PATH=./certs/key.pem

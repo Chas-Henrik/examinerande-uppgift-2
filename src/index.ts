@@ -28,8 +28,8 @@ const corsOptions: CorsOptions = {
 let sslOptions;
 try {
   sslOptions = {
-    key: fs.readFileSync("./certs/key.pem"),
-    cert: fs.readFileSync("./certs/cert.pem")
+    key: fs.readFileSync(config.ssl.keyPath),
+    cert: fs.readFileSync(config.ssl.certPath)
   };
 } catch (err) {
   console.error("Failed to load SSL certificates:", err);

@@ -83,13 +83,15 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 3. ***NODE_ENV*** Välj vilken version du ska bygga (`development` eller `production`), se `env_example` för mer info.
 4. ***PORT*** Välj TCP port (3000 eller 3001 för `development` versionen och 3443 för `production` versionen)
 5. ***FRONTEND_URL*** Konfigurera frontend URL:en `http://localhost:<port>` för `development` versionen, och `http://localhost:3443` för `production` versionen.
-6. ***Seed Kommando*** `npm run seed`
-7. ***Start Kommando*** `npm run dev`
-8. ***Inloggningsuppgifter för admin*** E-mail: `admin@example.com`, Password: `topsecret`
-9. ***Inloggningsuppgifter för seeded users*** E-mail: `user@example.com`, Password: `topsecret`
-10. ***Thunder Client*** Använd Thunder Client (eller Postman) för att skicka requests till endpointsen.
-11. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
-12. ***Test*** Kör sedan valfria tester efter att du har loggat in (välj från endpointsen nedan).  
+6. ***SSL_CERT_PATH*** Konfigurera pathen till ditt SSL certifikat om du bygger produktions versionen (default är `./certs/cert.pem`).
+7. ***SSL_KEY_PATH***  Konfigurera pathen till din SSL nyckel om du bygger produktions versionen (default är `./certs/key.pem`).
+8. ***Seed Kommando*** `npm run seed`
+9. ***Start Kommando*** `npm run dev`
+10. ***Inloggningsuppgifter för admin*** E-mail: `admin@example.com`, Password: `topsecret`
+11. ***Inloggningsuppgifter för seeded users*** E-mail: `user@example.com`, Password: `topsecret`
+12. ***Thunder Client*** Använd Thunder Client (eller Postman) för att skicka requests till endpointsen.
+13. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
+14. ***Test*** Kör sedan valfria tester efter att du har loggat in (välj från endpointsen nedan).  
 
 ***Att tänka på:***  
   

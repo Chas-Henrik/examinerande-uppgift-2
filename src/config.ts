@@ -18,9 +18,14 @@ if (!process.env.JWT_SECRET) {
 
 const config = {
     port: process.env.PORT || 3000,
+    dbUri: process.env.MONGODB_URI,
     frontendUrl: process.env.FRONTEND_URL,
     jwtSecret: process.env.JWT_SECRET,
     isProduction: process.env.NODE_ENV === 'production',
+    ssl: {
+        certPath: process.env.SSL_CERT_PATH || "./certs/cert.pem",
+        keyPath: process.env.SSL_KEY_PATH || "./certs/key.pem"
+    }
 };
 
 export default config;
