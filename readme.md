@@ -99,19 +99,19 @@ _Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexib
 13. ***Inloggning*** Börja med att logga in (då endast 3 endpoints är publika).
 14. ***Test*** Kör sedan valfria tester efter att du har loggat in (välj från endpointsen nedan).  
 
-***!!!Att tänka på!!!***  
+### Rate Limiting & SSL certificat
   
 _Rate Limiting_  
 Känsliga routes (`POST` `/api/auth/register`, `/api/auth/login` & `/api/users`) har en rate limit på _20 requests / 10 min_ för att bla. förhindra 'brute force inloggnings attacker'.  
 Övriga routes har en rate limit på _100 requests / 10 min_ för att bibehålla stabilitet, säkerhet och tillgänglighet.  
   
-_Production Version:_  
+_SSL Certificat_ 
 Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production`), så använd `PORT` 3443 och skapa dina egna lokala SSL certificat med:  
 ```bash
 mkdir certs
 openssl req -nodes -new -x509 -keyout certs/key.pem -out certs/cert.pem
 ```  
-Glöm inte att prefixa med `https://localhost:3443/` in Thunder Client när du kör produktions versionen!!!
+_Glöm inte att prefixa med `https://localhost:3443/` in Thunder Client när du kör produktions versionen!!!_
   
   
 ### Publika Endpoints  
