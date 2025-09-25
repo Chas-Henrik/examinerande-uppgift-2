@@ -6,14 +6,16 @@ import { generalLimiter } from "../middleware/rateLimiters.js";
 
 const router = express.Router()
 
+router.use(generalLimiter);
+
 // CRUD for projects
-router.post("/", authMiddleware, generalLimiter, createProject);
-router.get("/", authMiddleware, generalLimiter, getProjects);
-router.get("/:id", authMiddleware, generalLimiter, getProject);
-router.patch("/:id", authMiddleware, generalLimiter, patchProject);
-router.delete("/:id", authMiddleware, generalLimiter, deleteProject);
+router.post("/", authMiddleware, createProject);
+router.get("/", authMiddleware, getProjects);
+router.get("/:id", authMiddleware, getProject);
+router.patch("/:id", authMiddleware, patchProject);
+router.delete("/:id", authMiddleware, deleteProject);
 
 // Additional routes for projects
-router.get("/:id/tasks", authMiddleware, generalLimiter, getProjectTasks); // Get tasks for a specific project
+router.get("/:id/tasks", authMiddleware, getProjectTasks); // Get tasks for a specific project
 
 export default router;

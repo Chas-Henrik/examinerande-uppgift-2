@@ -12,7 +12,6 @@ export const COOKIE_OPTIONS = {
     secure: config.isProduction,
     sameSite: config.isProduction ? 'strict' as const : 'lax' as const,
     maxAge: 60 * 60 * 1000, // 1 hour
-    domain: 'localhost'
 };
 
 // POST /api/auth/register

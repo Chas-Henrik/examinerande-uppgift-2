@@ -15,7 +15,7 @@ export function signToken(payload: JwtPayload): string {
     if (!JWT_SECRET) {
         throw new Error("JWT_SECRET is not defined");
     }
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    return jwt.sign(payload, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' });
 }
 
 export function verifyToken(token: string): JwtPayload  {
