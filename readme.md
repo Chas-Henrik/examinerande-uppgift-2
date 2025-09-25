@@ -111,10 +111,10 @@ Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production
 mkdir certs
 openssl req -nodes -new -x509 -keyout certs/key.pem -out certs/cert.pem
 ```  
-_Glöm inte att prefixa med `https://localhost:3443/` in Thunder Client när du kör produktions versionen!!!_
+_Glöm inte att prefixa med `https://localhost:3443/` i Thunder Client när du kör produktions versionen!!!_
   
   
-### Publika Endpoints  
+### Publika Endpoints (`NODE_ENV=development`)  
 
 #### Registrera en ny användare (DEVELOPER)  
 _Endpoint:_  
@@ -150,7 +150,7 @@ POST localhost:3000/api/auth/logout
 ```  
 <br>  
 
-### 'users' Endpoints  
+### 'users' Endpoints (`NODE_ENV=development`)  
 
 #### Skapa en ny användare  
 _Endpoint:_  
@@ -211,7 +211,7 @@ _Endpoint:_
 GET localhost:3000/api/users/68ce5810e2da8623257e273a/tasks
 ```  
 
-### 'tasks' Endpoints  
+### 'tasks' Endpoints (`NODE_ENV=development`)  
 
 #### Skapa en ny task 
 _Endpoint:_  
@@ -270,7 +270,7 @@ DELETE localhost:3000/api/tasks/68ce78e4af8e379dbf9b1e8d
 ``` 
 
 
-### 'projects' Endpoints  
+### 'projects' Endpoints (`NODE_ENV=development`)  
 
 #### Skapa ett nytt projekt
 _Endpoint:_  
