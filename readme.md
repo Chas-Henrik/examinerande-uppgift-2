@@ -57,6 +57,8 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 - `DELETE localhost:3000/api/projects/:id` Ta bort ett projekt  
 - `GET localhost:3000/api/projects/:id/tasks` Hämta alla tasks för ett projekt  
     <br>
+- `GET localhost:3000/api/health` Health Check for uptime checks (useful for monitoring or load balancers)
+    <br>
 ***Applikationen stöder följande features:***
 1. User, Task & Project collections
 2. Autentisering med JWT (som HTTP-only cookie med 1h expiration time)

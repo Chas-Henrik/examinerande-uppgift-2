@@ -53,7 +53,7 @@ app.use("/api/users", userRoutes)
 app.use("/api/tasks", taskRoutes);
 app.use("/api/projects", projectRoutes);
 
-
+app.get('/api/health', (_req, res) => res.status(200).json({ ok: true, status: "Healthy" }));
 
 await connectDB()
 	.then(() => {
