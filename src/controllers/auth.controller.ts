@@ -5,13 +5,14 @@ import bcrypt from "bcrypt"
 import { signToken } from '../utils/jwt.js'
 import { User, serializeUser } from '../models/user.model.js';
 import { UserLevel, UserApiResponse } from "../types/user.js";
-import { ZodUserSchema, ZodLoginSchema } from "../validation/user.validation.js";
+import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType } from "../validation/user.validation.js";
 
 export const COOKIE_OPTIONS = {
     httpOnly: true,
     secure: config.isProduction,
-    sameSite: 'lax' as const,
+    sameSite: config.isProduction ? 'strict' as const : 'lax' as const,
     maxAge: 60 * 60 * 1000, // 1 hour
+    domain: 'localhost'
 };
 
 // POST /api/auth/register
@@ -64,7 +65,7 @@ export const login = async (req: Request, res: Response<UserApiResponse>) =>  {
                 error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
             });
         }
-        const { email, password } = result.data;
+        const { email, password } : ZodLoginSchemaType = result.data;
         const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password').lean();
 
         if (!user?.password || !await bcrypt.compare(password, user.password)) {

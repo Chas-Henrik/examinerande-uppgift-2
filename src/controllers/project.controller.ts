@@ -7,7 +7,7 @@ import { Task } from '../models/task.model.js';
 import { UserLevel } from "../types/user.js";
 import { ProjectApiResponse } from "../types/project.js";
 import { TaskApiResponse } from '../types/task.js';
-import { ZodProjectSchema, ZodProjectPatchSchema } from '../validation/project.validation.js';
+import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectPatchType } from '../validation/project.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 
 // POST /api/projects
@@ -95,7 +95,7 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 			});
 		}
 
-		const patchData = result.data;
+		const patchData: ZodProjectPatchType = result.data;
 
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {

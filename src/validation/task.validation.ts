@@ -18,3 +18,4 @@ export const ZodTaskSchema = z.object({
 });
 
 export const ZodTaskPatchSchema = ZodTaskSchema.partial();
+export type ZodTaskPatchType = z.infer<typeof ZodTaskPatchSchema>;

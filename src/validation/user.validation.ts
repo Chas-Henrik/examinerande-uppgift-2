@@ -20,6 +20,7 @@ export const ZodUserSchema = z.object({
 });
 
 export const ZodUserPatchSchema = ZodUserSchema.partial();
+export type ZodUserPatchType = z.infer<typeof ZodUserPatchSchema>;
 
 export const ZodLoginSchema = z.object({
     email: z.string()
@@ -30,3 +31,5 @@ export const ZodLoginSchema = z.object({
         .min(8, "Password must be at least 8 characters long")
         .max(100, "Password must be at most 100 characters long")
 });
+
+export type ZodLoginSchemaType = z.infer<typeof ZodLoginSchema>;

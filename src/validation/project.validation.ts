@@ -16,3 +16,4 @@ export const ZodProjectSchema = z.object({
 });
 
 export const ZodProjectPatchSchema = ZodProjectSchema.partial();
+export type ZodProjectPatchType = z.infer<typeof ZodProjectPatchSchema>;

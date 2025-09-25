@@ -6,7 +6,7 @@ import { UserLevel, UserApiResponse } from '../types/user.js';
 import { TaskApiResponse } from '../types/task.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
-import { ZodUserSchema, ZodUserPatchSchema } from "../validation/user.validation.js";
+import { ZodUserSchema, ZodUserPatchSchema, ZodUserPatchType } from "../validation/user.validation.js";
 import { Task } from '../models/task.model.js';
 import { normalizeUserLevel } from '../utils/utils.js';
 
@@ -96,7 +96,7 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
             });
         }
 
-        const patchData = result.data;
+        const patchData: ZodUserPatchType = result.data;
 
         // Ensure the user exists
         const existing = await User.findById(id).lean();

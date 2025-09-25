@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { Task, TaskType } from "../models/task.model.js"
 import { User } from '../models/user.model.js';
 import { TaskApiResponse } from "../types/task.js";
-import { ZodTaskSchema, ZodTaskPatchSchema } from '../validation/task.validation.js';
+import { ZodTaskSchema, ZodTaskPatchSchema, ZodTaskPatchType } from '../validation/task.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { Project } from '../models/project.model.js';
 
@@ -161,41 +161,29 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 			}
 		}
 
-		let updatedTask;
-		
-		// Update the task in the database
-		if(patchData.status && patchData.status === 'done' && existing.status !== 'done') {
-			// Set finishedAt and finishedBy if status is 'done'
-			updatedTask = await Task.findByIdAndUpdate(
-				id,  
-				{ $set: {...patchData, finishedAt: new Date(), finishedBy: new mongoose.Types.ObjectId(authReq.user._id)} },
-				{
-					new: true,
-					runValidators: true,
-					upsert: false  // Do not create a new document if it doesn't exist
-				}
-			);
-		} else if(patchData.status && patchData.status !== 'done' && existing.status === 'done') {
-			updatedTask = await Task.findByIdAndUpdate(
-				id,  
-				{ $set: patchData, finishedAt: null, finishedBy: null },
-				{
-					new: true,
-					runValidators: true,
-					upsert: false  // Do not create a new document if it doesn't exist
-				}
-			);
-		} else {
-			updatedTask = await Task.findByIdAndUpdate(
-				id,  
-				{ $set: patchData },
-				{
-					new: true,
-					runValidators: true,
-					upsert: false  // Do not create a new document if it doesn't exist
-				}
-			);
+		type FinalPatchDataType = ZodTaskPatchType & { finishedAt?: Date | null, finishedBy?: mongoose.Types.ObjectId | null };
+		let finalPatchData : FinalPatchDataType = { ...patchData };
+
+		// Add/remove finishedAt and finishedBy when status 'done' is toggled
+		if(patchData.status) {
+			if(patchData.status === 'done' && existing.status !== 'done') {
+				finalPatchData = { ...patchData, finishedAt: new Date(), finishedBy: new mongoose.Types.ObjectId(authReq.user._id) };
+			}
+			if(patchData.status !== 'done' && existing.status === 'done') {
+				finalPatchData = { ...patchData, finishedAt: null, finishedBy: null };
+			}
 		}
+
+		// Update the task in the database
+		const updatedTask = await Task.findByIdAndUpdate(
+			id,  
+			{ $set: finalPatchData },
+			{
+				new: true,
+				runValidators: true,
+				upsert: false  // Do not create a new document if it doesn't exist
+			}
+		);
 		if (!updatedTask) {
 			return res.status(404).json({ ok: false, message: "Task not found" });
 		}
