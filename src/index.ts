@@ -13,12 +13,10 @@ import compression from "compression";
 
 const app = express();
 
-const allowedOrigins = config.isProduction && config.frontendUrl ? [ config.frontendUrl ] : ["http://localhost:3000", "http://localhost:3001"];
-
-console.log("Allowed origins for CORS:", allowedOrigins);
+console.log("Allowed origins for CORS:", config.frontendUrl);
 
 const corsOptions: CorsOptions = {
-    origin: allowedOrigins,
+    origin: [ config.frontendUrl ],
     methods: ["POST", "GET", "PUT", "DELETE"],
     optionsSuccessStatus: 200,
     credentials: true,

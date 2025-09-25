@@ -4,7 +4,7 @@
 const config = {
     port: process.env.PORT || 3000,
     dbUri: process.env.MONGODB_URI,
-    frontendUrl: process.env.FRONTEND_URL,
+    frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
     jwtSecret: process.env.JWT_SECRET,
     isProduction: process.env.NODE_ENV === 'production',
     ssl: {

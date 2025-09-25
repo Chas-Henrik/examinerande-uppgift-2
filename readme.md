@@ -83,8 +83,8 @@ Jag använder PATCH istället för PUT, då PATCH är mer flexibel och innehåll
 1. ***MONGODB_URI*** Hämta din egen MongoDB connection string från Atlas och lägg till `/trulloDatabase` som databas namn (se `env_example`).
 2. ***JWT_SECRET*** Generera en JWT_SECRET (se `.env_example`) via att köra följande kommando i terminalen: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
 3. ***NODE_ENV*** Välj vilken version du ska bygga (`development` eller `production`), se `env_example` för mer info.
-4. ***PORT*** Välj TCP port (3000 eller 3001 för `development` versionen och 3443 för `production` versionen)
-5. ***FRONTEND_URL*** Konfigurera frontend URL:en `http://localhost:<port>` för `development` versionen, och `http://localhost:3443` för `production` versionen.
+4. ***PORT*** Välj TCP port (3000 för `development` versionen och 3443 för `production` versionen)
+5. ***FRONTEND_URL*** Konfigurera frontend URL:en `http://localhost:3000` för `development` versionen, och `https://localhost:3443` för `production` versionen.
 6. ***SSL_CERT_PATH*** Konfigurera pathen till ditt SSL certifikat om du bygger produktions versionen (default är `./certs/cert.pem`).
 7. ***SSL_KEY_PATH***  Konfigurera pathen till din SSL nyckel om du bygger produktions versionen (default är `./certs/key.pem`).
 8. ***Seed Kommando*** `npm run seed`
