@@ -10,6 +10,7 @@ import { connectDB } from "./db.js";
 import mongoose from "mongoose";
 import helmet from "helmet";
 import compression from "compression";
+import routes from "./routes/index.js";
 
 const app = express();
 
@@ -41,17 +42,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(compression());
 
-import authRoutes from "./routes/auth.route.js";
-import userRoutes from "./routes/user.route.js";
-import taskRoutes from "./routes/task.route.js";
-import projectRoutes from "./routes/project.route.js";
-
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes)
-app.use("/api/tasks", taskRoutes);
-app.use("/api/projects", projectRoutes);
-
-app.get('/api/health', (_req, res) => res.status(200).json({ ok: true, status: "Healthy" }));
+app.use("/api", routes); // Prefix all routes with /api
 
 await connectDB()
 	.then(() => {
