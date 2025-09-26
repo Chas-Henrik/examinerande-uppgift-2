@@ -1,14 +1,18 @@
 // src/loadEnv.ts
 import dotenv from 'dotenv';
+import dotenvExpand from "dotenv-expand";
 import { ZodEnvSchema } from "./validation";
 
 // Load .env file
-const result = dotenv.config();
+const env = dotenv.config();
 
-if (result.error) {
-    console.error('❌ Failed to load .env file:', result.error);
+if (env.error) {
+    console.error('❌ Failed to load .env file:', env.error);
     process.exit(1);
 }
+
+// Expand variables like ${VAR} in .env
+dotenvExpand.expand(env);
 
 // Validate FRONTEND_URL env variable
 if (process.env.NODE_ENV === 'production' && !process.env.FRONTEND_URL) {

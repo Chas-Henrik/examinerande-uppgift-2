@@ -25,6 +25,7 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 - ***express-rate-limit*** Används för rate-limiting.
 - ***helmet*** Används för att skydda applikationen från vanliga webbsäkerhetshot genom att ställa in olika HTTP-rubriker (headers) på rätt sätt.
 - ***compress*** Används för att komprimera HTTP-svar (t.ex. HTML, CSS, JavaScript, JSON) innan de skickas till klienten.
+- ***dotenv-expand*** Används för att expandera ${VAR_NAME} värden i .env filen.
 
 ### Redogör översiktligt hur applikationen fungerar
 
@@ -86,7 +87,7 @@ _Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexib
 2. ***JWT_SECRET*** Generera en JWT_SECRET (se `.env_example`) via att köra följande kommando i terminalen: `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
 3. ***NODE_ENV*** Välj vilken version du ska bygga (`development` eller `production`), se `env_example` för mer info.
 4. ***PORT*** Välj TCP port (3000 för `development` versionen och 3443 för `production` versionen)
-5. ***FRONTEND_URL*** Konfigurera frontend URL:en `http://localhost:3000` för `development` versionen, och `https://localhost:3443` för `production` versionen.
+5. ***FRONTEND_URL*** Konfigurera frontend URL:en till `http://localhost:${PORT}`.
 6. ***SSL_CERT_PATH*** Konfigurera pathen till ditt SSL certifikat om du bygger produktions versionen (default är `./certs/cert.pem`).
 7. ***SSL_KEY_PATH***  Konfigurera pathen till din SSL nyckel om du bygger produktions versionen (default är `./certs/key.pem`).
 8. ***Seed Kommando*** `npm run seed`
