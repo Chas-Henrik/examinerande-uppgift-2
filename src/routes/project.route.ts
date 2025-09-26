@@ -1,20 +1,20 @@
 // src/routes/project.route.ts
 import express from "express"
-import { createProject, getProjects, getProject, patchProject, deleteProject, getProjectTasks } from "../controllers/project.controller.js";
 import { authMiddleware, generalLimiter } from "../middleware/index.js";
+import { ProjectController } from '../controllers';
 
 const router = express.Router()
 
 router.use(generalLimiter);
 
 // CRUD for projects
-router.post("/", authMiddleware, createProject);
-router.get("/", authMiddleware, getProjects);
-router.get("/:id", authMiddleware, getProject);
-router.patch("/:id", authMiddleware, patchProject);
-router.delete("/:id", authMiddleware, deleteProject);
+router.post("/", authMiddleware, ProjectController.createProject);
+router.get("/", authMiddleware, ProjectController.getProjects);
+router.get("/:id", authMiddleware, ProjectController.getProject);
+router.patch("/:id", authMiddleware, ProjectController.patchProject);
+router.delete("/:id", authMiddleware, ProjectController.deleteProject);
 
 // Additional routes for projects
-router.get("/:id/tasks", authMiddleware, getProjectTasks); // Get tasks for a specific project
+router.get("/:id/tasks", authMiddleware, ProjectController.getProjectTasks); // Get tasks for a specific project
 
 export default router;

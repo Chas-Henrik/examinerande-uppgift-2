@@ -3,19 +3,19 @@ import express from "express"
 import { authMiddleware } from "../middleware/authorize.js";
 import { authorizeUser } from "../middleware/authorizeUser.js";
 import { UserLevel } from "../types/user.js";
-import { createUser, getUsers, getUser, patchUser, deleteUser, getUserTasks } from "../controllers/user.controller.js";
 import { generalLimiter, sensitiveActionLimiter } from '../middleware/rateLimiters.js';
+import { UserController } from '../controllers';
 
 const router = express.Router()
 
 // CRUD for users
-router.post("/", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN }), sensitiveActionLimiter , createUser);
-router.get("/", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN }), generalLimiter, getUsers);
-router.get("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), generalLimiter, getUser);
-router.patch("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), sensitiveActionLimiter, patchUser);
-router.delete("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), sensitiveActionLimiter, deleteUser);
+router.post("/", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN }), sensitiveActionLimiter , UserController.createUser);
+router.get("/", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN }), generalLimiter, UserController.getUsers);
+router.get("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), generalLimiter, UserController.getUser);
+router.patch("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), sensitiveActionLimiter, UserController.patchUser);
+router.delete("/:id", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), sensitiveActionLimiter, UserController.deleteUser);
 
 // Additional routes for users
-router.get("/:id/tasks", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), getUserTasks); // Get tasks for a specific user
+router.get("/:id/tasks", authMiddleware, authorizeUser({ minUserLevel: UserLevel.ADMIN, authOwner: true }), UserController.getUserTasks); // Get tasks for a specific user
 
 export default router;
