@@ -16,21 +16,34 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
     // Check that req.cookies is defined
     if (!authReq.cookies) {
-        res.status(401).json({message: "Unauthorized, missing Cookies header"});
-        return;
+        return res.status(401).json({message: "Not authenticated, missing Cookies header"});
     }
 
     const token = authReq.cookies.token;
 
     if(!token) {
-        res.status(401).json({ message: "Unauthorized, expired, missing or invalid JSON Web token"});
-        return;
+        // No token found — probably cookie expired
+        console.error("No token found — probably cookie expired");
+        return res.status(401).json({ message: "Not authenticated" });
     }
 
     // Check that token is valid
     try {
-        const payload = verifyToken(token);
-        authReq.user = payload as AuthUserType;
+        // Verify token and attach payload to authReq.user
+        try {
+            const payload = verifyToken(token);
+            authReq.user = payload as AuthUserType;
+        } catch (err) {
+            if (err instanceof Error) {
+                if (err.name === "TokenExpiredError") {
+                    return res.status(401).json({ message: "JWT token expired" });
+                } else {
+                    return res.status(401).json({ message: "Invalid JWT token" });
+                }
+            } else {
+                return res.status(500).json({ message: "Internal server error", error: String(err) });
+            }
+        }
 
         // Ensure authReq.user._id is defined
         if (!authReq.user || !authReq.user._id || !mongoose.isValidObjectId(authReq.user._id)) {

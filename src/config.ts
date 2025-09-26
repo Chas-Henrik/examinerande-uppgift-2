@@ -1,6 +1,5 @@
 // src/config.ts
 
-
 const config = {
     port: process.env.PORT || 3000,
     dbUri: process.env.MONGODB_URI,
@@ -12,5 +11,11 @@ const config = {
         keyPath: process.env.SSL_KEY_PATH || "./certs/key.pem"
     }
 };
+
+if(config.isProduction) {
+    if(!config.frontendUrl) {
+        throw new Error("FRONTEND_URL is required in production");
+    }
+}
 
 export default config;
