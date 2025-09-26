@@ -2,6 +2,7 @@
 import dotenv from 'dotenv';
 import dotenvExpand from "dotenv-expand";
 import { ZodEnvSchema } from "./validation";
+import { formatZodError } from './utils/zod.js';  // Don't use './utils' here to avoid importing config.ts from jwt.ts
 
 // Load .env file
 const env = dotenv.config();
@@ -23,7 +24,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.FRONTEND_URL) {
 // Validate env variables using Zod
 const parsed = ZodEnvSchema.safeParse(process.env);
 if (!parsed.success) {
-    console.error('❌ Invalid environment variables:', parsed.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })));
+    console.error('❌ Invalid environment variables:', formatZodError(parsed.error));
     process.exit(1);
 }
 
