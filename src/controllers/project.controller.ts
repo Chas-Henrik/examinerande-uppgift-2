@@ -5,6 +5,7 @@ import { User, Task, Project, ProjectType } from '../models';
 import { UserLevel, ProjectApiResponse, TaskApiResponse } from '../types';
 import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectPatchType } from '../validation/project.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
+import { formatZodError } from '../utils';
 
 // POST /api/projects
 export const createProject = async (req: Request, res: Response<ProjectApiResponse>) =>  {
@@ -18,7 +19,7 @@ export const createProject = async (req: Request, res: Response<ProjectApiRespon
 			return res.status(400).json({ 
 				ok: false, 
 				message: 'Invalid input', 
-				error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+				error: formatZodError(result.error) 
 			});
 		}
 
@@ -87,7 +88,7 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 			return res.status(400).json({ 
 				ok: false, 
 				message: 'Invalid input', 
-				error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message }))
+				error: formatZodError(result.error)
 			});
 		}
 

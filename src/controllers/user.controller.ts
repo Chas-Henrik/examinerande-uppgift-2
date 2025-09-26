@@ -7,6 +7,7 @@ import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema, ZodUserPatchSchema, ZodUserPatchType } from "../validation/user.validation.js";
 import { normalizeUserLevel } from '../utils/user.js';
+import { formatZodError } from '../utils';
 
 // POST /api/users
 export const createUser = async (req: Request, res: Response<UserApiResponse>) =>  {
@@ -20,7 +21,7 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>) =
             return res.status(400).json({ 
                 ok: false, 
                 message: 'Invalid input', 
-                error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message }))
+                error: formatZodError(result.error)
             });
         }
 
@@ -90,7 +91,7 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
             return res.status(400).json({ 
                 ok: false, 
                 message: 'Invalid input', 
-                error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+                error: formatZodError(result.error)
             });
         }
 

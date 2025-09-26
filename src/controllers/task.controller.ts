@@ -5,6 +5,7 @@ import { User, Task, TaskType, Project } from '../models';
 import { TaskApiResponse } from "../types";
 import { ZodTaskSchema, ZodTaskPatchSchema, ZodTaskPatchType } from '../validation/task.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
+import { formatZodError } from '../utils';
 
 // POST /api/tasks
 export const createTask = async (req: Request, res: Response<TaskApiResponse>) =>  {
@@ -18,7 +19,7 @@ export const createTask = async (req: Request, res: Response<TaskApiResponse>) =
 			return res.status(400).json({ 
 				ok: false, 
 				message: 'Invalid input', 
-				error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+				error: formatZodError(result.error) 
 			});
 		}
 
@@ -116,7 +117,7 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>) =>
 			return res.status(400).json({ 
 				ok: false, 
 				message: 'Invalid input', 
-				error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+				error: formatZodError(result.error) 
 			});
 		}
 

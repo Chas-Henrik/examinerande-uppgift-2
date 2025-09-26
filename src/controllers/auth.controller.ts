@@ -2,7 +2,7 @@
 import config from '../config.js'
 import { Request, Response } from 'express';
 import bcrypt from "bcrypt"
-import { signToken } from '../utils/jwt.js'
+import { signToken, formatZodError } from '../utils'
 import { User, serializeUser } from '../models';
 import { UserLevel, UserApiResponse } from "../types";
 import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType } from "../validation/user.validation.js";
@@ -26,7 +26,7 @@ export const register = async (req: Request, res: Response<UserApiResponse>) => 
             return res.status(400).json({ 
                 ok: false, 
                 message: 'Invalid input',
-                error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+                error: formatZodError(result.error)
             });
         }
         const { name, email, password } = result.data;
@@ -61,7 +61,7 @@ export const login = async (req: Request, res: Response<UserApiResponse>) =>  {
             return res.status(400).json({ 
                 ok: false, 
                 message: 'Invalid input', 
-                error: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) 
+                error: formatZodError(result.error) 
             });
         }
         const { email, password } : ZodLoginSchemaType = result.data;
