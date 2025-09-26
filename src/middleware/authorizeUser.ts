@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction } from "express";
 import { UserLevel } from "../types/user.js";
-import { AuthenticatedRequest } from "./authorize.js";
+import { AuthenticatedRequest } from "../middleware";
 import mongoose from "mongoose";
 
 type AuthorizeOptions = {

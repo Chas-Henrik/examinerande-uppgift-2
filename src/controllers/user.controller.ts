@@ -3,9 +3,9 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { User, UserType, serializeUser, Task } from "../models"
 import { UserLevel, UserApiResponse, TaskApiResponse } from '../types';
-import { AuthenticatedRequest } from "../middleware/authorize.js";
+import { AuthenticatedRequest } from "../middleware";
 import { COOKIE_OPTIONS } from './auth.controller.js';
-import { ZodUserSchema, ZodUserPatchSchema, ZodUserPatchType } from "../validation/user.validation.js";
+import { ZodUserSchema, ZodUserPatchSchema, ZodUserPatchType } from "../validation";
 import { normalizeUserLevel, formatZodError } from '../utils';
 
 // POST /api/users

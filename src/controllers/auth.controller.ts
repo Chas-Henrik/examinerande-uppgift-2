@@ -5,7 +5,7 @@ import bcrypt from "bcrypt"
 import { signToken, formatZodError } from '../utils'
 import { User, serializeUser } from '../models';
 import { UserLevel, UserApiResponse } from "../types";
-import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType } from "../validation/user.validation.js";
+import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType } from "../validation";
 
 export const COOKIE_OPTIONS = {
     httpOnly: true,

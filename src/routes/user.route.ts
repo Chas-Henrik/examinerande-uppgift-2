@@ -1,9 +1,7 @@
 // src/routes/user.route.ts
 import express from "express"
-import { authMiddleware } from "../middleware/authorize.js";
-import { authorizeUser } from "../middleware/authorizeUser.js";
+import { authMiddleware, authorizeUser, generalLimiter, sensitiveActionLimiter } from "../middleware";
 import { UserLevel } from '../types';
-import { generalLimiter, sensitiveActionLimiter } from '../middleware/rateLimiters.js';
 import { UserController } from '../controllers';
 
 const router = express.Router()

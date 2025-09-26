@@ -1,6 +1,6 @@
 // src/routes/project.route.ts
 import express from "express"
-import { authMiddleware, generalLimiter } from "../middleware/index.js";
+import { authMiddleware, generalLimiter } from "../middleware";
 import { ProjectController } from '../controllers';
 
 const router = express.Router()

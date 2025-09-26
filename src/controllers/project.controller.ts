@@ -3,8 +3,8 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { User, Task, Project, ProjectType } from '../models';
 import { UserLevel, ProjectApiResponse, TaskApiResponse } from '../types';
-import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectPatchType } from '../validation/project.validation.js';
-import { AuthenticatedRequest } from "../middleware/authorize.js";
+import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectPatchType } from '../validation';
+import { AuthenticatedRequest } from "../middleware";
 import { formatZodError } from '../utils';
 
 // POST /api/projects
