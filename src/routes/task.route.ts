@@ -1,8 +1,7 @@
 // src/routes/task.route.ts
 import express from "express"
 import { createTask, getTasks, getTask, patchTask, deleteTask } from "../controllers/task.controller.js";
-import { authMiddleware } from "../middleware/authorize.js";
-import { generalLimiter } from "../middleware/rateLimiters.js";
+import { authMiddleware, generalLimiter } from "../middleware/index.js";
 
 const router = express.Router()
 
