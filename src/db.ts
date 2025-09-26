@@ -7,3 +7,11 @@ export async function connectDB() {
     await mongoose.connect(config.dbUri);
     console.log("MongoDB connected");
 }
+
+mongoose.connection.on('disconnected', () => {
+  console.warn('⚠️ MongoDB disconnected');
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('✅ MongoDB reconnected');
+});

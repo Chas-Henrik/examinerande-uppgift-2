@@ -67,7 +67,7 @@ export const createTask = async (req: Request, res: Response<TaskApiResponse>) =
 // GET /api/tasks
 export const getTasks = async (_req: Request, res: Response<TaskApiResponse>) => {
 	try {
-		const tasks = await Task.find().populate([
+		const tasks = await Task.find().lean().populate([
 			{ path: "assignedTo", select: "name email" },
 			{ path: "finishedBy", select: "name email" },
 			{ path: "project", select: "name _id" }
@@ -88,7 +88,7 @@ export const getTask = async (req: Request, res: Response<TaskApiResponse>) => {
 		if (!mongoose.isValidObjectId(id)) {
 			return res.status(400).json({ ok: false, message: "Invalid task ID format" });
 		}
-		const task = await Task.findById(id).populate([
+		const task = await Task.findById(id).lean().populate([
 			{ path: "assignedTo", select: "name email" },
 			{ path: "finishedBy", select: "name email" },
 			{ path: "project", select: "name _id" }

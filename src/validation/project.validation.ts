@@ -10,6 +10,7 @@ export const ZodProjectSchema = z.object({
     description: z.coerce
         .string()
         .trim()
+        .min(1, "Description must be at least 1 character long")
         .max(500, "Description must be at most 500 characters long")
         .optional(),
     owner: z.string().nullable().optional()

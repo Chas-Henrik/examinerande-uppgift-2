@@ -196,7 +196,7 @@ export const getProjectTasks = async (req: Request, res: Response<TaskApiRespons
 			return res.status(404).json({ ok: false, message: "Project not found" });
 		}
 
-		const tasks = await Task.find({ project: id }).populate([
+		const tasks = await Task.find({ project: id }).lean().populate([
 			{
 				path: "assignedTo",
 				select: "name email"
