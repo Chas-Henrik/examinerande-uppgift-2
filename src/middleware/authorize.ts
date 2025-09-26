@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.js"
 import { User } from "../models/user.model.js";
-import { UserLevel, AuthUserType } from "../types/user.js";
+import { UserLevel, AuthUserType } from '../types';
 import mongoose from "mongoose";
 import { normalizeUserLevel } from "../utils/user.js";
 

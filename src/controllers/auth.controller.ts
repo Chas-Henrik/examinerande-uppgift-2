@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import bcrypt from "bcrypt"
 import { signToken } from '../utils/jwt.js'
 import { User, serializeUser } from '../models/user.model.js';
-import { UserLevel, UserApiResponse } from "../types/user.js";
+import { UserLevel, UserApiResponse } from "../types";
 import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType } from "../validation/user.validation.js";
 
 export const COOKIE_OPTIONS = {

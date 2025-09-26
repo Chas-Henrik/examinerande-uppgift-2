@@ -2,8 +2,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { User, UserType, serializeUser } from "../models/user.model.js"
-import { UserLevel, UserApiResponse } from '../types/user.js';
-import { TaskApiResponse } from '../types/task.js';
+import { UserLevel, UserApiResponse, TaskApiResponse } from '../types';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema, ZodUserPatchSchema, ZodUserPatchType } from "../validation/user.validation.js";

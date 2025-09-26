@@ -2,7 +2,7 @@
 import express from "express"
 import { authMiddleware } from "../middleware/authorize.js";
 import { authorizeUser } from "../middleware/authorizeUser.js";
-import { UserLevel } from "../types/user.js";
+import { UserLevel } from '../types';
 import { generalLimiter, sensitiveActionLimiter } from '../middleware/rateLimiters.js';
 import { UserController } from '../controllers';
 

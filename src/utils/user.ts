@@ -1,5 +1,5 @@
 // src/utils/user.ts
-import { UserLevel } from "../types/user";
+import { UserLevel } from "../types";
 
 export function normalizeUserLevel(input: string | number): UserLevel | undefined {
 	if (typeof input === 'string') {

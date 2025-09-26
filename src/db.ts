@@ -1,5 +1,5 @@
 // src/db.ts
-import mongoose from "mongoose"; //med "type":"module"
+import mongoose from "mongoose";
 import config from "./config.js";
 
 export async function connectDB() {

@@ -4,9 +4,7 @@ import mongoose from 'mongoose';
 import { Project, ProjectType } from "../models/project.model.js"
 import { User } from '../models/user.model.js';
 import { Task } from '../models/task.model.js';
-import { UserLevel } from "../types/user.js";
-import { ProjectApiResponse } from "../types/project.js";
-import { TaskApiResponse } from '../types/task.js';
+import { UserLevel, ProjectApiResponse, TaskApiResponse } from '../types';
 import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectPatchType } from '../validation/project.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 
