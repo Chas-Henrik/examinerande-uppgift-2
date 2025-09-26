@@ -1,7 +1,7 @@
 // src/middleware/authorize.ts
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.js"
-import { User } from "../models/user.model.js";
+import { User } from "../models";
 import { UserLevel, AuthUserType } from '../types';
 import mongoose from "mongoose";
 import { normalizeUserLevel } from "../utils/user.js";

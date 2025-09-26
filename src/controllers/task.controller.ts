@@ -1,12 +1,10 @@
 // src/controllers/task.controller.ts
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { Task, TaskType } from "../models/task.model.js"
-import { User } from '../models/user.model.js';
+import { User, Task, TaskType, Project } from '../models';
 import { TaskApiResponse } from "../types";
 import { ZodTaskSchema, ZodTaskPatchSchema, ZodTaskPatchType } from '../validation/task.validation.js';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
-import { Project } from '../models/project.model.js';
 
 // POST /api/tasks
 export const createTask = async (req: Request, res: Response<TaskApiResponse>) =>  {

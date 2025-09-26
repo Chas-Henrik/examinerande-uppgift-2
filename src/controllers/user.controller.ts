@@ -1,12 +1,11 @@
 // src/controllers/user.controller.ts
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import { User, UserType, serializeUser } from "../models/user.model.js"
+import { User, UserType, serializeUser, Task } from "../models"
 import { UserLevel, UserApiResponse, TaskApiResponse } from '../types';
 import { AuthenticatedRequest } from "../middleware/authorize.js";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema, ZodUserPatchSchema, ZodUserPatchType } from "../validation/user.validation.js";
-import { Task } from '../models/task.model.js';
 import { normalizeUserLevel } from '../utils/user.js';
 
 // POST /api/users
