@@ -12,7 +12,8 @@ if (result.error) {
 
 // Validate FRONTEND_URL env variable
 if (process.env.NODE_ENV === 'production' && !process.env.FRONTEND_URL) {
-    throw new Error("❌ Missing required env: FRONTEND_URL");
+    console.error("❌ Missing required env: FRONTEND_URL");
+    process.exit(1);
 }
 
 // Validate env variables using Zod
