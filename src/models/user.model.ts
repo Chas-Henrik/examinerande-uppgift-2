@@ -34,6 +34,9 @@ const userSchema = new Schema({
 		default: UserLevel.NONE,
 		required: true
 	}
+}, 
+{ 
+	timestamps: true,
 });
 
 // ✅ Pre-save hook (runs on .save())
@@ -52,7 +55,7 @@ type UserBaseType = InferSchemaType<typeof userSchema>;
 export type UserType = UserBaseType & { _id: Types.ObjectId };
 
 export const serializeUser = (user: UserType) => ({
-  _id: user._id,
+  _id: user._id.toString(),
   name: user.name,
   email: user.email,
   userLevel: user.userLevel
