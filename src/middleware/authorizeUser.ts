@@ -1,13 +1,13 @@
 // src/middleware/authorizeUser.ts
 
 import { Request, Response, NextFunction } from "express";
-import { UserLevel } from "../types/user.js";
+import { UserLevel } from "../types";
 import { AuthenticatedRequest } from "../middleware";
 import mongoose from "mongoose";
 
 type AuthorizeOptions = {
-  minUserLevel: UserLevel;  // Optional minimum required level
-  authOwner?: boolean;    // Whether ownership (req.user._id === req.params.id) access is allowed
+  minUserLevel: UserLevel;  // Minimum required user level
+  authOwner?: boolean;      // Whether ownership (req.user._id === req.params.id) access is allowed
 };
 
 export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOptions) {
