@@ -11,6 +11,7 @@ import mongoose from "mongoose";
 import helmet from "helmet";
 import compression from "compression";
 import routes from "./routes/index.js";
+import { errorHandler } from './middleware';
 
 const app = express();
 
@@ -42,7 +43,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(compression());
 
-app.use("/api", routes); // Prefix all routes with /api
+app.use("/api", routes);  // Prefix all routes with /api
+app.use(errorHandler);    // Centralized error handling middleware
 
 await connectDB()
 	.then(() => {

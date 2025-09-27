@@ -2,4 +2,5 @@
 
 export * from './authorize.js';
 export * from './authorizeUser.js';
+export * from './errorMiddleware.js';
 export * from './rateLimiters.js';

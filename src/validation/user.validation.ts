@@ -17,8 +17,9 @@ export const ZodUserSchema = z.object({
         .min(8, "Password must be at least 8 characters long")
         .max(100, "Password must be at most 100 characters long"),
     userLevel: z.enum(Object.values(UserLevel) as string[])
-});
+}).strict();
 
+export type ZodUserType = z.infer<typeof ZodUserSchema>;
 export const ZodUserPatchSchema = ZodUserSchema.partial();
 export type ZodUserPatchType = z.infer<typeof ZodUserPatchSchema>;
 
@@ -30,6 +31,6 @@ export const ZodLoginSchema = z.object({
     password: z.string()
         .min(8, "Password must be at least 8 characters long")
         .max(100, "Password must be at most 100 characters long")
-});
+}).strict();
 
 export type ZodLoginSchemaType = z.infer<typeof ZodLoginSchema>;

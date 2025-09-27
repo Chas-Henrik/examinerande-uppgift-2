@@ -16,7 +16,8 @@ export const ZodTaskSchema = z.object({
     status: z.enum(['to-do', 'in progress', 'blocked', 'done']),
     assignedTo: z.string().optional().nullable(),
     project: z.string().optional().nullable()
-});
+}).strict();
 
+export type ZodTaskType = z.infer<typeof ZodTaskSchema>;
 export const ZodTaskPatchSchema = ZodTaskSchema.partial();
 export type ZodTaskPatchType = z.infer<typeof ZodTaskPatchSchema>;

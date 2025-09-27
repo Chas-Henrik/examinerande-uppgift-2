@@ -14,7 +14,8 @@ export const ZodProjectSchema = z.object({
         .max(500, "Description must be at most 500 characters long")
         .optional(),
     owner: z.string().nullable().optional()
-});
+}).strict();
 
+export type ZodProjectType = z.infer<typeof ZodProjectSchema>;
 export const ZodProjectPatchSchema = ZodProjectSchema.partial();
 export type ZodProjectPatchType = z.infer<typeof ZodProjectPatchSchema>;

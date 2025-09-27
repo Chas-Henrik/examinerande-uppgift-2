@@ -1,67 +1,49 @@
 // src/controllers/user.controller.ts
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import { User, UserType, serializeUser, Task } from "../models"
 import { UserLevel, UserApiResponse, TaskApiResponse } from '../types';
 import { AuthenticatedRequest } from "../middleware";
 import { COOKIE_OPTIONS } from './auth.controller.js';
-import { ZodUserSchema, ZodUserPatchSchema, ZodUserPatchType } from "../validation";
-import { normalizeUserLevel, formatZodError } from '../utils';
+import { ZodUserSchema, ZodUserPatchSchema, ZodUserType, ZodUserPatchType } from "../validation";
+import { normalizeUserLevel } from '../utils';
 
 // POST /api/users
-export const createUser = async (req: Request, res: Response<UserApiResponse>) =>  {
+export const createUser = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) =>  {
     try {
-        const authReq = req as AuthenticatedRequest;
-        const { name, email, password, userLevel } = req.body as UserType;
+        const userData: UserType = req.body as UserType;
         
         // Validate input
-        const result = ZodUserSchema.safeParse(req.body);
-        if (!result.success) {
-            return res.status(400).json({ 
-                ok: false, 
-                message: 'Invalid input', 
-                error: formatZodError(result.error)
-            });
-        }
-
-        // Check if user already exists
-        const existing = await User.findOne({ email });
-        if (existing) {
-            return res.status(409).json({ ok: false, message: 'User already exists' });
-        }
+        const validatedUser: ZodUserType =  ZodUserSchema.parse(userData);
 
         // Normalize and validate userLevel
-        const level = normalizeUserLevel(userLevel);
+        const level = normalizeUserLevel(validatedUser.userLevel);
         if (level === undefined) {
             return res.status(400).json({ ok: false, message: "Invalid user level" });
         }
 
         // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ name, email, password, userLevel: level });
+        const createdUser = await User.create({ ...validatedUser, userLevel: level });
 
         res.status(201).json({ ok: true, message: 'User created', user: serializeUser(createdUser) });
     } catch (error) {
-        console.error("Error creating user:", error);
-		const errorMessage = (error instanceof Error) ? error.message : String(error);
-		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+        next(error);
     }
 };
 
 // GET /api/users
-export const getUsers = async (req: Request, res: Response<UserApiResponse>) => {
+export const getUsers = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) => {
 	try {
         const users = await User.find().lean();
 
 		res.status(200).json({ ok: true, users: users.map(user => serializeUser(user)) });
 	} catch (error) {
-		console.error("Error fetching users:", error);
-		const errorMessage = (error instanceof Error) ? error.message : String(error);
-		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+		next(error);
 	}
 };
 
 // GET /api/users/:id
-export const getUser = async (req: Request, res: Response<UserApiResponse>) => {
+export const getUser = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) => {
     try {
         const { id } = req.params;
         const user = await User.findById(id).lean();
@@ -71,30 +53,19 @@ export const getUser = async (req: Request, res: Response<UserApiResponse>) => {
         }
         res.status(200).json({ ok: true, user: serializeUser(user) });
     } catch (error) {
-        console.error("Error fetching user:", error);
-        const errorMessage = (error instanceof Error) ? error.message : String(error);
-        res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+        next(error);
     }
 };
 
 // PATCH /api/users/:id
-export const patchUser = async (req: Request, res: Response<UserApiResponse>) => {
+export const patchUser = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) => {
     try {
         const { id } = req.params;
         const userData: UserType = req.body;
         const authReq = req as AuthenticatedRequest;
 
         // Validate input
-        const result = ZodUserPatchSchema.safeParse(userData);
-        if (!result.success) {
-            return res.status(400).json({ 
-                ok: false, 
-                message: 'Invalid input', 
-                error: formatZodError(result.error)
-            });
-        }
-
-        const patchData: ZodUserPatchType = result.data;
+        const validatedUser: ZodUserPatchType = ZodUserPatchSchema.parse(userData);
 
         // Ensure the user exists
         const existing = await User.findById(id).lean();
@@ -104,10 +75,10 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
 
         // Only include fields that were provided in the patch
         const updatePayload: Partial<UserType> = {};
-        if (patchData.name !== undefined) updatePayload.name = patchData.name;
-        if (patchData.email !== undefined) updatePayload.email = patchData.email;
-        if (patchData.userLevel !== undefined) {
-            const level = normalizeUserLevel(patchData.userLevel);
+        if (validatedUser.name !== undefined) updatePayload.name = validatedUser.name;
+        if (validatedUser.email !== undefined) updatePayload.email = validatedUser.email;
+        if (validatedUser.userLevel !== undefined) {
+            const level = normalizeUserLevel(validatedUser.userLevel);
 
             if(level === undefined) {
                 return res.status(400).json({ ok: false, message: "Invalid user level" });
@@ -118,7 +89,7 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
             }
             updatePayload.userLevel = level;
         } 
-        if (patchData.password) updatePayload.password = await bcrypt.hash(patchData.password, 10);
+        if (validatedUser.password) updatePayload.password = await bcrypt.hash(validatedUser.password, 10);
 
         // Update the user in the database
         const updatedUser = await User.findByIdAndUpdate(id, updatePayload, {
@@ -131,14 +102,12 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>) =>
         }
         res.status(200).json({ ok: true, message: 'User updated', user: serializeUser(updatedUser) });
     } catch (error) {
-        console.error("Error patching user:", error);
-        const errorMessage = (error instanceof Error) ? error.message : String(error);
-        res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+        next(error);
     }
 };
 
 // DELETE /api/users/:id
-export const deleteUser = async (req: Request, res: Response<UserApiResponse>) => {
+export const deleteUser = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) => {
     try {
         const { id } = req.params;
         const authReq = req as AuthenticatedRequest;
@@ -161,14 +130,12 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>) =
 
         res.status(200).json({ ok: true, message: "User deleted" });
     } catch (error) {
-        console.error("Error deleting user:", error);
-        const errorMessage = (error instanceof Error) ? error.message : String(error);
-        res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+        next(error);
     }
 };
 
 // GET /api/users/:id/tasks
-export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>) => {
+export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>, next: NextFunction) => {
     try {
         const { id } = req.params;
 
@@ -181,8 +148,6 @@ export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>)
         const tasks = await Task.find({ assignedTo: id }).lean();
         res.status(200).json({ ok: true, tasks: tasks });
     } catch (error) {
-        console.error("Error fetching user tasks:", error);
-        const errorMessage = (error instanceof Error) ? error.message : String(error);
-        res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+        next(error);
     }
 };

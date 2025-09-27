@@ -1,11 +1,11 @@
 // src/controllers/auth.controller.ts
 import config from '../config.js'
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from "bcrypt"
-import { signToken, formatZodError } from '../utils'
+import { signToken } from '../utils'
 import { User, serializeUser } from '../models';
 import { UserLevel, UserApiResponse } from "../types";
-import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType } from "../validation";
+import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType, ZodUserType } from "../validation";
 
 export const COOKIE_OPTIONS = {
     httpOnly: true,
@@ -15,56 +15,28 @@ export const COOKIE_OPTIONS = {
 };
 
 // POST /api/auth/register
-export const register = async (req: Request, res: Response<UserApiResponse>) =>  {
+export const register = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) =>  {
     try {
-        // Force new users to have DEVELOPER level
-        const userLevel = UserLevel.DEVELOPER;
-
         // Validate input
-        const result = ZodUserSchema.safeParse({ ...req.body, userLevel: UserLevel[userLevel] });
-        if (!result.success) {
-            return res.status(400).json({ 
-                ok: false, 
-                message: 'Invalid input',
-                error: formatZodError(result.error)
-            });
-        }
-        const { name, email, password } = result.data;
-
-        // Check if user already exists
-        const existing = await User.findOne({ email });
-        if (existing) {
-            return res.status(409).json({ ok: false, message: 'User already exists' });
-        }
+        const validatedUser: ZodUserType =  ZodUserSchema.parse({ ...req.body, userLevel: UserLevel[UserLevel.DEVELOPER] });
 
         // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ name, email, password, userLevel });
+        const createdUser = await User.create({ ...validatedUser, userLevel: UserLevel.DEVELOPER });
 
         // Generate JWT token
-        const token = signToken({ _id: createdUser._id.toString(), userLevel });
+        const token = signToken({ _id: createdUser._id.toString(), userLevel: createdUser.userLevel });
 
         return res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', user: serializeUser(createdUser) });
     } catch (error) {
-        console.error("Error registering user:", error);
-		const errorMessage = (error instanceof Error) ? error.message : String(error);
-		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+        next(error);
     }
 };
 
 // POST /api/auth/login
-export const login = async (req: Request, res: Response<UserApiResponse>) =>  {
+export const login = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) =>  {
     try {
         // Validate input
-        const result = ZodLoginSchema.safeParse(req.body);
-        if (!result.success) {
-            res.clearCookie('token', COOKIE_OPTIONS);
-            return res.status(400).json({ 
-                ok: false, 
-                message: 'Invalid input', 
-                error: formatZodError(result.error) 
-            });
-        }
-        const { email, password } : ZodLoginSchemaType = result.data;
+        const { email, password } : ZodLoginSchemaType = ZodLoginSchema.parse(req.body);
         const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password').lean();
 
         if (!user?.password || !await bcrypt.compare(password, user.password)) {
@@ -80,21 +52,17 @@ export const login = async (req: Request, res: Response<UserApiResponse>) =>  {
         return res.cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'Logged in successfully', user: serializeUser(user) });
     } catch (error) {
         res.clearCookie('token', COOKIE_OPTIONS);
-        console.error("Login failed:", error);
-		const errorMessage = (error instanceof Error) ? error.message : String(error);
-		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+        next(error);
     }
 };
 
 // POST /api/auth/logout
-export const logout = async (req: Request, res: Response<UserApiResponse>) =>  {
+export const logout = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) =>  {
     try {
         res.clearCookie('token', COOKIE_OPTIONS);
         return res.json({ ok: true, message: 'Logged out successfully' }); 
     } catch (error) {
-        console.error("Logout failed:", error);
-		const errorMessage = (error instanceof Error) ? error.message : String(error);
-		res.status(500).json({ ok: false, message: "Internal server error", error: errorMessage });
+        next(error);
     }
 };
 
