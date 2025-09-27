@@ -1,5 +1,5 @@
 // src/types/user.ts
-import { UserType } from '../models/user.model.js';
+import { UserJSONType } from '../models/user.model.js';
 
 export type AuthUserType = { 
 	_id: string; 
@@ -12,6 +12,6 @@ export enum UserLevel {
 	ADMIN = 20
 }
 
-type UserApiOK = { ok: true; message?: string; user?: Partial<UserType>; users?: Partial<UserType>[]};
+type UserApiOK = { ok: true; message?: string; user?: UserJSONType; users?: UserJSONType[] };
 type UserApiErr = { ok: false; message: string; error?: string | object };
 export type UserApiResponse = UserApiOK | UserApiErr;

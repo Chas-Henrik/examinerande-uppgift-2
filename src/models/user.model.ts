@@ -53,8 +53,9 @@ userSchema.pre('save', async function (next) {
 
 type UserBaseType = InferSchemaType<typeof userSchema>;
 export type UserType = UserBaseType & { _id: Types.ObjectId };
+export type UserJSONType = Partial<UserBaseType> & { _id: string };
 
-export const serializeUser = (user: UserType) => ({
+export const serializeUser = (user: UserType): UserJSONType => ({
   _id: user._id.toString(),
   name: user.name,
   email: user.email,
