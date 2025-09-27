@@ -40,3 +40,19 @@ export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOpti
   };
 }
 
+export function authorizeUserDelete() {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const authReq = req as AuthenticatedRequest;
+
+    // admins cannot delete themselves (to guarantee at least one admin user exists)
+    if (authReq.user._id === id && authReq.user.userLevel === UserLevel.ADMIN) {
+      return res.status(403).json({ 
+        ok: false, 
+        message: "Forbidden, admin users cannot delete themselves" 
+      });
+    }
+
+    return next();
+  };
+}

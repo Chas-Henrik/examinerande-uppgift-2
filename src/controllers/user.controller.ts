@@ -112,18 +112,13 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>, n
         const { id } = req.params;
         const authReq = req as AuthenticatedRequest;
 
-        // admins cannot delete themselves (to guarantee at least one admin user exists)
-        if (authReq.user._id === id && authReq.user.userLevel === UserLevel.ADMIN) {
-            return res.status(403).json({ ok: false, message: "Forbidden, admin users cannot delete themselves" });
-        }
-
         // Delete the user
         const deleted = await User.findByIdAndDelete(id);
         if (!deleted) {
             return res.status(404).json({ ok: false, message: "User not found" });
         }
 
-        // If the user deleted itself, clear their cookie
+        // If the user deleted themselves, clear their cookie
         if (authReq.user._id === id) {
             res.clearCookie('token', COOKIE_OPTIONS);
         }
