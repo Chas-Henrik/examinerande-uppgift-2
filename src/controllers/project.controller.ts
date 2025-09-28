@@ -37,10 +37,6 @@ export const getProjects = async (req: Request, res: Response<ApiResponseType>, 
 // GET /api/projects/:id
 export const getProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
-	// Validate the id format
-	if (!mongoose.isValidObjectId(id)) {
-		throw new ApiError(400, 'Invalid project ID format');
-	}
 
 	// Fetch the project and populate the owner field
 	const project = await Project.findById(id).lean().populate({
@@ -63,11 +59,6 @@ export const patchProject = async (req: Request, res: Response<ApiResponseType>,
 
 	// Validate input
 	const validatedProject: ZodProjectPatchType = ZodProjectPatchSchema.parse(projectData);
-
-	// Validate the id format
-	if (!mongoose.isValidObjectId(id)) {
-		throw new ApiError(400, 'Invalid project ID format');
-	}
 
 	// Validate owner field if provided
 	if (validatedProject.owner && !mongoose.isValidObjectId(validatedProject.owner)) {
@@ -98,11 +89,6 @@ export const patchProject = async (req: Request, res: Response<ApiResponseType>,
 export const deleteProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
 
-	// Validate the id format
-	if (!mongoose.isValidObjectId(id)) {
-		throw new ApiError(400, 'Invalid project ID format');
-	}
-
 	// Delete the project
 	const deleted = await Project.findByIdAndDelete(id);
 	if (!deleted) {
@@ -115,11 +101,6 @@ export const deleteProject = async (req: Request, res: Response<ApiResponseType>
 // GET /api/projects/:id/tasks
 export const getProjectTasks = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
-
-	// Validate the id format
-	if (!mongoose.isValidObjectId(id)) {
-		throw new ApiError(400, 'Invalid project ID format');
-	}
 
 	// Check if the project exists
 	const projectExists = await Project.exists({ _id: id });

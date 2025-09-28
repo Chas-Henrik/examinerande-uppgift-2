@@ -25,7 +25,7 @@ export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOpti
 
           // Validate the id format
           if (!mongoose.isValidObjectId(id)) {
-            throw new ApiError(400, "Invalid user ID format");
+            throw new ApiError(400, "Invalid user ID parameter");
           }
 
           // Check that the user exists

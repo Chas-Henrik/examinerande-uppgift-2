@@ -1,7 +1,7 @@
 // src/routes/task.route.ts
 
 import express from "express"
-import { authenticate, generalLimiter, validatePagination } from "../middleware";
+import { authenticate, generalLimiter, validatePagination, validateId } from "../middleware";
 import { TaskController } from '../controllers';
 import { asyncHandler } from '../utils';
 
@@ -12,8 +12,8 @@ router.use(generalLimiter);
 // CRUD for tasks
 router.post("/", authenticate, asyncHandler(TaskController.createTask));
 router.get("/", authenticate, validatePagination(), asyncHandler(TaskController.getTasks));
-router.get("/:id", authenticate, asyncHandler(TaskController.getTask));
-router.patch("/:id", authenticate, asyncHandler(TaskController.patchTask));
-router.delete("/:id", authenticate, asyncHandler(TaskController.deleteTask));
+router.get("/:id", authenticate, validateId(), asyncHandler(TaskController.getTask));
+router.patch("/:id", authenticate, validateId(), asyncHandler(TaskController.patchTask));
+router.delete("/:id", authenticate, validateId(), asyncHandler(TaskController.deleteTask));
 
 export default router;

@@ -73,10 +73,7 @@ export const getTasks = async (req: Request, res: Response<ApiResponseType>, nex
 // GET /api/tasks/:id
 export const getTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
-	// Validate the id format
-	if (!mongoose.isValidObjectId(id)) {
-		throw new ApiError(400, 'Invalid task ID format');
-	}
+
 	const task = await Task.findById(id).lean().populate([
 		{ path: "assignedTo", select: "name email" },
 		{ path: "finishedBy", select: "name email" },
@@ -96,11 +93,6 @@ export const patchTask = async (req: Request, res: Response<ApiResponseType>, ne
 
 	// Validate input
 	const validatedTask: ZodTaskPatchType =  ZodTaskPatchSchema.parse(taskData);
-
-	// Validate the id format
-	if (!mongoose.isValidObjectId(id)) {
-		throw new ApiError(400, 'Invalid task ID format');
-	}
 
 	// Ensure the task exists
 	const existing = await Task.findById(id);
@@ -167,10 +159,6 @@ export const patchTask = async (req: Request, res: Response<ApiResponseType>, ne
 // DELETE /api/tasks/:id
 export const deleteTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
-	// Validate the id format
-	if (!mongoose.isValidObjectId(id)) {
-		throw new ApiError(400, 'Invalid task ID format');
-	}
 
 	// Delete the task
 	const deleted = await Task.findByIdAndDelete(id);
