@@ -1,4 +1,5 @@
 // src/routes/auth.route.ts
+
 import express from "express"
 import { generalLimiter, sensitiveActionLimiter } from "../middleware";
 import { AuthController } from '../controllers';

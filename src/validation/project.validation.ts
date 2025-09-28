@@ -1,4 +1,5 @@
 // src/validation/project.validation.ts
+
 import { z } from "zod";
 
 export const ZodProjectSchema = z.object({

@@ -1,4 +1,5 @@
 // src/validation/user.validation.ts
+
 import { z } from "zod";
 import { UserLevel } from "../types/user.js";
 
