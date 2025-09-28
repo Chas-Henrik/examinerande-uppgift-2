@@ -5,7 +5,7 @@ import { User, UserType, Task, serializeUser, serializeTask } from "../models"
 import { ApiResponseType } from '../types';
 import { AuthenticatedRequest } from "../middleware";
 import { COOKIE_OPTIONS } from './auth.controller.js';
-import { ZodUserSchema, ZodUserPatchSchema, ZodUserType, ZodUserPatchType } from "../validation";
+import { ZodUserSchema, ZodUserPatchSchema, ZodUserType, ZodUserPatchType, ZodPaginationType, ZodPaginationSchema } from "../validation";
 import { ApiError, normalizeUserLevel } from '../utils';
 
 // POST /api/users
@@ -34,7 +34,8 @@ export const getUsers = async (req: Request, res: Response<ApiResponseType>, nex
 	const sizeNum = parseInt(size as string);
 
 	// Validate pagination parameters
-	if (isNaN(pageNum) || isNaN(sizeNum)) {
+    const validatedPagination: ZodPaginationType = ZodPaginationSchema.parse({ page: pageNum, size: sizeNum });
+	if (!validatedPagination) {
 		throw new ApiError(400, 'Invalid pagination parameters');
 	}
 

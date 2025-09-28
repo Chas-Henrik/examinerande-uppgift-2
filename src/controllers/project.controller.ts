@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { User, Task, Project, ProjectType, serializeProject, serializeTask } from '../models';
 import { ApiResponseType } from '../types';
-import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectType, ZodProjectPatchType } from '../validation';
+import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectType, ZodProjectPatchType, ZodPaginationType, ZodPaginationSchema } from '../validation';
 import { AuthenticatedRequest } from "../middleware";
 import { ApiError } from '../utils';
 
@@ -26,7 +26,8 @@ export const getProjects = async (req: Request, res: Response<ApiResponseType>, 
 	const sizeNum = parseInt(size as string);
 
 	// Validate pagination parameters
-	if (isNaN(pageNum) || isNaN(sizeNum)) {
+	const validatedPagination: ZodPaginationType = ZodPaginationSchema.parse({ page: pageNum, size: sizeNum });
+	if (!validatedPagination) {
 		throw new ApiError(400, 'Invalid pagination parameters');
 	}
 
