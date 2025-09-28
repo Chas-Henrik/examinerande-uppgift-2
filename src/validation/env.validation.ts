@@ -10,7 +10,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production']),
   SSL_CERT_PATH: z.string().nonempty().optional(),
   SSL_KEY_PATH: z.string().nonempty().optional(),
-});
+}).loose(); // Allow other env vars
 
 export const ZodEnvSchema = envSchema.partial();
 export type ZodEnvType = z.infer<typeof ZodEnvSchema>;
