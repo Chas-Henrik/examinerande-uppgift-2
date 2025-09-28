@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import bcrypt from "bcrypt"
 import { signToken } from '../utils'
 import { User, serializeUser } from '../models';
-import { UserLevel, UserApiResponse } from "../types";
+import { UserLevel, ApiResponseType } from "../types";
 import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType, ZodUserType } from "../validation";
 
 export const COOKIE_OPTIONS = {
@@ -15,7 +15,7 @@ export const COOKIE_OPTIONS = {
 };
 
 // POST /api/auth/register
-export const register = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) =>  {
+export const register = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
     try {
         // Validate input
         const validatedUser: ZodUserType =  ZodUserSchema.parse({ ...req.body, userLevel: UserLevel[UserLevel.DEVELOPER] });
@@ -26,14 +26,14 @@ export const register = async (req: Request, res: Response<UserApiResponse>, nex
         // Generate JWT token
         const token = signToken({ _id: createdUser._id.toString(), userLevel: createdUser.userLevel });
 
-        return res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', user: serializeUser(createdUser) });
+        return res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', data: serializeUser(createdUser) });
     } catch (error) {
         next(error);
     }
 };
 
 // POST /api/auth/login
-export const login = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) =>  {
+export const login = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
     try {
         // Validate input
         const { email, password } : ZodLoginSchemaType = ZodLoginSchema.parse(req.body);
@@ -49,7 +49,7 @@ export const login = async (req: Request, res: Response<UserApiResponse>, next: 
 
         const token = signToken({ _id: user._id.toString(), userLevel: user.userLevel });
 
-        return res.cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'Logged in successfully', user: serializeUser(user) });
+        return res.cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'Logged in successfully', data: serializeUser(user) });
     } catch (error) {
         res.clearCookie('token', COOKIE_OPTIONS);
         next(error);
@@ -57,7 +57,7 @@ export const login = async (req: Request, res: Response<UserApiResponse>, next: 
 };
 
 // POST /api/auth/logout
-export const logout = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) =>  {
+export const logout = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
     try {
         res.clearCookie('token', COOKIE_OPTIONS);
         return res.json({ ok: true, message: 'Logged out successfully' }); 

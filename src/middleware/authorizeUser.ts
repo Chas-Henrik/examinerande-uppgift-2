@@ -1,7 +1,7 @@
 // src/middleware/authorizeUser.ts
 
 import { Request, Response, NextFunction } from "express";
-import { UserLevel } from "../types";
+import { UserLevel, ApiResponseType } from "../types";
 import { AuthenticatedRequest } from "../middleware";
 import mongoose from "mongoose";
 
@@ -11,7 +11,7 @@ type AuthorizeOptions = {
 };
 
 export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOptions) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     const authReq = req as AuthenticatedRequest;
     
     const userLevelAuthorized = authReq.user.userLevel >= minUserLevel;
@@ -41,7 +41,7 @@ export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOpti
 }
 
 export function authorizeUserDelete() {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     const { id } = req.params;
     const authReq = req as AuthenticatedRequest;
 

@@ -3,9 +3,9 @@
 import { ZodError } from 'zod';
 import mongoose from 'mongoose';
 import { Request, Response, NextFunction } from 'express';
-import { GenericApiResponse } from '../types';
+import { ApiResponseType } from '../types';
 
-export function errorHandler(err: any, req: Request, res: Response<GenericApiResponse>, _next: NextFunction) {
+export function errorHandler(err: any, req: Request, res: Response<ApiResponseType>, _next: NextFunction) {
   let statusCode: number;
   let message: string;
   let errors: object[] = [];

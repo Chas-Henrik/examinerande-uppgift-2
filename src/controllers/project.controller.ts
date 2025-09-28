@@ -1,13 +1,13 @@
 // src/controllers/project.controller.ts
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { User, Task, Project, ProjectType } from '../models';
-import { UserLevel, ProjectApiResponse, TaskApiResponse } from '../types';
+import { User, Task, Project, ProjectType, serializeProject, serializeTask } from '../models';
+import { ApiResponseType } from '../types';
 import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectType, ZodProjectPatchType } from '../validation';
 import { AuthenticatedRequest } from "../middleware";
 
 // POST /api/projects
-export const createProject = async (req: Request, res: Response<ProjectApiResponse>, next: NextFunction) =>  {
+export const createProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
 	try {
 		const authReq = req as AuthenticatedRequest;
 		const projectData: Omit<ProjectType, 'owner'> = req.body;
@@ -16,27 +16,27 @@ export const createProject = async (req: Request, res: Response<ProjectApiRespon
 		const validatedProject: ZodProjectType =  ZodProjectSchema.parse(projectData);
 
 		const createdProject = await Project.create({ ...validatedProject, owner: authReq.user._id });
-		res.status(201).json({ ok: true, message: 'Project created', project: createdProject });
+		res.status(201).json({ ok: true, message: 'Project created', data: serializeProject(createdProject) });
 	} catch (error) {
 		next(error);
 	}
 };
 
 // GET /api/projects
-export const getProjects = async (_req: Request, res: Response<ProjectApiResponse>, next: NextFunction) => {
+export const getProjects = async (_req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	try {
 		const projects = await Project.find().lean().populate({
             path: "owner",
 			select: "name email", // Select only specific fields to return
         });
-		res.status(200).json({ ok: true, projects: projects });
+		res.status(200).json({ ok: true, message: 'Projects fetched', data: projects.map(project => serializeProject(project)) });
 	} catch (error) {
 		next(error);
 	}
 };
 
 // GET /api/projects/:id
-export const getProject = async (req: Request, res: Response<ProjectApiResponse>, next: NextFunction) => {
+export const getProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	try {
 		const { id } = req.params;
 		// Validate the id format
@@ -55,14 +55,14 @@ export const getProject = async (req: Request, res: Response<ProjectApiResponse>
 			return res.status(404).json({ ok: false, message: "Project not found" });
 		}
 
-		res.status(200).json({ ok: true, project: project });
+		res.status(200).json({ ok: true, message: 'Project fetched', data: serializeProject(project) });
 	} catch (error) {
 		next(error);
 	}
 };
 
 // PATCH /api/projects/:id
-export const patchProject = async (req: Request, res: Response<ProjectApiResponse>, next: NextFunction) => {
+export const patchProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	try {
         const authReq = req as AuthenticatedRequest;
 		const projectData: ProjectType = req.body;
@@ -98,14 +98,14 @@ export const patchProject = async (req: Request, res: Response<ProjectApiRespons
 		if (!updatedProject) {
 			return res.status(404).json({ ok: false, message: "Project not found" });
 		}
-		res.status(200).json({ ok: true, message: 'Project updated', project: updatedProject });
+		res.status(200).json({ ok: true, message: 'Project updated', data: serializeProject(updatedProject) });
 	} catch (error) {
 		next(error);
 	}
 };
 
 // DELETE /api/projects/:id
-export const deleteProject = async (req: Request, res: Response<ProjectApiResponse>, next: NextFunction) => {
+export const deleteProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	try {
         const authReq = req as AuthenticatedRequest;
 		const { id } = req.params;
@@ -128,7 +128,7 @@ export const deleteProject = async (req: Request, res: Response<ProjectApiRespon
 };
 
 // GET /api/projects/:id/tasks
-export const getProjectTasks = async (req: Request, res: Response<TaskApiResponse>, next: NextFunction) => {
+export const getProjectTasks = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     try {
         const { id } = req.params;
 
@@ -154,7 +154,7 @@ export const getProjectTasks = async (req: Request, res: Response<TaskApiRespons
 			}
 		]);
 
-		res.status(200).json({ ok: true, tasks: tasks });
+		res.status(200).json({ ok: true, message: 'Tasks fetched', data: tasks.map(task => serializeTask(task)) });
     } catch (error) {
 		next(error);
     }

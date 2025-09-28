@@ -1,12 +1,12 @@
 // src/middleware/authorizeProject.ts
 
 import { Request, Response, NextFunction } from "express";
-import { UserLevel } from "../types";
+import { UserLevel, ApiResponseType } from "../types";
 import { AuthenticatedRequest } from "../middleware";
 import { Project } from '../models';
 
 export function authorizeProject(minUserLevel: UserLevel) {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     const authReq = req as AuthenticatedRequest;
     const { id } = req.params;
 

@@ -1,13 +1,13 @@
 // src/controllers/task.controller.ts
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
-import { User, Task, TaskType, Project } from '../models';
-import { TaskApiResponse } from "../types";
+import { User, Task, TaskType, Project, TaskJSONType, serializeTask } from '../models';
+import { ApiResponseType } from "../types";
 import { ZodTaskSchema, ZodTaskPatchSchema, ZodTaskType, ZodTaskPatchType } from '../validation';
 import { AuthenticatedRequest } from "../middleware";
 
 // POST /api/tasks
-export const createTask = async (req: Request, res: Response<TaskApiResponse>, next: NextFunction) =>  {
+export const createTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
 	try {
 		const authReq = req as AuthenticatedRequest;
 		const taskData: TaskType = req.body;
@@ -51,28 +51,28 @@ export const createTask = async (req: Request, res: Response<TaskApiResponse>, n
 		}
 
 		const createdTask = await Task.create(finalTaskData);
-		res.status(201).json({ ok: true, message: 'Task created', task: createdTask });
+		res.status(201).json({ ok: true, message: 'Task created', data: serializeTask(createdTask) });
 	} catch (error) {
 		next(error);
 	}
 };
 
 // GET /api/tasks
-export const getTasks = async (_req: Request, res: Response<TaskApiResponse>, next: NextFunction) => {
+export const getTasks = async (_req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	try {
 		const tasks = await Task.find().lean().populate([
 			{ path: "assignedTo", select: "name email" },
 			{ path: "finishedBy", select: "name email" },
 			{ path: "project", select: "name _id" }
 		]);
-		res.status(200).json({ ok: true, tasks: tasks });
+		res.status(200).json({ ok: true, message: 'Tasks fetched', data: tasks.map(task => serializeTask(task)) });
 	} catch (error) {
 		next(error);
 	}
 };
 
 // GET /api/tasks/:id
-export const getTask = async (req: Request, res: Response<TaskApiResponse>, next: NextFunction) => {
+export const getTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	try {
 		const { id } = req.params;
 		// Validate the id format
@@ -87,14 +87,14 @@ export const getTask = async (req: Request, res: Response<TaskApiResponse>, next
 		if (!task) {
 			return res.status(404).json({ ok: false, message: "Task not found" });
 		}
-		res.status(200).json({ ok: true, task: task });
+		res.status(200).json({ ok: true, message: 'Task fetched', data: serializeTask(task) });
 	} catch (error) {
 		next(error);
 	}
 };
 
 // PATCH /api/tasks/:id
-export const patchTask = async (req: Request, res: Response<TaskApiResponse>, next: NextFunction) => {
+export const patchTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
 	try {
 		const authReq = req as AuthenticatedRequest;
@@ -167,14 +167,14 @@ export const patchTask = async (req: Request, res: Response<TaskApiResponse>, ne
 			return res.status(404).json({ ok: false, message: "Task not found" });
 		}
 
-		res.status(200).json({ ok: true, message: 'Task updated', task: updatedTask });
+		res.status(200).json({ ok: true, message: 'Task updated', data: serializeTask(updatedTask) });
 	} catch (error) {
 		next(error);
 	}
 };
 
 // DELETE /api/tasks/:id
-export const deleteTask = async (req: Request, res: Response<TaskApiResponse>, next: NextFunction) => {
+export const deleteTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
 	try {
 		// Validate the id format

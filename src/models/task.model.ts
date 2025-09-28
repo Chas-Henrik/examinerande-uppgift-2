@@ -47,5 +47,14 @@ const taskSchema = new mongoose.Schema({
 
 type TaskBaseType = InferSchemaType<typeof taskSchema>;
 export type TaskType = TaskBaseType & { _id: Types.ObjectId };
+export type TaskJSONType = Partial<TaskBaseType> & { _id: string };
+
+export const serializeTask = (task: TaskType): TaskJSONType => {
+    const ret = { ...task, _id: task._id.toString() };
+    if ('__v' in ret) {
+        delete (ret as any).__v;      // Remove __v field if present
+    }
+    return ret;
+};
 
 export const Task = mongoose.model("Task", taskSchema);

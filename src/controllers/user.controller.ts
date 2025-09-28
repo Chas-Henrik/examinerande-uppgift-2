@@ -1,15 +1,15 @@
 // src/controllers/user.controller.ts
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
-import { User, UserType, serializeUser, Task } from "../models"
-import { UserLevel, UserApiResponse, TaskApiResponse } from '../types';
+import { User, UserType, Task, serializeUser, serializeTask } from "../models"
+import { ApiResponseType } from '../types';
 import { AuthenticatedRequest } from "../middleware";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema, ZodUserPatchSchema, ZodUserType, ZodUserPatchType } from "../validation";
 import { normalizeUserLevel } from '../utils';
 
 // POST /api/users
-export const createUser = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) =>  {
+export const createUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
     try {
         const userData: UserType = req.body as UserType;
         
@@ -25,25 +25,25 @@ export const createUser = async (req: Request, res: Response<UserApiResponse>, n
         // Create user (password will be hashed in pre-save hook in user model)
         const createdUser = await User.create({ ...validatedUser, userLevel: level });
 
-        res.status(201).json({ ok: true, message: 'User created', user: serializeUser(createdUser) });
+        res.status(201).json({ ok: true, message: 'User created', data: serializeUser(createdUser) });
     } catch (error) {
         next(error);
     }
 };
 
 // GET /api/users
-export const getUsers = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) => {
+export const getUsers = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	try {
         const users = await User.find().lean();
 
-		res.status(200).json({ ok: true, users: users.map(user => serializeUser(user)) });
+		res.status(200).json({ ok: true, message: 'Users fetched', data: users.map(user => serializeUser(user)) });
 	} catch (error) {
 		next(error);
 	}
 };
 
 // GET /api/users/:id
-export const getUser = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) => {
+export const getUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     try {
         const { id } = req.params;
         const user = await User.findById(id).lean();
@@ -51,14 +51,14 @@ export const getUser = async (req: Request, res: Response<UserApiResponse>, next
         if (!user) {
             return res.status(404).json({ ok: false, message: "User not found" });
         }
-        res.status(200).json({ ok: true, user: serializeUser(user) });
+        res.status(200).json({ ok: true, message: 'User fetched', data: serializeUser(user) });
     } catch (error) {
         next(error);
     }
 };
 
 // PATCH /api/users/:id
-export const patchUser = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) => {
+export const patchUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     try {
         const { id } = req.params;
         const userData: UserType = req.body;
@@ -100,14 +100,14 @@ export const patchUser = async (req: Request, res: Response<UserApiResponse>, ne
         if (!updatedUser) {
             return res.status(404).json({ ok: false, message: "User not found" });
         }
-        res.status(200).json({ ok: true, message: 'User updated', user: serializeUser(updatedUser) });
+        res.status(200).json({ ok: true, message: 'User updated', data: serializeUser(updatedUser) });
     } catch (error) {
         next(error);
     }
 };
 
 // DELETE /api/users/:id
-export const deleteUser = async (req: Request, res: Response<UserApiResponse>, next: NextFunction) => {
+export const deleteUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     try {
         const { id } = req.params;
         const authReq = req as AuthenticatedRequest;
@@ -130,7 +130,7 @@ export const deleteUser = async (req: Request, res: Response<UserApiResponse>, n
 };
 
 // GET /api/users/:id/tasks
-export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>, next: NextFunction) => {
+export const getUserTasks = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     try {
         const { id } = req.params;
 
@@ -141,7 +141,7 @@ export const getUserTasks = async (req: Request, res: Response<TaskApiResponse>,
         }
 
         const tasks = await Task.find({ assignedTo: id }).lean();
-        res.status(200).json({ ok: true, tasks: tasks });
+        res.status(200).json({ ok: true, message: 'Tasks fetched', data: tasks.map(task => serializeTask(task)) });
     } catch (error) {
         next(error);
     }
