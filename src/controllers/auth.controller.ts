@@ -17,20 +17,16 @@ export const COOKIE_OPTIONS = {
 
 // POST /api/auth/register
 export const register = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
-    try {
-        // Validate input
-        const validatedUser: ZodUserType =  ZodUserSchema.parse({ ...req.body, userLevel: UserLevel[UserLevel.DEVELOPER] });
+    // Validate input
+    const validatedUser: ZodUserType =  ZodUserSchema.parse({ ...req.body, userLevel: UserLevel[UserLevel.DEVELOPER] });
 
-        // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ ...validatedUser, userLevel: UserLevel.DEVELOPER });
+    // Create user (password will be hashed in pre-save hook in user model)
+    const createdUser = await User.create({ ...validatedUser, userLevel: UserLevel.DEVELOPER });
 
-        // Generate JWT token
-        const token = signToken({ _id: createdUser._id.toString(), userLevel: createdUser.userLevel });
+    // Generate JWT token
+    const token = signToken({ _id: createdUser._id.toString(), userLevel: createdUser.userLevel });
 
-        return res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', data: serializeUser(createdUser) });
-    } catch (error) {
-        next(error);
-    }
+    return res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', data: serializeUser(createdUser) });
 };
 
 // POST /api/auth/login
@@ -59,11 +55,7 @@ export const login = async (req: Request, res: Response<ApiResponseType>, next: 
 
 // POST /api/auth/logout
 export const logout = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
-    try {
-        res.clearCookie('token', COOKIE_OPTIONS);
-        return res.json({ ok: true, message: 'Logged out successfully' }); 
-    } catch (error) {
-        next(error);
-    }
+    res.clearCookie('token', COOKIE_OPTIONS);
+    return res.json({ ok: true, message: 'Logged out successfully' }); 
 };
 

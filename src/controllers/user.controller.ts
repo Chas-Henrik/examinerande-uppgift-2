@@ -10,139 +10,103 @@ import { ApiError, normalizeUserLevel } from '../utils';
 
 // POST /api/users
 export const createUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
-    try {
-        const userData: UserType = req.body as UserType;
-        
-        // Validate input
-        const validatedUser: ZodUserType =  ZodUserSchema.parse(userData);
+    const userData: UserType = req.body as UserType;
+    
+    // Validate input
+    const validatedUser: ZodUserType =  ZodUserSchema.parse(userData);
 
-        // Normalize and validate userLevel
-        const level = normalizeUserLevel(validatedUser.userLevel);
-        if (level === undefined) {
-            throw new ApiError(400, 'Invalid user level');
-        }
-
-        // Create user (password will be hashed in pre-save hook in user model)
-        const createdUser = await User.create({ ...validatedUser, userLevel: level });
-
-        res.status(201).json({ ok: true, message: 'User created', data: serializeUser(createdUser) });
-    } catch (error) {
-        next(error);
+    // Normalize and validate userLevel
+    const level = normalizeUserLevel(validatedUser.userLevel);
+    if (level === undefined) {
+        throw new ApiError(400, 'Invalid user level');
     }
+
+    // Create user (password will be hashed in pre-save hook in user model)
+    const createdUser = await User.create({ ...validatedUser, userLevel: level });
+
+    res.status(201).json({ ok: true, message: 'User created', data: serializeUser(createdUser) });
 };
 
 // GET /api/users
 export const getUsers = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-	try {
-        const users = await User.find().lean();
+    const users = await User.find().lean();
 
-		res.status(200).json({ ok: true, message: 'Users fetched', data: users.map(user => serializeUser(user)) });
-	} catch (error) {
-		next(error);
-	}
+    res.status(200).json({ ok: true, message: 'Users fetched', data: users.map(user => serializeUser(user)) });
 };
 
 // GET /api/users/:id
 export const getUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-    try {
-        const { id } = req.params;
-        const user = await User.findById(id).lean();
+    const { id } = req.params;
+    const user = await User.findById(id).lean();
 
-        if (!user) {
-            throw new ApiError(404, 'User not found');
-        }
-        res.status(200).json({ ok: true, message: 'User fetched', data: serializeUser(user) });
-    } catch (error) {
-        next(error);
+    if (!user) {
+        throw new ApiError(404, 'User not found');
     }
+    res.status(200).json({ ok: true, message: 'User fetched', data: serializeUser(user) });
 };
 
 // PATCH /api/users/:id
 export const patchUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-    try {
-        const { id } = req.params;
-        const userData: UserType = req.body;
-        const authReq = req as AuthenticatedRequest;
+    const { id } = req.params;
+    const userData: UserType = req.body;
+    const authReq = req as AuthenticatedRequest;
 
-        // Validate input
-        const validatedUser: ZodUserPatchType = ZodUserPatchSchema.parse(userData);
+    // Validate input
+    const validatedUser: ZodUserPatchType = ZodUserPatchSchema.parse(userData);
 
-        // Ensure the user exists
-        const existing = await User.findById(id).lean();
-        if (!existing) {
-            throw new ApiError(404, 'User not found');
+    // Only include fields that were provided in the patch
+    const updatePayload: Partial<UserType> = {};
+    if (validatedUser.name !== undefined) updatePayload.name = validatedUser.name;
+    if (validatedUser.email !== undefined) updatePayload.email = validatedUser.email;
+    if (validatedUser.userLevel !== undefined) {
+        const level = normalizeUserLevel(validatedUser.userLevel);
+
+        if(level === undefined) {
+            throw new ApiError(400, 'Invalid user level');
         }
 
-        // Only include fields that were provided in the patch
-        const updatePayload: Partial<UserType> = {};
-        if (validatedUser.name !== undefined) updatePayload.name = validatedUser.name;
-        if (validatedUser.email !== undefined) updatePayload.email = validatedUser.email;
-        if (validatedUser.userLevel !== undefined) {
-            const level = normalizeUserLevel(validatedUser.userLevel);
-
-            if(level === undefined) {
-                throw new ApiError(400, 'Invalid user level');
-            }
-
-            if(level > authReq.user.userLevel) {
-                throw new ApiError(403, 'Cannot assign a user level higher than your own');
-            }
-            updatePayload.userLevel = level;
-        } 
-        if (validatedUser.password) updatePayload.password = await bcrypt.hash(validatedUser.password, 10);
-
-        // Update the user in the database
-        const updatedUser = await User.findByIdAndUpdate(id, updatePayload, {
-            new: true,
-            runValidators: true,
-            upsert: false  // Do not create a new document if it doesn't exist
-        });
-        if (!updatedUser) {
-            throw new ApiError(404, 'User not found');
+        if(level > authReq.user.userLevel) {
+            throw new ApiError(403, 'Cannot assign a user level higher than your own');
         }
-        res.status(200).json({ ok: true, message: 'User updated', data: serializeUser(updatedUser) });
-    } catch (error) {
-        next(error);
+        updatePayload.userLevel = level;
+    } 
+    if (validatedUser.password) updatePayload.password = await bcrypt.hash(validatedUser.password, 10);
+
+    // Update the user in the database
+    const updatedUser = await User.findByIdAndUpdate(id, updatePayload, {
+        new: true,
+        runValidators: true,
+        upsert: false  // Do not create a new document if it doesn't exist
+    });
+    if (!updatedUser) {
+        throw new ApiError(404, 'User not found');
     }
+    res.status(200).json({ ok: true, message: 'User updated', data: serializeUser(updatedUser) });
 };
 
 // DELETE /api/users/:id
 export const deleteUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-    try {
-        const { id } = req.params;
-        const authReq = req as AuthenticatedRequest;
+    const { id } = req.params;
+    const authReq = req as AuthenticatedRequest;
 
-        // Delete the user
-        const deleted = await User.findByIdAndDelete(id);
-        if (!deleted) {
-            throw new ApiError(404, 'User not found');
-        }
-
-        // If the user deleted themselves, clear their cookie
-        if (authReq.user._id === id) {
-            res.clearCookie('token', COOKIE_OPTIONS);
-        }
-
-        res.status(200).json({ ok: true, message: "User deleted" });
-    } catch (error) {
-        next(error);
+    // Delete the user
+    const deleted = await User.findByIdAndDelete(id);
+    if (!deleted) {
+        throw new ApiError(404, 'User not found');
     }
+
+    // If the user deleted themselves, clear their cookie
+    if (authReq.user._id === id) {
+        res.clearCookie('token', COOKIE_OPTIONS);
+    }
+
+    res.status(200).json({ ok: true, message: "User deleted" });
 };
 
 // GET /api/users/:id/tasks
 export const getUserTasks = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-    try {
-        const { id } = req.params;
+    const { id } = req.params;
 
-        // Check that the user exists
-        const userExists = await User.exists({ _id: id });
-        if (!userExists) {
-            throw new ApiError(404, 'User not found');
-        }
-
-        const tasks = await Task.find({ assignedTo: id }).lean();
-        res.status(200).json({ ok: true, message: 'Tasks fetched', data: tasks.map(task => serializeTask(task)) });
-    } catch (error) {
-        next(error);
-    }
+    const tasks = await Task.find({ assignedTo: id }).lean();
+    res.status(200).json({ ok: true, message: 'Tasks fetched', data: tasks.map(task => serializeTask(task)) });
 };

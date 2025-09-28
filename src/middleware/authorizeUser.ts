@@ -5,6 +5,7 @@ import { UserLevel, ApiResponseType } from "../types";
 import { AuthenticatedRequest } from "../middleware";
 import mongoose from "mongoose";
 import { ApiError } from "../utils";
+import { User } from "../models";
 
 type AuthorizeOptions = {
   minUserLevel: UserLevel;  // Minimum required user level
@@ -12,7 +13,7 @@ type AuthorizeOptions = {
 };
 
 export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOptions) {
-  return (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+  return async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     try {
       const authReq = req as AuthenticatedRequest;
     
@@ -25,6 +26,12 @@ export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOpti
           // Validate the id format
           if (!mongoose.isValidObjectId(id)) {
             throw new ApiError(400, "Invalid user ID format");
+          }
+
+          // Check that the user exists
+          const userExists = await User.exists({ _id: id });
+          if (!userExists) {
+              throw new ApiError(404, 'User not found');
           }
 
           ownsResource = authOwner && id === authReq.user._id;
