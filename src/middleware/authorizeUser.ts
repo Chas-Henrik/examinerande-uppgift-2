@@ -13,7 +13,7 @@ type AuthorizeOptions = {
 };
 
 export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOptions) {
-  return async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+  return async (req: Request, _res: Response<ApiResponseType>, next: NextFunction) => {
     try {
       const authReq = req as AuthenticatedRequest;
     
@@ -50,7 +50,7 @@ export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOpti
 }
 
 export function authorizeUserDelete() {
-  return (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+  return (req: Request, _res: Response<ApiResponseType>, next: NextFunction) => {
     try {
       const { id } = req.params;
       const authReq = req as AuthenticatedRequest;

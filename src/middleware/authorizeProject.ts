@@ -7,7 +7,7 @@ import { Project } from '../models';
 import { ApiError } from "../utils";
 
 export function authorizeProject(minUserLevel: UserLevel) {
-  return async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+  return async (req: Request, _res: Response<ApiResponseType>, next: NextFunction) => {
     try {
       const authReq = req as AuthenticatedRequest;
       const { id } = req.params;

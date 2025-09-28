@@ -11,7 +11,7 @@ export interface AuthenticatedRequest extends Request {
 }
 
 // Middleware to authenticate and authorize users based on JWT token and user level
-export async function authenticate(req: Request, res: Response<ApiResponseType>, next: NextFunction) {
+export async function authenticate(req: Request, _res: Response<ApiResponseType>, next: NextFunction) {
     try {
         const authReq = req as AuthenticatedRequest;
 

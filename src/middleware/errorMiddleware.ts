@@ -6,7 +6,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ApiResponseType } from '../types';
 import { ApiError } from '../utils';
 
-export function errorHandler(err: any, req: Request, res: Response<ApiResponseType>, _next: NextFunction) {
+export function errorHandler(err: any, _req: Request, res: Response<ApiResponseType>, _next: NextFunction) {
   let statusCode: number;
   let message: string;
   let errors: object[] = [];
