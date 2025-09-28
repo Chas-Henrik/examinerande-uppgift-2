@@ -4,13 +4,18 @@ import { ZodError } from 'zod';
 import mongoose from 'mongoose';
 import { Request, Response, NextFunction } from 'express';
 import { ApiResponseType } from '../types';
+import { ApiError } from '../utils';
 
 export function errorHandler(err: any, req: Request, res: Response<ApiResponseType>, _next: NextFunction) {
   let statusCode: number;
   let message: string;
   let errors: object[] = [];
 
-  if (err instanceof ZodError) {
+  if (err instanceof ApiError) {
+    // Handle API errors
+    statusCode = err.statusCode;
+    message = err.message;
+  } else if (err instanceof ZodError) {
     // Handle Zod validation errors
     statusCode = 400;
     message = 'Parameter validation error';
@@ -39,7 +44,7 @@ export function errorHandler(err: any, req: Request, res: Response<ApiResponseTy
 
   res.status(statusCode).json({
     ok: false,
-    message,
+    message: message,
     errors: errors.length > 0 ? errors : undefined
   });
 }

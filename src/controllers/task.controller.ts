@@ -5,6 +5,7 @@ import { User, Task, TaskType, Project, TaskJSONType, serializeTask } from '../m
 import { ApiResponseType } from "../types";
 import { ZodTaskSchema, ZodTaskPatchSchema, ZodTaskType, ZodTaskPatchType } from '../validation';
 import { AuthenticatedRequest } from "../middleware";
+import { ApiError } from '../utils';
 
 // POST /api/tasks
 export const createTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
@@ -17,27 +18,27 @@ export const createTask = async (req: Request, res: Response<ApiResponseType>, n
 
 		// Validate assignedTo field if provided
 		if (validatedTask.assignedTo && !mongoose.isValidObjectId(validatedTask.assignedTo)) {
-			return res.status(400).json({ ok: false, message: "Invalid assignedTo user ID format" });
+			throw new ApiError(400, 'Invalid assignedTo user ID format');
 		}
 
 		// If assignedTo is provided, check that the user exists
 		if(validatedTask.assignedTo) {
 			const user = await User.findById(validatedTask.assignedTo);
 			if (!user) {
-				return res.status(404).json({ ok: false, message: "assignedTo user not found" });
+				throw new ApiError(404, 'assignedTo user not found');
 			}
 		}
 
 		// Validate project field if provided
 		if (validatedTask.project && !mongoose.isValidObjectId(validatedTask.project)) {
-			return res.status(400).json({ ok: false, message: "Invalid project ID format" });
+			throw new ApiError(400, 'Invalid project ID format');
 		}
 		
 		// If project is provided, check that the project exists
 		if(validatedTask.project) {
 			const projectExists = await Project.exists({ _id: validatedTask.project });
 			if (!projectExists) {
-				return res.status(404).json({ ok: false, message: "Project not found" });
+				throw new ApiError(404, 'Project not found');
 			}
 		}
 
@@ -77,7 +78,7 @@ export const getTask = async (req: Request, res: Response<ApiResponseType>, next
 		const { id } = req.params;
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
-			return res.status(400).json({ ok: false, message: "Invalid task ID format" });
+			throw new ApiError(400, 'Invalid task ID format');
 		}
 		const task = await Task.findById(id).lean().populate([
 			{ path: "assignedTo", select: "name email" },
@@ -85,7 +86,7 @@ export const getTask = async (req: Request, res: Response<ApiResponseType>, next
 			{ path: "project", select: "name _id" }
 		]);
 		if (!task) {
-			return res.status(404).json({ ok: false, message: "Task not found" });
+			throw new ApiError(404, 'Task not found');
 		}
 		res.status(200).json({ ok: true, message: 'Task fetched', data: serializeTask(task) });
 	} catch (error) {
@@ -105,38 +106,38 @@ export const patchTask = async (req: Request, res: Response<ApiResponseType>, ne
 
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
-			return res.status(400).json({ ok: false, message: "Invalid task ID format" });
+			throw new ApiError(400, 'Invalid task ID format');
 		}
 
 		// Ensure the task exists
 		const existing = await Task.findById(id);
 		if (!existing) {
-			return res.status(404).json({ ok: false, message: "Task not found" });
+			throw new ApiError(404, 'Task not found');
 		}
 
 		// Validate assignedTo field if provided
 		if (validatedTask.assignedTo && !mongoose.isValidObjectId(validatedTask.assignedTo)) {
-			return res.status(400).json({ ok: false, message: "Invalid assignedTo user ID format" });
+			throw new ApiError(400, 'Invalid assignedTo user ID format');
 		}
 
 		// If assignedTo is provided, check that the user exists
 		if(validatedTask.assignedTo) {
 			const user = await User.findById(validatedTask.assignedTo);
 			if (!user) {
-				return res.status(404).json({ ok: false, message: "assignedTo user not found" });
+				throw new ApiError(404, 'assignedTo user not found');
 			}
 		}
 
 		// Validate project field if provided
 		if (validatedTask.project && !mongoose.isValidObjectId(validatedTask.project)) {
-			return res.status(400).json({ ok: false, message: "Invalid project ID format" });
+			throw new ApiError(400, 'Invalid project ID format');
 		}
 
 		// If project is provided, check that the project exists
 		if(validatedTask.project) {
 			const projectExists = await Project.exists({ _id: validatedTask.project });
 			if (!projectExists) {
-				return res.status(404).json({ ok: false, message: "Project not found" });
+				throw new ApiError(404, 'Project not found');
 			}
 		}
 
@@ -164,7 +165,7 @@ export const patchTask = async (req: Request, res: Response<ApiResponseType>, ne
 			}
 		);
 		if (!updatedTask) {
-			return res.status(404).json({ ok: false, message: "Task not found" });
+			throw new ApiError(404, 'Task not found');
 		}
 
 		res.status(200).json({ ok: true, message: 'Task updated', data: serializeTask(updatedTask) });
@@ -179,13 +180,13 @@ export const deleteTask = async (req: Request, res: Response<ApiResponseType>, n
 	try {
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
-			return res.status(400).json({ ok: false, message: "Invalid task ID format" });
+			throw new ApiError(400, 'Invalid task ID format');
 		}
 
 		// Delete the task
 		const deleted = await Task.findByIdAndDelete(id);
 		if (!deleted) {
-			return res.status(404).json({ ok: false, message: "Task not found" });
+			throw new ApiError(404, 'Task not found');
 		}
 
 		res.status(200).json({ ok: true, message: "Task deleted" });

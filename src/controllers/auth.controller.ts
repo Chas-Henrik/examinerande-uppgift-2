@@ -6,6 +6,7 @@ import { signToken } from '../utils'
 import { User, serializeUser } from '../models';
 import { UserLevel, ApiResponseType } from "../types";
 import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType, ZodUserType } from "../validation";
+import { ApiError } from "../utils"; // Adjust path if ApiError is in a different module
 
 export const COOKIE_OPTIONS = {
     httpOnly: true,
@@ -44,7 +45,7 @@ export const login = async (req: Request, res: Response<ApiResponseType>, next: 
             const dummyHash = '$2b$10$invalidsaltinvalidsaltinv.uFzQxGZ7yQzW9X0mFq2e2K';
             await bcrypt.compare(password, dummyHash); // for timing consistency
             res.clearCookie('token', COOKIE_OPTIONS);
-            return res.status(401).json({ ok: false, message: 'Invalid credentials' });
+            throw new ApiError(401, 'Invalid credentials');
         }
 
         const token = signToken({ _id: user._id.toString(), userLevel: user.userLevel });

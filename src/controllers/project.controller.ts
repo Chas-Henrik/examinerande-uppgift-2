@@ -5,6 +5,7 @@ import { User, Task, Project, ProjectType, serializeProject, serializeTask } fro
 import { ApiResponseType } from '../types';
 import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectType, ZodProjectPatchType } from '../validation';
 import { AuthenticatedRequest } from "../middleware";
+import { ApiError } from '../utils';
 
 // POST /api/projects
 export const createProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
@@ -41,7 +42,7 @@ export const getProject = async (req: Request, res: Response<ApiResponseType>, n
 		const { id } = req.params;
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
-			return res.status(400).json({ ok: false, message: "Invalid project ID format" });
+			throw new ApiError(400, 'Invalid project ID format');
 		}
 
         // Fetch the project and populate the owner field
@@ -52,7 +53,7 @@ export const getProject = async (req: Request, res: Response<ApiResponseType>, n
 
         // Check if the project exists
 		if (!project) {
-			return res.status(404).json({ ok: false, message: "Project not found" });
+			throw new ApiError(404, 'Project not found');
 		}
 
 		res.status(200).json({ ok: true, message: 'Project fetched', data: serializeProject(project) });
@@ -73,19 +74,19 @@ export const patchProject = async (req: Request, res: Response<ApiResponseType>,
 
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
-			return res.status(400).json({ ok: false, message: "Invalid project ID format" });
+			throw new ApiError(400, 'Invalid project ID format');
 		}
 
         // Validate owner field if provided
 		if (validatedProject.owner && !mongoose.isValidObjectId(validatedProject.owner)) {
-			return res.status(400).json({ ok: false, message: "Invalid owner user ID format" });
+			throw new ApiError(400, 'Invalid owner user ID format');
 		}
 
 		// If owner is provided, check that the user exists
 		if (validatedProject.owner) {
 			const user = await User.findById(validatedProject.owner);
 			if (!user) {
-				return res.status(404).json({ ok: false, message: "Owner user not found" });
+				throw new ApiError(404, 'Owner user not found');
 			}
 		}
 
@@ -96,7 +97,7 @@ export const patchProject = async (req: Request, res: Response<ApiResponseType>,
 			upsert: false  // Do not create a new document if it doesn't exist
 		});
 		if (!updatedProject) {
-			return res.status(404).json({ ok: false, message: "Project not found" });
+			throw new ApiError(404, 'Project not found');
 		}
 		res.status(200).json({ ok: true, message: 'Project updated', data: serializeProject(updatedProject) });
 	} catch (error) {
@@ -112,13 +113,13 @@ export const deleteProject = async (req: Request, res: Response<ApiResponseType>
 
 		// Validate the id format
 		if (!mongoose.isValidObjectId(id)) {
-			return res.status(400).json({ ok: false, message: "Invalid project ID format" });
+			throw new ApiError(400, 'Invalid project ID format');
 		}
 
 		// Delete the project
 		const deleted = await Project.findByIdAndDelete(id);
 		if (!deleted) {
-			return res.status(404).json({ ok: false, message: "Project not found" });
+			throw new ApiError(404, 'Project not found');
 		}
 
 		res.status(200).json({ ok: true, message: "Project deleted" });
@@ -134,13 +135,13 @@ export const getProjectTasks = async (req: Request, res: Response<ApiResponseTyp
 
         // Validate the id format
         if (!mongoose.isValidObjectId(id)) {
-            return res.status(400).json({ ok: false, message: "Invalid project ID format" });
+            throw new ApiError(400, 'Invalid project ID format');
         }
 
         // Check if the project exists
 		const projectExists = await Project.exists({ _id: id });
 		if (!projectExists) {
-			return res.status(404).json({ ok: false, message: "Project not found" });
+			throw new ApiError(404, 'Project not found');
 		}
 
 		const tasks = await Task.find({ project: id }).lean().populate([

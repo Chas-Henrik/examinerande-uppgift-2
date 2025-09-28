@@ -6,7 +6,7 @@ import { ApiResponseType } from '../types';
 import { AuthenticatedRequest } from "../middleware";
 import { COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema, ZodUserPatchSchema, ZodUserType, ZodUserPatchType } from "../validation";
-import { normalizeUserLevel } from '../utils';
+import { ApiError, normalizeUserLevel } from '../utils';
 
 // POST /api/users
 export const createUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
@@ -19,7 +19,7 @@ export const createUser = async (req: Request, res: Response<ApiResponseType>, n
         // Normalize and validate userLevel
         const level = normalizeUserLevel(validatedUser.userLevel);
         if (level === undefined) {
-            return res.status(400).json({ ok: false, message: "Invalid user level" });
+            throw new ApiError(400, 'Invalid user level');
         }
 
         // Create user (password will be hashed in pre-save hook in user model)
@@ -49,7 +49,7 @@ export const getUser = async (req: Request, res: Response<ApiResponseType>, next
         const user = await User.findById(id).lean();
 
         if (!user) {
-            return res.status(404).json({ ok: false, message: "User not found" });
+            throw new ApiError(404, 'User not found');
         }
         res.status(200).json({ ok: true, message: 'User fetched', data: serializeUser(user) });
     } catch (error) {
@@ -70,7 +70,7 @@ export const patchUser = async (req: Request, res: Response<ApiResponseType>, ne
         // Ensure the user exists
         const existing = await User.findById(id).lean();
         if (!existing) {
-            return res.status(404).json({ ok: false, message: "User not found" });
+            throw new ApiError(404, 'User not found');
         }
 
         // Only include fields that were provided in the patch
@@ -81,11 +81,11 @@ export const patchUser = async (req: Request, res: Response<ApiResponseType>, ne
             const level = normalizeUserLevel(validatedUser.userLevel);
 
             if(level === undefined) {
-                return res.status(400).json({ ok: false, message: "Invalid user level" });
+                throw new ApiError(400, 'Invalid user level');
             }
 
             if(level > authReq.user.userLevel) {
-                return res.status(403).json({ ok: false, message: 'Cannot assign a user level higher than your own' });
+                throw new ApiError(403, 'Cannot assign a user level higher than your own');
             }
             updatePayload.userLevel = level;
         } 
@@ -98,7 +98,7 @@ export const patchUser = async (req: Request, res: Response<ApiResponseType>, ne
             upsert: false  // Do not create a new document if it doesn't exist
         });
         if (!updatedUser) {
-            return res.status(404).json({ ok: false, message: "User not found" });
+            throw new ApiError(404, 'User not found');
         }
         res.status(200).json({ ok: true, message: 'User updated', data: serializeUser(updatedUser) });
     } catch (error) {
@@ -115,7 +115,7 @@ export const deleteUser = async (req: Request, res: Response<ApiResponseType>, n
         // Delete the user
         const deleted = await User.findByIdAndDelete(id);
         if (!deleted) {
-            return res.status(404).json({ ok: false, message: "User not found" });
+            throw new ApiError(404, 'User not found');
         }
 
         // If the user deleted themselves, clear their cookie
@@ -137,7 +137,7 @@ export const getUserTasks = async (req: Request, res: Response<ApiResponseType>,
         // Check that the user exists
         const userExists = await User.exists({ _id: id });
         if (!userExists) {
-            return res.status(404).json({ ok: false, message: "User not found" });
+            throw new ApiError(404, 'User not found');
         }
 
         const tasks = await Task.find({ assignedTo: id }).lean();
