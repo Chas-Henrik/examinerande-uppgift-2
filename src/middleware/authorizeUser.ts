@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import { UserLevel, ApiResponseType } from "../types";
 import { AuthenticatedRequest } from "../middleware";
 import mongoose from "mongoose";
+import { ApiError } from "../utils";
 
 type AuthorizeOptions = {
   minUserLevel: UserLevel;  // Minimum required user level
@@ -12,47 +13,49 @@ type AuthorizeOptions = {
 
 export function authorizeUser({ minUserLevel, authOwner = false }: AuthorizeOptions) {
   return (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-    const authReq = req as AuthenticatedRequest;
+    try {
+      const authReq = req as AuthenticatedRequest;
     
-    const userLevelAuthorized = authReq.user.userLevel >= minUserLevel;
-    let ownsResource = false;
+      const userLevelAuthorized = authReq.user.userLevel >= minUserLevel;
+      let ownsResource = false;
 
-    if(authOwner) {
-        const { id } = req.params;
+      if(authOwner) {
+          const { id } = req.params;
 
-        // Validate the id format
-        if (!mongoose.isValidObjectId(id)) {
-            return res.status(400).json({ ok: false, message: "Invalid user ID format" });
-        }
+          // Validate the id format
+          if (!mongoose.isValidObjectId(id)) {
+            throw new ApiError(400, "Invalid user ID format");
+          }
 
-        ownsResource = authOwner && id === authReq.user._id;
+          ownsResource = authOwner && id === authReq.user._id;
+      }
+
+      // If neither user level nor ownership is authorized, deny access
+      if (!(userLevelAuthorized || ownsResource)) {
+        throw new ApiError(403, "Forbidden: You do not have permission to access this resource");
+      }
+
+      return next();
+    } catch (error) {
+      next(error);
     }
-
-    // If neither user level nor ownership is authorized, deny access
-    if (!(userLevelAuthorized || ownsResource)) {
-      return res.status(403).json({
-        ok: false,
-        message: "Forbidden: You do not have permission to access this resource",
-      });
-    }
-
-    return next();
   };
 }
 
 export function authorizeUserDelete() {
   return (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-    const { id } = req.params;
-    const authReq = req as AuthenticatedRequest;
+    try {
+      const { id } = req.params;
+      const authReq = req as AuthenticatedRequest;
 
-    // admins cannot delete themselves (to guarantee at least one admin user exists)
-    if (authReq.user._id === id && authReq.user.userLevel === UserLevel.ADMIN) {
-      return res.status(403).json({ 
-        ok: false, 
-        message: "Forbidden, admin users cannot delete themselves" 
-      });
+      // admins cannot delete themselves (to guarantee at least one admin user exists)
+      if (authReq.user._id === id && authReq.user.userLevel === UserLevel.ADMIN) {
+        throw new ApiError(403, "Forbidden, admin users cannot delete themselves");
+      }
+
+      return next();
+    } catch (error) {
+      next(error);
     }
-
-    return next();
   };
 }
