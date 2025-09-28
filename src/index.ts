@@ -38,7 +38,7 @@ try {
 }
 
 // Middleware
-app.use(cookieParser()); // !!!Ensure cookie-parser is used before authMiddleware is called!!!
+app.use(cookieParser()); // !!!Ensure cookie-parser is used before authenticate is called!!!
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());

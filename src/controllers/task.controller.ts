@@ -60,12 +60,6 @@ export const getTasks = async (req: Request, res: Response<ApiResponseType>, nex
 	const pageNum = parseInt(page as string);
 	const sizeNum = parseInt(size as string);
 
-	// Validate pagination parameters
-	const validatedPagination: ZodPaginationType = ZodPaginationSchema.parse({ page: pageNum, size: sizeNum });
-	if (!validatedPagination) {
-		throw new ApiError(400, 'Invalid pagination parameters');
-	}
-
 	const skip = (pageNum - 1) * sizeNum;
 
 	const tasks = await Task.find().lean().skip(skip).limit(sizeNum).populate([
