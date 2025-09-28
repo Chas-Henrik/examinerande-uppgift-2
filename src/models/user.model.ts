@@ -55,12 +55,13 @@ type UserBaseType = InferSchemaType<typeof userSchema>;
 export type UserType = UserBaseType & { _id: Types.ObjectId };
 export type UserJSONType = Partial<UserBaseType> & { _id: string };
 
-export const serializeUser = (user: UserType): UserJSONType => {
-	const ret = { ...user, _id: user._id.toString() };
-	if ('__v' in ret) {
-		delete (ret as any).__v;      // Remove __v field if present
-	}
-	return ret;
-};
+export const serializeUser = (user: UserType): UserJSONType => ({
+	_id: user._id.toString(),
+	name: user.name,
+	email: user.email,
+	userLevel: user.userLevel,
+	createdAt: user.createdAt,
+	updatedAt: user.updatedAt
+});
 
 export const User = mongoose.model("User", userSchema);

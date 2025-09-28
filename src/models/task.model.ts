@@ -49,12 +49,17 @@ type TaskBaseType = InferSchemaType<typeof taskSchema>;
 export type TaskType = TaskBaseType & { _id: Types.ObjectId };
 export type TaskJSONType = Partial<TaskBaseType> & { _id: string };
 
-export const serializeTask = (task: TaskType): TaskJSONType => {
-    const ret = { ...task, _id: task._id.toString() };
-    if ('__v' in ret) {
-        delete (ret as any).__v;      // Remove __v field if present
-    }
-    return ret;
-};
+export const serializeTask = (task: TaskType): TaskJSONType => ({
+	_id: task._id.toString(),
+	title: task.title,
+	description: task.description,
+	status: task.status,
+	assignedTo: task.assignedTo,
+	project: task.project,
+	finishedBy: task.finishedBy,
+	finishedAt: task.finishedAt,
+	createdAt: task.createdAt,
+	updatedAt: task.updatedAt
+});
 
 export const Task = mongoose.model("Task", taskSchema);
