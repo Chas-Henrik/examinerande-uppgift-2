@@ -29,7 +29,18 @@ export const createUser = async (req: Request, res: Response<ApiResponseType>, n
 
 // GET /api/users
 export const getUsers = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-    const users = await User.find().lean();
+    const { page = '1', size = '10' } = req.query;
+	const pageNum = parseInt(page as string);
+	const sizeNum = parseInt(size as string);
+
+	// Validate pagination parameters
+	if (isNaN(pageNum) || isNaN(sizeNum)) {
+		throw new ApiError(400, 'Invalid pagination parameters');
+	}
+
+	const skip = (pageNum - 1) * sizeNum;
+
+    const users = await User.find().lean().skip(skip).limit(sizeNum);
 
     res.status(200).json({ ok: true, message: 'Users fetched', data: users.map(user => serializeUser(user)) });
 };

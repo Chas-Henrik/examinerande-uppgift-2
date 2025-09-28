@@ -20,8 +20,19 @@ export const createProject = async (req: Request, res: Response<ApiResponseType>
 };
 
 // GET /api/projects
-export const getProjects = async (_req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-	const projects = await Project.find().lean().populate({
+export const getProjects = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+	const { page = '1', size = '10' } = req.query;
+	const pageNum = parseInt(page as string);
+	const sizeNum = parseInt(size as string);
+
+	// Validate pagination parameters
+	if (isNaN(pageNum) || isNaN(sizeNum)) {
+		throw new ApiError(400, 'Invalid pagination parameters');
+	}
+
+	const skip = (pageNum - 1) * sizeNum;
+
+	const projects = await Project.find().lean().skip(skip).limit(sizeNum).populate({
 		path: "owner",
 		select: "name email", // Select only specific fields to return
 	});

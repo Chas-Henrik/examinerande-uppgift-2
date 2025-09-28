@@ -55,8 +55,19 @@ export const createTask = async (req: Request, res: Response<ApiResponseType>, n
 };
 
 // GET /api/tasks
-export const getTasks = async (_req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
-	const tasks = await Task.find().lean().populate([
+export const getTasks = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+	const { page = '1', size = '10' } = req.query;
+	const pageNum = parseInt(page as string);
+	const sizeNum = parseInt(size as string);
+
+	// Validate pagination parameters
+	if (isNaN(pageNum) || isNaN(sizeNum)) {
+		throw new ApiError(400, 'Invalid pagination parameters');
+	}
+
+	const skip = (pageNum - 1) * sizeNum;
+
+	const tasks = await Task.find().lean().skip(skip).limit(sizeNum).populate([
 		{ path: "assignedTo", select: "name email" },
 		{ path: "finishedBy", select: "name email" },
 		{ path: "project", select: "name _id" }

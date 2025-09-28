@@ -80,6 +80,7 @@ _Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexib
 16. Compress komprimerar HTTP-svar (t.ex. HTML, CSS, JavaScript, JSON) innan de skickas till klienten.
 17. HTTPS för produktions versionen.
 18. Health Check for uptime checks.
+19. Stöder pagination för GET `/api/users`, `/api/tasks`, `/api/projects`.
 
 ### Körguide  
   
@@ -172,6 +173,12 @@ _Endpoint:_
 GET localhost:3000/api/users
 ```  
 
+#### Hämta alla användare (med pagination)
+_Endpoint:_  
+```
+GET localhost:3000/api/users?page=1&size=3
+```  
+
 #### Hämta en användare  
 _Endpoint:_  
 ```
@@ -234,6 +241,12 @@ _Endpoint:_
 GET localhost:3000/api/tasks
 ```  
 
+#### Hämta alla task (med pagination)
+_Endpoint:_  
+```
+GET localhost:3000/api/tasks?page=1&size=10
+```  
+
 #### Hämta en task
 _Endpoint:_  
 ```
@@ -288,6 +301,12 @@ _Body (JSON):_
 _Endpoint:_  
 ```
 GET localhost:3000/api/projects
+```  
+
+#### Hämta alla projekt (med pagination)
+_Endpoint:_  
+```
+GET localhost:3000/api/projects?page=1&size=2
 ```  
 
 #### Hämta ett projekt
