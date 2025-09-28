@@ -30,7 +30,12 @@ export function errorHandler(err: any, req: Request, res: Response<ApiResponseTy
     errors = Object.values(err.errors).map(e => ({
       message: e.message
     }));
-  }  else if (err.code === 11000) {
+  } else if(err instanceof mongoose.Error.CastError) {
+    // Handle Mongoose cast errors (e.g., invalid ObjectId)
+    statusCode = 400;
+    message = 'Invalid parameter format';
+    errors = [{ message: err.message }];
+  } else if (err.code === 11000) {
     // Handle duplicate key error (e.g., unique fields)
     statusCode = 409;
     message = 'Duplicate key error';
