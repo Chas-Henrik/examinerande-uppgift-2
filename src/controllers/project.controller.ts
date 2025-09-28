@@ -65,7 +65,6 @@ export const getProject = async (req: Request, res: Response<ApiResponseType>, n
 // PATCH /api/projects/:id
 export const patchProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	try {
-        const authReq = req as AuthenticatedRequest;
 		const projectData: ProjectType = req.body;
 		const { id } = req.params;
 
@@ -108,7 +107,6 @@ export const patchProject = async (req: Request, res: Response<ApiResponseType>,
 // DELETE /api/projects/:id
 export const deleteProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	try {
-        const authReq = req as AuthenticatedRequest;
 		const { id } = req.params;
 
 		// Validate the id format
