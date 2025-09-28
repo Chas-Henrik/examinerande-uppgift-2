@@ -18,6 +18,7 @@ const userSchema = new Schema({
         type: String,
         required: true,
 		unique: true,
+		index: true,    // make sure index is created to enforce uniqueness!
         trim: true,
         lowercase: true,	// This converts to lowercase before saving
         match: [/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/, "Invalid email address"],
