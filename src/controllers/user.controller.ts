@@ -76,7 +76,7 @@ export const patchUser = async (req: Request, res: Response<ApiResponseType>, ne
         }
         updatePayload.userLevel = level;
     } 
-    if (validatedUser.password) updatePayload.password = await bcrypt.hash(validatedUser.password, 10);
+    if (validatedUser.password) updatePayload.password = validatedUser.password; // Will be hashed in pre-update hook in user model
 
     // Update the user in the database
     const updatedUser = await User.findByIdAndUpdate(id, updatePayload, {

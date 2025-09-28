@@ -52,6 +52,20 @@ userSchema.pre('save', async function (next) {
 	next();
 });
 
+// ✅ Pre-update hook (runs on findByIdAndUpdate, findOneAndUpdate)
+userSchema.pre('findOneAndUpdate', async function (next) {
+	// Hash password before findByIdAndUpdate, findOneAndUpdate
+	const update = this.getUpdate() as { [key: string]: any };
+	
+	if (!update) return next();
+
+	if (update.password && typeof update.password === 'string' && !update.password.startsWith('$2b$')) {
+		update.password = await bcrypt.hash(update.password, 10);
+		this.setUpdate(update);
+	}
+	next();
+});
+
 type UserBaseType = InferSchemaType<typeof userSchema>;
 export type UserType = UserBaseType & { _id: Types.ObjectId };
 export type UserJSONType = Partial<UserBaseType> & { _id: string };

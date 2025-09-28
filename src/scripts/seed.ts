@@ -35,8 +35,8 @@ function buildAdmin() {
     return {
         name: "Admin User",
         email: "admin@example.com",
-        password: "topsecret", // Password will be hashed in pre-save hook in user model
-        userLevel: 20
+        password: "topsecret",  // Password will be hashed in pre-save hook in user model
+        userLevel: 20   // Admin level
     };
 }
 
@@ -44,8 +44,8 @@ async function buildUser() {
     return {
         name: faker.person.fullName(),
         email: faker.internet.email().toLowerCase(),
-        password: await bcrypt.hash("topsecret", 10),
-        userLevel: 10
+        password: await bcrypt.hash("topsecret", 10),  // Note that pre-update hook is not called at insertMany
+        userLevel: 10   // Developer user level
     };
 }
 
