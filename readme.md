@@ -336,14 +336,14 @@ _Body (JSON):_
   "owner": "68ce78e4af8e379dbf9b1e83"
 }
 ```
-_*Endast tillgänglig för ADMIN-användare och projektägaren_  
+_*Endast tillgänglig för projektägaren och ADMIN-användare_  
 
 #### Ta bort ett projekt
 _Endpoint:_  
 ```
 DELETE localhost:3000/api/projects/68ce9e5f2dde32359e5d814b
 ```  
-_*Endast tillgänglig för ADMIN-användare och projektägaren_  
+_*Endast tillgänglig för projektägaren och ADMIN-användare_  
 
 #### Hämta alla tasks för ett projekt
 _Endpoint:_  
