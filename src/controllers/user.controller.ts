@@ -4,7 +4,7 @@ import { User, UserType, Task, serializeUser, serializeTask } from "../models"
 import { ApiResponseType } from '../types';
 import { AuthenticatedRequest } from "../middleware";
 import { COOKIE_NAME, COOKIE_OPTIONS } from './auth.controller.js';
-import { ZodUserSchema, ZodUserPatchSchema, ZodUserType, ZodUserPatchType, ZodPaginationType, ZodPaginationSchema } from "../validation";
+import { ZodUserSchema, ZodUserPatchSchema, ZodUserType, ZodUserPatchType } from "../validation";
 import { ApiError, normalizeUserLevel } from '../utils';
 
 // POST /api/users

@@ -4,4 +4,5 @@ export * from './asyncHandler.js';
 export * from './error.js';
 export * from './jwt.js';
 export * from './user.js';
+export * from './validateObjectId.js';
 export * from './zod.js';

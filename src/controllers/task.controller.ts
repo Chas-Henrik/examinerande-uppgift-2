@@ -1,11 +1,11 @@
 // src/controllers/task.controller.ts
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
-import { User, Task, TaskType, Project, TaskJSONType, serializeTask } from '../models';
+import { User, Task, TaskType, Project, serializeTask } from '../models';
 import { ApiResponseType } from "../types";
-import { ZodTaskSchema, ZodTaskPatchSchema, ZodTaskType, ZodTaskPatchType, ZodPaginationType, ZodPaginationSchema } from '../validation';
+import { ZodTaskSchema, ZodTaskPatchSchema, ZodTaskType, ZodTaskPatchType } from '../validation';
 import { AuthenticatedRequest } from "../middleware";
-import { ApiError } from '../utils';
+import { ApiError, ensureValidObjectId } from '../utils';
 
 // POST /api/tasks
 export const createTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
@@ -15,26 +15,18 @@ export const createTask = async (req: Request, res: Response<ApiResponseType>, n
 	// Validate input
 	const validatedTask: ZodTaskType = ZodTaskSchema.parse(taskData);
 
-	// Validate assignedTo field if provided
-	if (validatedTask.assignedTo && !mongoose.isValidObjectId(validatedTask.assignedTo)) {
-		throw new ApiError(400, 'Invalid assignedTo user ID format');
-	}
-
-	// If assignedTo is provided, check that the user exists
+	// Validate assignedTo field if provided and check that the user exists
 	if(validatedTask.assignedTo) {
+		ensureValidObjectId(validatedTask.assignedTo, 'assignedTo user ID');
 		const user = await User.findById(validatedTask.assignedTo);
 		if (!user) {
 			throw new ApiError(404, 'assignedTo user not found');
 		}
 	}
-
-	// Validate project field if provided
-	if (validatedTask.project && !mongoose.isValidObjectId(validatedTask.project)) {
-		throw new ApiError(400, 'Invalid project ID format');
-	}
 	
-	// If project is provided, check that the project exists
+	// Validate project field if provided and check that the project exists
 	if(validatedTask.project) {
+		ensureValidObjectId(validatedTask.project, 'project ID');
 		const projectExists = await Project.exists({ _id: validatedTask.project });
 		if (!projectExists) {
 			throw new ApiError(404, 'Project not found');
@@ -100,26 +92,18 @@ export const patchTask = async (req: Request, res: Response<ApiResponseType>, ne
 		throw new ApiError(404, 'Task not found');
 	}
 
-	// Validate assignedTo field if provided
-	if (validatedTask.assignedTo && !mongoose.isValidObjectId(validatedTask.assignedTo)) {
-		throw new ApiError(400, 'Invalid assignedTo user ID format');
-	}
-
-	// If assignedTo is provided, check that the user exists
+	// Validate assignedTo field if provided and check that the user exists
 	if(validatedTask.assignedTo) {
+		ensureValidObjectId(validatedTask.assignedTo, 'assignedTo user ID');
 		const user = await User.findById(validatedTask.assignedTo);
 		if (!user) {
 			throw new ApiError(404, 'assignedTo user not found');
 		}
 	}
 
-	// Validate project field if provided
-	if (validatedTask.project && !mongoose.isValidObjectId(validatedTask.project)) {
-		throw new ApiError(400, 'Invalid project ID format');
-	}
-
-	// If project is provided, check that the project exists
+	// Validate project field if provided and check that the project exists
 	if(validatedTask.project) {
+		ensureValidObjectId(validatedTask.project, 'project ID');
 		const projectExists = await Project.exists({ _id: validatedTask.project });
 		if (!projectExists) {
 			throw new ApiError(404, 'Project not found');

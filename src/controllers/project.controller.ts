@@ -3,9 +3,9 @@ import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { User, Task, Project, ProjectType, serializeProject, serializeTask } from '../models';
 import { ApiResponseType } from '../types';
-import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectType, ZodProjectPatchType, ZodPaginationType, ZodPaginationSchema } from '../validation';
+import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectType, ZodProjectPatchType } from '../validation';
 import { AuthenticatedRequest } from "../middleware";
-import { ApiError } from '../utils';
+import { ApiError, ensureValidObjectId } from '../utils';
 
 // POST /api/projects
 export const createProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
@@ -61,8 +61,8 @@ export const patchProject = async (req: Request, res: Response<ApiResponseType>,
 	const validatedProject: ZodProjectPatchType = ZodProjectPatchSchema.parse(projectData);
 
 	// Validate owner field if provided
-	if (validatedProject.owner && !mongoose.isValidObjectId(validatedProject.owner)) {
-		throw new ApiError(400, 'Invalid owner user ID format');
+	if (validatedProject.owner) {
+		ensureValidObjectId(validatedProject.owner, 'owner user ID');
 	}
 
 	// If owner is provided, check that the user exists
