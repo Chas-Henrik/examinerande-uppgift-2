@@ -174,21 +174,21 @@ _Endpoint:_
 ```
 GET localhost:3000/api/users
 ```  
-_Only accessible for ADMIN users_  
+_*Only accessible for ADMIN users_  
 
 #### Hämta alla användare (med pagination)
 _Endpoint:_  
 ```
 GET localhost:3000/api/users?page=1&size=3
 ```  
-_Only accessible for ADMIN users_  
+_*Only accessible for ADMIN users_  
 
 #### Hämta en användare  
 _Endpoint:_  
 ```
 GET localhost:3000/api/users/68ce5784e2da8623257e2736
 ```  
-_Only accessible for ADMIN users and the user with the user ID above_  
+_*Only accessible for ADMIN users and the user with the user ID above_  
 
 #### Patcha en användare  
 _Endpoint:_  
@@ -208,21 +208,21 @@ _Body Example 2 (JSON):_
   "password": "mysecretpsw"
 }
 ```
-_Only accessible for ADMIN users and the user with the user ID above_  
+_*Only accessible for ADMIN users and the user with the user ID above_  
 
 #### Ta bort en användare  
 _Endpoint:_  
 ```
 DELETE localhost:3000/api/users/68ce5810e2da8623257e273a
 ```  
-_Only accessible for ADMIN users and the user with the user ID above_  
+_*Only accessible for ADMIN users and the user with the user ID above_  
 
 #### Hämta alla tasks för en användare  
 _Endpoint:_  
 ```
 GET localhost:3000/api/users/68ce5784e2da8623257e2736/tasks
 ```  
-_Only accessible for ADMIN users and the user with the user ID above_  
+_*Only accessible for ADMIN users and the user with the user ID above_  
 
 ### 'tasks' Endpoints (`NODE_ENV=development`)  
 
@@ -335,14 +335,14 @@ _Body (JSON):_
   "owner": "68ce78e4af8e379dbf9b1e83"
 }
 ```
-_Only accessible for ADMIN users and the owner of the project_  
+_*Only accessible for ADMIN users and the owner of the project_  
 
 #### Ta bort ett projekt
 _Endpoint:_  
 ```
 DELETE localhost:3000/api/projects/68ce9e5f2dde32359e5d814b
 ```  
-_Only accessible for ADMIN users and the owner of the project_  
+_*Only accessible for ADMIN users and the owner of the project_  
 
 #### Hämta alla tasks för ett projekt
 _Endpoint:_  
