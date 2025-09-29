@@ -31,10 +31,10 @@ i framtiden, och då kommer mongoose aggregation pipelines väl till hands.
 
 Trullo är ett projekt hanteringssystem som för närvarande innehåller tre collections, User, Task & Project.  
   
-_Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexibel & bandbredds effektiv än PUT då man endast behöver inkludera de fält man vill ändra i objektet som man skickar till servern.
-
-_Authentication, authorization, rate limiting, validering & felhantering_ utförs i middleware för att kunna återanvända så mycket kod som möjligt och för att göra applikationen mindre felbenägen. Detta är även något som ChatGPT kräver för att godkänna applikationen som 'production ready'.
-
+_Observera_ att jag använder PATCH istället för PUT, då PATCH är mer flexibel & bandbredds effektiv än PUT då man endast behöver inkludera de fält man vill ändra i objektet som man skickar till servern.  
+  
+_Authentication, authorization, rate limiting, validering & felhantering_ utförs i middleware för att kunna återanvända så mycket kod som möjligt och för att göra applikationen mindre felbenägen. Detta är även något som ChatGPT kräver för att godkänna applikationen som 'production ready'.  
+  
 ***Applikationen stöder följande publika endpoints:***
 - `POST localhost:3000/api/auth/register` Registrera en ny developer användare (med UserLevel DEVELOPER)
 - `POST localhost:3000/api/auth/login` Logga in en användare
