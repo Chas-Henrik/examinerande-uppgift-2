@@ -78,7 +78,7 @@ export const patchProject = async (req: Request, res: Response<ApiResponseType>,
 		new: true,
 		runValidators: true,
 		upsert: false  // Do not create a new document if it doesn't exist
-	});
+	}).lean();
 	if (!updatedProject) {
 		throw new ApiError(404, 'Project not found');
 	}

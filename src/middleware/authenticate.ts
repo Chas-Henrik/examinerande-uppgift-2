@@ -10,7 +10,7 @@ export interface AuthenticatedRequest extends Request {
 	user: AuthUserType;
 }
 
-// Middleware to authenticate and authorize users based on JWT token and user level
+// Middleware to authenticate and authorize users based on JWT Cookie token and user level
 export function authenticate() {
     return async (req: Request, _res: Response<ApiResponseType>, next: NextFunction) => {
         try {

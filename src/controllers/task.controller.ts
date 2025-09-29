@@ -148,7 +148,7 @@ export const patchTask = async (req: Request, res: Response<ApiResponseType>, ne
 			runValidators: true,
 			upsert: false  // Do not create a new document if it doesn't exist
 		}
-	);
+	).lean();
 	if (!updatedTask) {
 		throw new ApiError(404, 'Task not found');
 	}
