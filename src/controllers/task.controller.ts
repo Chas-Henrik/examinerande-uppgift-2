@@ -5,10 +5,10 @@ import { User, Task, TaskType, Project, serializeTask } from '../models';
 import { ApiResponseType } from "../types";
 import { ZodTaskSchema, ZodTaskPatchSchema, ZodTaskType, ZodTaskPatchType } from '../validation';
 import { AuthenticatedRequest } from "../middleware";
-import { ApiError, ensureValidObjectId } from '../utils';
+import { ApiError, asyncHandler, ensureValidObjectId } from '../utils';
 
 // POST /api/tasks
-export const createTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
+export const createTask = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
 	const authReq = req as AuthenticatedRequest;
 	const taskData: TaskType = req.body;
 
@@ -44,10 +44,10 @@ export const createTask = async (req: Request, res: Response<ApiResponseType>, n
 
 	const createdTask = await Task.create(finalTaskData);
 	res.status(201).json({ ok: true, message: 'Task created', data: serializeTask(createdTask) });
-};
+});
 
 // GET /api/tasks
-export const getTasks = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const getTasks = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { page = '1', size = '10' } = req.query;
 	const pageNum = parseInt(page as string);
 	const sizeNum = parseInt(size as string);
@@ -60,10 +60,10 @@ export const getTasks = async (req: Request, res: Response<ApiResponseType>, nex
 		{ path: "project", select: "name _id" }
 	]);
 	res.status(200).json({ ok: true, message: 'Tasks fetched', data: tasks.map(task => serializeTask(task)) });
-};
+});
 
 // GET /api/tasks/:id
-export const getTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const getTask = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
 
 	const task = await Task.findById(id).lean().populate([
@@ -75,10 +75,10 @@ export const getTask = async (req: Request, res: Response<ApiResponseType>, next
 		throw new ApiError(404, 'Task not found');
 	}
 	res.status(200).json({ ok: true, message: 'Task fetched', data: serializeTask(task) });
-};
+});
 
 // PATCH /api/tasks/:id
-export const patchTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const patchTask = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
 	const authReq = req as AuthenticatedRequest;
 	const taskData: TaskType = req.body;
@@ -138,10 +138,10 @@ export const patchTask = async (req: Request, res: Response<ApiResponseType>, ne
 	}
 
 	res.status(200).json({ ok: true, message: 'Task updated', data: serializeTask(updatedTask) });
-};
+});
 
 // DELETE /api/tasks/:id
-export const deleteTask = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const deleteTask = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
 
 	// Delete the task
@@ -151,4 +151,4 @@ export const deleteTask = async (req: Request, res: Response<ApiResponseType>, n
 	}
 
 	res.status(200).json({ ok: true, message: "Task deleted" });
-};
+});

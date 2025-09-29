@@ -5,10 +5,10 @@ import { ApiResponseType } from '../types';
 import { AuthenticatedRequest } from "../middleware";
 import { COOKIE_NAME, COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema, ZodUserPatchSchema, ZodUserType, ZodUserPatchType } from "../validation";
-import { ApiError, normalizeUserLevel } from '../utils';
+import { ApiError, asyncHandler, normalizeUserLevel } from '../utils';
 
 // POST /api/users
-export const createUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
+export const createUser = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
     const userData: UserType = req.body as UserType;
     
     // Validate input
@@ -24,10 +24,10 @@ export const createUser = async (req: Request, res: Response<ApiResponseType>, n
     const createdUser = await User.create({ ...validatedUser, userLevel: level });
 
     res.status(201).json({ ok: true, message: 'User created', data: serializeUser(createdUser) });
-};
+});
 
 // GET /api/users
-export const getUsers = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const getUsers = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     const { page = '1', size = '10' } = req.query;
 	const pageNum = parseInt(page as string);
 	const sizeNum = parseInt(size as string);
@@ -37,10 +37,10 @@ export const getUsers = async (req: Request, res: Response<ApiResponseType>, nex
     const users = await User.find().lean().skip(skip).limit(sizeNum);
 
     res.status(200).json({ ok: true, message: 'Users fetched', data: users.map(user => serializeUser(user)) });
-};
+});
 
 // GET /api/users/:id
-export const getUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const getUser = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     const { id } = req.params;
     const user = await User.findById(id).lean();
 
@@ -48,10 +48,10 @@ export const getUser = async (req: Request, res: Response<ApiResponseType>, next
         throw new ApiError(404, 'User not found');
     }
     res.status(200).json({ ok: true, message: 'User fetched', data: serializeUser(user) });
-};
+});
 
 // PATCH /api/users/:id
-export const patchUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const patchUser = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     const { id } = req.params;
     const userData: UserType = req.body;
     const authReq = req as AuthenticatedRequest;
@@ -87,10 +87,10 @@ export const patchUser = async (req: Request, res: Response<ApiResponseType>, ne
         throw new ApiError(404, 'User not found');
     }
     res.status(200).json({ ok: true, message: 'User updated', data: serializeUser(updatedUser) });
-};
+});
 
 // DELETE /api/users/:id
-export const deleteUser = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const deleteUser = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     const { id } = req.params;
     const authReq = req as AuthenticatedRequest;
 
@@ -106,12 +106,12 @@ export const deleteUser = async (req: Request, res: Response<ApiResponseType>, n
     }
 
     res.status(200).json({ ok: true, message: "User deleted" });
-};
+});
 
 // GET /api/users/:id/tasks
-export const getUserTasks = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const getUserTasks = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
     const { id } = req.params;
 
     const tasks = await Task.find({ assignedTo: id }).lean();
     res.status(200).json({ ok: true, message: 'Tasks fetched', data: tasks.map(task => serializeTask(task)) });
-};
+});

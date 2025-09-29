@@ -2,11 +2,10 @@
 import config from '../config.js'
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from "bcrypt"
-import { signToken } from '../utils'
+import { asyncHandler, signToken, ApiError } from '../utils'
 import { User, serializeUser } from '../models';
 import { UserLevel, ApiResponseType } from "../types";
 import { ZodUserSchema, ZodLoginSchema, ZodLoginSchemaType, ZodUserType } from "../validation";
-import { ApiError } from "../utils"; // Adjust path if ApiError is in a different module
 
 export const COOKIE_OPTIONS = {
     httpOnly: true,
@@ -18,7 +17,7 @@ export const COOKIE_OPTIONS = {
 export const COOKIE_NAME = 'token';
 
 // POST /api/auth/register
-export const register = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
+export const register = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
     // Validate input
     const validatedUser: ZodUserType =  ZodUserSchema.parse({ ...req.body, userLevel: UserLevel[UserLevel.DEVELOPER] });
 
@@ -29,7 +28,7 @@ export const register = async (req: Request, res: Response<ApiResponseType>, nex
     const token = signToken({ _id: createdUser._id.toString(), userLevel: createdUser.userLevel });
 
     return res.status(201).cookie(COOKIE_NAME, token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', data: serializeUser(createdUser) });
-};
+});
 
 // POST /api/auth/login
 export const login = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
@@ -56,8 +55,8 @@ export const login = async (req: Request, res: Response<ApiResponseType>, next: 
 };
 
 // POST /api/auth/logout
-export const logout = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
+export const logout = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
     res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
     return res.json({ ok: true, message: 'Logged out successfully' }); 
-};
+});
 

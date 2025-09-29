@@ -5,10 +5,10 @@ import { User, Task, Project, ProjectType, serializeProject, serializeTask } fro
 import { ApiResponseType } from '../types';
 import { ZodProjectSchema, ZodProjectPatchSchema, ZodProjectType, ZodProjectPatchType } from '../validation';
 import { AuthenticatedRequest } from "../middleware";
-import { ApiError, ensureValidObjectId } from '../utils';
+import { ApiError, asyncHandler, ensureValidObjectId } from '../utils';
 
 // POST /api/projects
-export const createProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
+export const createProject = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
 	const authReq = req as AuthenticatedRequest;
 	const projectData: Omit<ProjectType, 'owner'> = req.body;
 
@@ -17,10 +17,10 @@ export const createProject = async (req: Request, res: Response<ApiResponseType>
 
 	const createdProject = await Project.create({ ...validatedProject, owner: authReq.user._id });
 	res.status(201).json({ ok: true, message: 'Project created', data: serializeProject(createdProject) });
-};
+});
 
 // GET /api/projects
-export const getProjects = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const getProjects = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { page = '1', size = '10' } = req.query;
 	const pageNum = parseInt(page as string);
 	const sizeNum = parseInt(size as string);
@@ -32,10 +32,10 @@ export const getProjects = async (req: Request, res: Response<ApiResponseType>, 
 		select: "name email", // Select only specific fields to return
 	});
 	res.status(200).json({ ok: true, message: 'Projects fetched', data: projects.map(project => serializeProject(project)) });
-};
+});
 
 // GET /api/projects/:id
-export const getProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const getProject = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
 
 	// Fetch the project and populate the owner field
@@ -50,10 +50,10 @@ export const getProject = async (req: Request, res: Response<ApiResponseType>, n
 	}
 
 	res.status(200).json({ ok: true, message: 'Project fetched', data: serializeProject(project) });
-};
+});
 
 // PATCH /api/projects/:id
-export const patchProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const patchProject = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const projectData: ProjectType = req.body;
 	const { id } = req.params;
 
@@ -83,10 +83,10 @@ export const patchProject = async (req: Request, res: Response<ApiResponseType>,
 		throw new ApiError(404, 'Project not found');
 	}
 	res.status(200).json({ ok: true, message: 'Project updated', data: serializeProject(updatedProject) });
-};
+});
 
 // DELETE /api/projects/:id
-export const deleteProject = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const deleteProject = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
 
 	// Delete the project
@@ -96,10 +96,10 @@ export const deleteProject = async (req: Request, res: Response<ApiResponseType>
 	}
 
 	res.status(200).json({ ok: true, message: "Project deleted" });
-};
+});
 
 // GET /api/projects/:id/tasks
-export const getProjectTasks = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
+export const getProjectTasks = asyncHandler(async (req: Request, res: Response<ApiResponseType>, next: NextFunction) => {
 	const { id } = req.params;
 
 	// Check if the project exists
@@ -120,4 +120,4 @@ export const getProjectTasks = async (req: Request, res: Response<ApiResponseTyp
 	]);
 
 	res.status(200).json({ ok: true, message: 'Tasks fetched', data: tasks.map(task => serializeTask(task)) });
-};
+});
