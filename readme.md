@@ -168,27 +168,28 @@ _Body (JSON):_
   "userLevel": "ADMIN"
 }
 ```
+_*Endast tillgänglig för ADMIN-användare_  
 
 #### Hämta alla användare  
 _Endpoint:_  
 ```
 GET localhost:3000/api/users
 ```  
-_*Only accessible for ADMIN users_  
+_*Endast tillgänglig för ADMIN-användare_  
 
 #### Hämta alla användare (med pagination)
 _Endpoint:_  
 ```
 GET localhost:3000/api/users?page=1&size=3
 ```  
-_*Only accessible for ADMIN users_  
+_*Endast tillgänglig för ADMIN-användare_  
 
 #### Hämta en användare  
 _Endpoint:_  
 ```
 GET localhost:3000/api/users/68ce5784e2da8623257e2736
 ```  
-_*Only accessible for ADMIN users and the user with the user ID above_  
+_*Endast tillgänglig för ADMIN-användare och användaren med user ID't ovan_  
 
 #### Patcha en användare  
 _Endpoint:_  
@@ -208,21 +209,21 @@ _Body Example 2 (JSON):_
   "password": "mysecretpsw"
 }
 ```
-_*Only accessible for ADMIN users and the user with the user ID above_  
+_*Endast tillgänglig för ADMIN-användare och användaren med user ID't ovan_  
 
 #### Ta bort en användare  
 _Endpoint:_  
 ```
 DELETE localhost:3000/api/users/68ce5810e2da8623257e273a
 ```  
-_*Only accessible for ADMIN users and the user with the user ID above_  
+_*Endast tillgänglig för ADMIN-användare och användaren med user ID't ovan_  
 
 #### Hämta alla tasks för en användare  
 _Endpoint:_  
 ```
 GET localhost:3000/api/users/68ce5784e2da8623257e2736/tasks
 ```  
-_*Only accessible for ADMIN users and the user with the user ID above_  
+_*Endast tillgänglig för ADMIN-användare och användaren med user ID't ovan_  
 
 ### 'tasks' Endpoints (`NODE_ENV=development`)  
 
@@ -335,14 +336,14 @@ _Body (JSON):_
   "owner": "68ce78e4af8e379dbf9b1e83"
 }
 ```
-_*Only accessible for ADMIN users and the owner of the project_  
+_*Endast tillgänglig för ADMIN-användare och projektägaren_  
 
 #### Ta bort ett projekt
 _Endpoint:_  
 ```
 DELETE localhost:3000/api/projects/68ce9e5f2dde32359e5d814b
 ```  
-_*Only accessible for ADMIN users and the owner of the project_  
+_*Endast tillgänglig för ADMIN-användare och projektägaren_  
 
 #### Hämta alla tasks för ett projekt
 _Endpoint:_  
