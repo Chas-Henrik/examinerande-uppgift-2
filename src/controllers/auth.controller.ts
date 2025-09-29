@@ -37,7 +37,7 @@ export const login = async (req: Request, res: Response<ApiResponseType>, next: 
         const { email, password } : ZodLoginSchemaType = ZodLoginSchema.parse(req.body);
         const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+password').lean();
 
-        if (!user?.password || !await bcrypt.compare(password, user.password)) {
+        if (!user || !user.password || !await bcrypt.compare(password, user.password)) {
             // Dummy bcrypt hash to mitigate timing attacks
             const dummyHash = '$2b$10$invalidsaltinvalidsaltinv.uFzQxGZ7yQzW9X0mFq2e2K';
             await bcrypt.compare(password, dummyHash); // for timing consistency
