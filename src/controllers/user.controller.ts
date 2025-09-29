@@ -82,7 +82,7 @@ export const patchUser = async (req: Request, res: Response<ApiResponseType>, ne
         new: true,
         runValidators: true,
         upsert: false  // Do not create a new document if it doesn't exist
-    });
+    }).lean();
     if (!updatedUser) {
         throw new ApiError(404, 'User not found');
     }
