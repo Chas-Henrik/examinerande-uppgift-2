@@ -243,13 +243,13 @@ _Body (JSON):_
 }
 ```
 
-#### Hämta alla task
+#### Hämta alla tasks
 _Endpoint:_  
 ```
 GET localhost:3000/api/tasks
 ```  
 
-#### Hämta alla task (med pagination)
+#### Hämta alla tasks (med pagination)
 _Endpoint:_  
 ```
 GET localhost:3000/api/tasks?page=1&size=10
