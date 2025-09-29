@@ -1,10 +1,9 @@
 // src/controllers/user.controller.ts
 import { Request, Response, NextFunction } from 'express';
-import bcrypt from 'bcrypt';
 import { User, UserType, Task, serializeUser, serializeTask } from "../models"
 import { ApiResponseType } from '../types';
 import { AuthenticatedRequest } from "../middleware";
-import { COOKIE_OPTIONS } from './auth.controller.js';
+import { COOKIE_NAME, COOKIE_OPTIONS } from './auth.controller.js';
 import { ZodUserSchema, ZodUserPatchSchema, ZodUserType, ZodUserPatchType, ZodPaginationType, ZodPaginationSchema } from "../validation";
 import { ApiError, normalizeUserLevel } from '../utils';
 
@@ -103,7 +102,7 @@ export const deleteUser = async (req: Request, res: Response<ApiResponseType>, n
 
     // If the user deleted themselves, clear their cookie
     if (authReq.user._id === id) {
-        res.clearCookie('token', COOKIE_OPTIONS);
+        res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
     }
 
     res.status(200).json({ ok: true, message: "User deleted" });

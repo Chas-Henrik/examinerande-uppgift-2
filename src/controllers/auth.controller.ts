@@ -15,6 +15,8 @@ export const COOKIE_OPTIONS = {
     maxAge: 60 * 60 * 1000, // 1 hour
 };
 
+export const COOKIE_NAME = 'token';
+
 // POST /api/auth/register
 export const register = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
     // Validate input
@@ -26,7 +28,7 @@ export const register = async (req: Request, res: Response<ApiResponseType>, nex
     // Generate JWT token
     const token = signToken({ _id: createdUser._id.toString(), userLevel: createdUser.userLevel });
 
-    return res.status(201).cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', data: serializeUser(createdUser) });
+    return res.status(201).cookie(COOKIE_NAME, token, COOKIE_OPTIONS).json({ ok: true, message: 'User registered', data: serializeUser(createdUser) });
 };
 
 // POST /api/auth/login
@@ -40,22 +42,22 @@ export const login = async (req: Request, res: Response<ApiResponseType>, next: 
             // Dummy bcrypt hash to mitigate timing attacks
             const dummyHash = '$2b$10$invalidsaltinvalidsaltinv.uFzQxGZ7yQzW9X0mFq2e2K';
             await bcrypt.compare(password, dummyHash); // for timing consistency
-            res.clearCookie('token', COOKIE_OPTIONS);
+            res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
             throw new ApiError(401, 'Invalid credentials');
         }
 
         const token = signToken({ _id: user._id.toString(), userLevel: user.userLevel });
 
-        return res.cookie('token', token, COOKIE_OPTIONS).json({ ok: true, message: 'Logged in successfully', data: serializeUser(user) });
+        return res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS).json({ ok: true, message: 'Logged in successfully', data: serializeUser(user) });
     } catch (error) {
-        res.clearCookie('token', COOKIE_OPTIONS);
+        res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
         next(error);
     }
 };
 
 // POST /api/auth/logout
 export const logout = async (req: Request, res: Response<ApiResponseType>, next: NextFunction) =>  {
-    res.clearCookie('token', COOKIE_OPTIONS);
+    res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
     return res.json({ ok: true, message: 'Logged out successfully' }); 
 };
 
