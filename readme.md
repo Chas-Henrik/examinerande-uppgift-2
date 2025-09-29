@@ -66,18 +66,18 @@ _Authentication, authorization, rate limiting, validering & delar av felhanterin
 1. User, Task & Project collections.
 2. Autentisering med JWT (som HTTP-only cookie med 1h expiration time).
 3. ADMIN & DEVELOPER User Level.
-4. Task stöder fältet `finishedBy` (ref. till User) och `project` (Project ID).
+4. Task stöder fältet `finishedBy` (User ID) och fältet `project` (Project ID).
 5. Lösenordet är krypterat i databasen (hash + salt).
-6. Registrering av nya developer konton, vem som helst kan registrera ett nytt developer konto (och userLevel sätts till DEVELOPER automatiskt).
-7. Endast administratörer kan skapa nya administratörs konton.
-8. Användaren kan endast ändra uppgifter (t.ex. lösenord) i sitt eget användarkonto och administratörer kan ändra uppgifter i vilka användarkonton som helst.
-9. Användaren kan endast ta bort sitt eget användarkonto och administratörer kan ta bort vilka användarkonton som helst utom sitt eget konto (för att garantera att det alltid finns minst ett administratörs konto i systemet).
-10. Endast autentiserade användare kan ändra sina egna uppgifter och administratörer kan ändra uppgifter för vilken användare som helst.
-11. Project collection med `owner` fält där endast ägaren eller en administratör kan ändra eller ta bort projektet, och ägaren sätts automatiskt till den inloggade användaren när projektet skapas.
+6. Registrering av nya developer konton (`POST localhost:3000/api/auth/register`), vem som helst kan registrera ett nytt developer konto (där userLevel sätts till DEVELOPER automatiskt).
+7. Endast administratörer kan skapa nya administratörs konton (`POST localhost:3000/api/users`).
+8. Användaren kan endast ändra uppgifter (t.ex. lösenord) i sitt eget användarkonto medan administratörer kan ändra uppgifter i vilka användarkonton som helst.
+9. Användaren kan endast ta bort sitt eget användarkonto medan administratörer kan ta bort vilka användarkonton som helst utom sitt eget konto (för att garantera att det alltid finns minst ett administratörs konto i systemet).
+10. Authentiserade användare har full access till alla tasks.
+11. Endast ägaren eller en administratör kan ändra eller ta bort ett projekt, och ägaren (projeketets `owner` fält) sätts automatiskt till den inloggade användaren när projektet skapas.
 12. Rate Limiter på känsliga routes, som t.ex. `localhost:3000/api/auth/login` och en generell Rate Limiter på övriga routes för att bibehålla stabilitet, säkerhet och tillgänglighet.
-13. Dummy bcrypt-hash för att mildra timingattacker.
-14. Authentication & authorization middleware (authorize.ts).
-14. User authorization middleware (authorizeUser.ts).
+13. Dummy bcrypt-hash vid login för att mildra timingattacker.
+14. Authentication middleware (authenticate.ts).
+14. Authorization middleware (authorizeProject.ts & authorizeUser.ts).
 15. Helmet skyddar applikationen från vanliga webbsäkerhetshot genom att ställa in olika HTTP-rubriker (headers) på rätt sätt.
 16. Compress komprimerar HTTP-svar (t.ex. HTML, CSS, JavaScript, JSON) innan de skickas till klienten.
 17. HTTPS för produktions versionen.
