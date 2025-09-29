@@ -70,7 +70,7 @@ _Authentication, authorization, rate limiting, validering & delar av felhanterin
 5. Lösenordet är krypterat i databasen (hash + salt).
 6. Registrering av nya developer konton (`POST localhost:3000/api/auth/register`), vem som helst kan registrera ett nytt developer konto (där userLevel sätts till DEVELOPER automatiskt).
 7. Endast administratörer kan skapa nya administratörs konton (`POST localhost:3000/api/users`).
-8. Användaren kan endast ändra uppgifter (t.ex. lösenord) i sitt eget användarkonto medan administratörer kan ändra uppgifter i vilka användarkonton som helst.
+8. Användaren kan endast administrera sitt eget användarkonto medan administratörer kan administrera alla användare/uppgifter.
 9. Användaren kan endast ta bort sitt eget användarkonto medan administratörer kan ta bort vilka användarkonton som helst utom sitt eget konto (för att garantera att det alltid finns minst ett administratörs konto i systemet).
 10. Authentiserade användare har full access till alla tasks.
 11. Endast ägaren eller en administratör kan ändra eller ta bort ett projekt, och ägaren (projeketets `owner` fält) sätts automatiskt till den inloggade användaren när projektet skapas.
