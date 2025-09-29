@@ -104,8 +104,8 @@ _Authentication, authorization, rate limiting samt delar av validering & felhant
 ### Rate Limiting & SSL certificat
   
 ***Rate Limiting***  
-Känsliga routes (`POST` `/api/auth/register`, `/api/auth/login` & `/api/users`) har en rate limit på _20 requests / 10 min_ för att bla. förhindra 'brute force inloggnings attacker'.  
-Övriga routes har en rate limit på _100 requests / 10 min_ för att bibehålla stabilitet, säkerhet och tillgänglighet.  
+- Känsliga routes (`POST` `/api/auth/register`, `/api/auth/login` & `/api/users`) har en rate limit på _20 requests / 10 min_ för att bla. förhindra 'brute force inloggnings attacker'.  
+- Övriga routes har en rate limit på _100 requests / 10 min_ för att bibehålla stabilitet, säkerhet och tillgänglighet.  
   
 ***SSL Certificat***  
 Om du konfigurerar `.env` filen för produktions versionen (`NODE_ENV=production`) så ska du använda `PORT` 3443, och du kan skapa ditt egna lokala SSL certificat med:  
